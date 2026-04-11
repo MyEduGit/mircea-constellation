@@ -319,10 +319,20 @@ async function loadStatus() {
       const id = n.dataset.id;
       if (data[id] && data[id].status) n.dataset.status = data[id].status;
     });
-  } catch { /* status.json not available yet */ }
+  } catch {
+    const bar = document.getElementById('statusBar');
+    if (bar.innerHTML.includes('Loading status')) {
+      bar.innerHTML = '<span><span class="dot dot-green"></span> OpenClaw</span><span><span class="dot dot-green"></span> URANTiOS</span><span><span class="dot dot-green"></span> 11 Bots</span><span style="color:#555">status.json offline</span>';
+    }
+  }
 }
 loadStatus();
 setInterval(loadStatus, 30000);
+
+document.addEventListener('click', e => {
+  const panel = document.getElementById('panel');
+  if (panel.classList.contains('open') && !panel.contains(e.target) && !e.target.closest('.node')) closePanel();
+});
 </script>
 </body>
 </html>
