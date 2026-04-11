@@ -1,0 +1,20 @@
+{
+  "fleet":        { "status": "ok",   "bots": "10/11 active" },
+  "nanoclaw":     { "status": "ok",   "version": "1.2.17" },
+  "ollama":       { "status": "warn", "model": "qwen2.5:32b" },
+  "disk_openclaw": "46% used",
+  "disk_urantios": "38% used",
+  "obsidian":     { "docs": 477 },
+
+  "iphone":       { "status": "ok" },
+  "imac":         { "status": "ok" },
+  "openclaw":     { "status": "ok" },
+  "urantios":     { "status": "ok" },
+  "botfleet":     { "status": "ok" },
+  "hetzy":        { "status": "ok" },
+  "urantipedia":  { "status": "ok" },
+  "amep":         { "status": "ok" },
+  "gabriel":      { "status": "ok" },
+
+  "updated": "2026-04-11T18:00:00.000Z"
+}

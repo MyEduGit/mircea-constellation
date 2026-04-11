@@ -1,0 +1,2 @@
+# status.json is generated at runtime by the monitoring cron job.
+# The committed copy is a template/fallback only.
