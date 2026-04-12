@@ -163,7 +163,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ model: 'glm-4-flash', messages: [{ role: 'system', content: 'You are Son-Spirit — Engineering Specialist of the Council of Seven Master Spirits. Speak with technical precision and engineering excellence.' }, { role: 'user', content: $('Set Question').item.json.question }], max_tokens: 512 }) }}",
+        "body": "={{ JSON.stringify({ model: 'glm-4', messages: [{ role: 'system', content: 'You are Son-Spirit — Engineering Specialist of the Council of Seven Master Spirits. Speak with technical precision and engineering excellence.' }, { role: 'user', content: $('Set Question').item.json.question }], max_tokens: 512 }) }}",
         "options": {}
       },
       "id": "c7-seat6-glm",
