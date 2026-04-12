@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 Wire Seat 6 (Z.ai / GLM) into the Council of Seven n8n workflow.
-Uses n8n REST API — no UI clicking required.
+Auto-imports the workflow from GitHub if not already in n8n.
 
 Run from iMac Terminal:
-  curl -fsSL https://raw.githubusercontent.com/MyEduGit/mircea-constellation/claude/count-claws-NrqRh/setup/wire_seat6.py | python3
+  curl -fsSL https://raw.githubusercontent.com/MyEduGit/mircea-constellation/claude/count-claws-NrqRh/setup/wire_seat6.py -o /tmp/wire_seat6.py && python3 /tmp/wire_seat6.py
 """
 import json
 import getpass
@@ -13,7 +13,8 @@ import urllib.request
 import urllib.error
 import http.cookiejar
 
-N8N_HOST = "http://46.225.51.30"
+N8N_HOST     = "http://46.225.51.30"
+WORKFLOW_URL = "https://raw.githubusercontent.com/MyEduGit/mircea-constellation/claude/count-claws-NrqRh/council/council_of_seven_v1.n8n.json"
 
 B = "\033[1m"; G = "\033[32m"; C = "\033[36m"; R = "\033[31m"; Y = "\033[33m"; E = "\033[0m"
 def ok(s):   print(f"{G}✓{E} {s}")
@@ -41,14 +42,13 @@ class N8n:
             body = e.read().decode()[:600]
             raise Exception(f"HTTP {e.code} on {method} {path}: {body}")
 
-    def get(self, p):       return self._req("GET",  p)
-    def post(self, p, b):   return self._req("POST", p, b)
-    def put(self, p, b):    return self._req("PUT",  p, b)
+    def get(self, p):     return self._req("GET",  p)
+    def post(self, p, b): return self._req("POST", p, b)
+    def put(self, p, b):  return self._req("PUT",  p, b)
 
 
 def find_workflows(client):
     result = client.get("/rest/workflows")
-    # n8n returns {"data": [...]} or just [...]
     ws = result.get("data", result)
     if isinstance(ws, dict):
         ws = list(ws.values())
@@ -57,7 +57,7 @@ def find_workflows(client):
 
 def main():
     print(f"\n{B}=== WIRE SEAT 6 — Z.ai / GLM ==={E}")
-    print("Configures the Authorization header in n8n via REST API.\n")
+    print("Auto-imports Council of Seven if missing, then wires the Z.ai key.\n")
 
     email    = input("n8n email:    ").strip()
     password = getpass.getpass("n8n password: ")
@@ -66,38 +66,43 @@ def main():
 
     client = N8n()
 
-    # ── Login ───────────────────────────────────────────────────────
+    # ── Login ────────────────────────────────────────────────────────
     info("Logging into n8n...")
     result = client.post("/rest/login", {"emailOrLdapLoginId": email, "password": password})
     if not result.get("data"):
-        err(f"Login failed — check email/password. Response: {result}")
+        err(f"Login failed — check email/password.\nResponse: {result}")
     ok("Logged in\n")
 
-    # ── Find workflow ────────────────────────────────────────────────
+    # ── Find or import workflow ──────────────────────────────────────
     info("Finding Council of Seven workflow...")
     workflows = find_workflows(client)
-    wf = next((w for w in workflows if "Council" in w.get("name", "")), None)
+    wf        = next((w for w in workflows if "Council" in w.get("name", "")), None)
 
-    if not wf:
+    if wf:
+        wf_id = wf["id"]
+        ok(f'Found: "{wf["name"]}" (ID: {wf_id})\n')
+        info("Fetching full workflow JSON...")
+        result  = client.get(f"/rest/workflows/{wf_id}")
+        full_wf = result.get("data", result)
+        ok(f"Fetched ({len(full_wf.get('nodes', []))} nodes)\n")
+    else:
         names = [w.get("name", "?") for w in workflows]
-        err(f"Council of Seven not found. Workflows in n8n: {names}\n"
-            "Run claws_boot.sh first to import it.")
-
-    wf_id = wf["id"]
-    ok(f'Found: "{wf["name"]}" (ID: {wf_id})\n')
-
-    # ── Fetch full workflow ──────────────────────────────────────────
-    info("Fetching full workflow JSON...")
-    result = client.get(f"/rest/workflows/{wf_id}")
-    full_wf = result.get("data", result)
-    ok(f"Fetched ({len(full_wf.get('nodes', []))} nodes)\n")
+        warn(f"Council of Seven not found. Existing: {names}")
+        info("Importing from GitHub...")
+        with urllib.request.urlopen(WORKFLOW_URL) as r:
+            wf_data = json.loads(r.read())
+        result  = client.post("/rest/workflows", wf_data)
+        full_wf = result.get("data", result)
+        wf_id   = full_wf.get("id")
+        if not wf_id:
+            err(f"Import failed: {result}")
+        ok(f"Workflow imported: \"{full_wf.get('name')}\" (ID: {wf_id})\n")
 
     # ── Patch Seat 6 ─────────────────────────────────────────────────
     info("Patching Seat6_SonSpirit_GLM...")
     patched = False
     for node in full_wf.get("nodes", []):
         if node.get("name") == "Seat6_SonSpirit_GLM":
-            # Fix Authorization header — this is the key fix
             params = node.setdefault("parameters", {})
             params["sendHeaders"] = True
             params["headerParameters"] = {
@@ -106,20 +111,17 @@ def main():
                     {"name": "Content-Type",  "value": "application/json"}
                 ]
             }
-            # Fix model: glm-4 (as specified by Z.ai / GLM)
-            # Keep n8n expression body; just fix the model name inside it
             if "body" in params:
-                params["body"] = params["body"].replace("glm-4-flash", "glm-4").replace("glm-4.5", "glm-4")
+                params["body"] = params["body"].replace("glm-4-flash", "glm-4")
             ok("  Authorization: Bearer [key set]")
-            ok("  Content-Type: application/json")
-            ok("  Model: glm-4")
+            ok("  Content-Type:  application/json")
+            ok("  Model:         glm-4")
             patched = True
             break
 
     if not patched:
         node_names = [n.get("name") for n in full_wf.get("nodes", [])]
-        err(f"Seat6_SonSpirit_GLM not found in workflow nodes: {node_names}")
-
+        err(f"Seat6_SonSpirit_GLM not found in nodes: {node_names}")
     print()
 
     # ── Save ─────────────────────────────────────────────────────────
@@ -133,13 +135,11 @@ def main():
     print(f"{B}================================================={E}")
     print(f"{G}  Seat 6 (GLM/Z.ai) is wired!{E}")
     print()
-    print("  In your browser at http://46.225.51.30:")
-    print("  1. Open Workflows → Council of Seven Master Spirits v1")
-    print("  2. Click Execute Workflow (top right)")
-    print("  3. Check Seat6_SonSpirit_GLM output")
-    print(f"  4. Expect: response with {Y}choices[0].message.content{E}")
+    print(f"  → http://46.225.51.30")
+    print(f"  → Workflows → Council of Seven Master Spirits v1")
+    print(f"  → Execute Workflow")
+    print(f"  → Check Seat6_SonSpirit_GLM output for GLM response")
     print()
-    print("  If Seat 6 responds → you have a live Council seat!")
     print(f"  Next: Seat 4 (Ollama/Gemma — no key needed)")
     print(f"{B}================================================={E}\n")
 
