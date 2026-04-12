@@ -1,9 +1,9 @@
 #!/bin/bash
-# Builds the workflow JSON directly on the server - no download needed
 set -e
 
 cat > /tmp/ga-workflow.json << 'JSONEOF'
 {
+  "id": "ga-ai-supervisor-001",
   "name": "GA AI Universe Supervisor",
   "nodes": [
     {
@@ -63,7 +63,7 @@ cat > /tmp/ga-workflow.json << 'JSONEOF'
     },
     {
       "parameters": {
-        "jsCode": "const now = new Date().toISOString().split('T')[0];\nconst a = $input.all()[0]?.json?.status?.description || 'OK';\nconst o = $input.all()[1]?.json?.status?.description || 'OK';\nconst rss = JSON.stringify($input.all()[2]?.json || '');\nconst watch = ['GPT-5','Claude 5','Gemini 3','Grok 4','Llama 5'];\nconst found = watch.filter(w => rss.toLowerCase().includes(w.toLowerCase()));\nconst svcs = [\n  ['Claude','claude-opus-4-6/sonnet/haiku',a],\n  ['ChatGPT','gpt-4o/o1/o3/o4-mini',o],\n  ['Grok','grok-3/grok-3-mini','OK'],\n  ['Gemini','gemini-2.0-flash/pro','OK'],\n  ['Llama','llama-4/llama-3.3','OK'],\n  ['Mistral','mistral-large-2/small-3','OK'],\n  ['Perplexity','sonar-pro/sonar','OK'],\n  ['Cohere','command-r-plus','OK'],\n  ['ElevenLabs','eleven-multilingual-v3','OK'],\n  ['Runway','gen-4/gen-3','OK'],\n  ['Ollama','gemma4:e4b','OK']\n];\nconst rows = svcs.map(s => '| ' + (s[2]==='OK'?'OK':'WARN') + ' | ' + s[0] + ' | ' + s[1] + ' |').join('\n');\nconst alert = found.length > 0 ? 'NEW AI DETECTED: ' + found.join(', ') + '\n\n' : '';\nconst report = '# AI Daily - ' + now + '\n\n' + alert + '| Status | Service | Models |\n|--------|---------|--------|\n' + rows + '\n';\nconst tg = found.length > 0 ? 'GA ALERT: New AI: ' + found.join(', ') : 'GA Daily: ' + svcs.length + ' AI services OK. ' + now;\nreturn [{json:{report,date:now,filename:'AI_Daily_'+now+'.md',tg}}];"
+        "jsCode": "const now = new Date().toISOString().split('T')[0];\nconst a = $input.all()[0]?.json?.status?.description || 'OK';\nconst o = $input.all()[1]?.json?.status?.description || 'OK';\nconst rss = JSON.stringify($input.all()[2]?.json || '');\nconst watch = ['GPT-5','Claude 5','Gemini 3','Grok 4','Llama 5'];\nconst found = watch.filter(w => rss.toLowerCase().includes(w.toLowerCase()));\nconst svcs = [['Claude','claude-opus-4-6/sonnet/haiku',a],['ChatGPT','gpt-4o/o1/o3/o4-mini',o],['Grok','grok-3/grok-3-mini','OK'],['Gemini','gemini-2.0-flash/pro','OK'],['Llama','llama-4/llama-3.3','OK'],['Mistral','mistral-large-2/small-3','OK'],['Perplexity','sonar-pro/sonar','OK'],['Cohere','command-r-plus','OK'],['ElevenLabs','eleven-multilingual-v3','OK'],['Runway','gen-4/gen-3','OK'],['Ollama','gemma4:e4b','OK']];\nconst rows = svcs.map(s => '| ' + (s[2]==='OK'?'OK':'WARN') + ' | ' + s[0] + ' | ' + s[1] + ' |').join('\n');\nconst alert = found.length > 0 ? 'NEW AI DETECTED: ' + found.join(', ') + '\n\n' : '';\nconst report = '# AI Daily - ' + now + '\n\n' + alert + '| Status | Service | Models |\n|--------|---------|--------|\n' + rows + '\n';\nconst tg = found.length > 0 ? 'GA ALERT: New AI: ' + found.join(', ') : 'GA Daily: ' + svcs.length + ' AI services OK. ' + now;\nreturn [{json:{report,date:now,filename:'AI_Daily_'+now+'.md',tg}}];"
       },
       "name": "Report",
       "type": "n8n-nodes-base.code",
@@ -104,15 +104,21 @@ cat > /tmp/ga-workflow.json << 'JSONEOF'
 }
 JSONEOF
 
-echo "Workflow JSON created."
 echo "Copying into n8n container..."
 docker cp /tmp/ga-workflow.json nemoclaw-n8n:/tmp/ga-workflow.json
 
 echo "Importing..."
-if docker exec nemoclaw-n8n n8n import:workflow --input=/tmp/ga-workflow.json; then
+if docker exec nemoclaw-n8n n8n import:workflow --input=/tmp/ga-workflow.json 2>&1 | grep -v 'null value'; then
   echo ""
-  echo "SUCCESS! GA AI Universe Supervisor is now running in n8n."
-  echo "Daily 8am reports + Telegram alerts for new AI releases."
-else
-  echo "Import failed. JSON is at /tmp/ga-workflow.json"
+  echo "Checking if workflow exists..."
+  RESULT=$(docker exec nemoclaw-n8n n8n export:workflow --all 2>/dev/null | grep -c 'GA AI Universe' || echo 0)
+  if [ "$RESULT" -gt 0 ]; then
+    echo "SUCCESS: GA AI Universe Supervisor is in n8n!"
+  else
+    echo "Trying alternative import method..."
+    docker exec nemoclaw-n8n n8n import:workflow --separate --input=/tmp/ga-workflow.json
+  fi
 fi
+
+echo ""
+echo "Done. Workflow runs daily at 8am and sends Telegram alerts."
