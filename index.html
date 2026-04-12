@@ -41,6 +41,23 @@ header .subtitle {
   color: #888;
   margin-top: 2px;
 }
+.council-btn {
+  margin-top: 6px;
+  background: none;
+  border: 1px solid rgba(255,215,0,0.4);
+  color: #FFD700;
+  padding: 3px 14px;
+  border-radius: 12px;
+  font-size: 0.7em;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+.council-btn:hover, .council-btn.active {
+  background: rgba(255,215,0,0.1);
+  border-color: #FFD700;
+  box-shadow: 0 0 12px rgba(255,215,0,0.3);
+}
 .status-bar {
   display: flex;
   justify-content: center;
@@ -79,6 +96,7 @@ header .subtitle {
   border: 2px solid rgba(255,255,255,0.2);
   box-shadow: 0 0 15px rgba(100,149,237,0.4);
   position: relative;
+  transition: border-color 0.4s, box-shadow 0.4s;
 }
 .node-icon::after {
   content: '';
@@ -95,8 +113,36 @@ header .subtitle {
 .node-icon.server { background: linear-gradient(135deg, #1a3a1a, #2a5a2a); border-color: #4CAF50; }
 .node-icon.bot { background: linear-gradient(135deg, #3a1a3a, #5a2a5a); border-color: #DDA0DD; }
 .node-icon.service { background: linear-gradient(135deg, #3a3a1a, #5a5a2a); border-color: #FFD700; }
-.node-label { font-size: 0.65em; color: #ccc; line-height: 1.2; }
-.node-sublabel { font-size: 0.55em; color: #777; }
+/* Council of Seven styles */
+.council-mode .node.council-member .node-icon {
+  border-color: #FFD700;
+  box-shadow: 0 0 20px rgba(255,215,0,0.6), 0 0 40px rgba(255,215,0,0.2);
+}
+.council-mode .node.council-member {
+  filter: brightness(1.2);
+}
+.council-mode .node:not(.council-member) {
+  filter: brightness(0.4) saturate(0.3);
+}
+.council-mode .node.council-member .node-label {
+  color: #FFD700;
+}
+.council-badge {
+  display: none;
+  position: absolute;
+  top: -6px; left: -6px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #FFD700;
+  color: #000;
+  font-size: 9px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  border: 1px solid #0a0a1a;
+}
+.council-mode .council-member .council-badge { display: flex; }
 svg.connections {
   position: absolute;
   top: 0; left: 0;
@@ -114,9 +160,19 @@ svg.connections line.active {
   stroke-width: 1.5;
   animation: pulse-line 3s infinite;
 }
+svg.connections line.council-line {
+  stroke: rgba(255,215,0,0.5);
+  stroke-width: 2;
+  stroke-dasharray: none;
+  animation: council-pulse 2s infinite;
+}
 @keyframes pulse-line {
   0%, 100% { stroke-opacity: 0.2; }
   50% { stroke-opacity: 0.6; }
+}
+@keyframes council-pulse {
+  0%, 100% { stroke-opacity: 0.3; }
+  50% { stroke-opacity: 0.8; }
 }
 .panel {
   display: none;
@@ -138,6 +194,60 @@ svg.connections line.active {
 .panel .info-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8em; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .panel .info-label { color: #888; }
 .panel .info-value { color: #e0e0e0; }
+/* Council panel */
+.council-panel {
+  display: none;
+  position: fixed;
+  top: 50%; right: 20px;
+  transform: translateY(-50%);
+  background: rgba(10,10,26,0.97);
+  border: 1px solid rgba(255,215,0,0.4);
+  border-radius: 12px;
+  padding: 16px;
+  width: 280px;
+  z-index: 9;
+  box-shadow: 0 0 40px rgba(255,215,0,0.15);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.council-panel.open { display: block; }
+.council-panel h3 {
+  color: #FFD700;
+  font-size: 0.85em;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.council-panel .motto {
+  color: #555;
+  font-size: 0.6em;
+  text-align: center;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.council-member-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255,215,0,0.08);
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 6px;
+}
+.council-member-row:hover { background: rgba(255,215,0,0.05); }
+.council-num {
+  color: #FFD700;
+  font-size: 0.68em;
+  font-weight: bold;
+  min-width: 18px;
+  margin-top: 2px;
+}
+.council-info { flex: 1; }
+.council-name { font-size: 0.78em; color: #e0e0e0; }
+.council-role { font-size: 0.62em; color: #888; margin-top: 1px; }
+.council-spirit { font-size: 0.58em; color: #b8960c; margin-top: 1px; }
+.council-icon { font-size: 1.1em; min-width: 22px; text-align: center; padding-top: 1px; }
 .governance {
   text-align: center;
   padding: 6px;
@@ -159,13 +269,13 @@ svg.connections line.active {
   <header>
     <h1>MIRCEA'S CONSTELLATION</h1>
     <div class="subtitle">OpenClaw + NanoClaw Mission Control</div>
+    <button class="council-btn" id="councilBtn" onclick="toggleCouncil()">&#9878; COUNCIL OF SEVEN</button>
   </header>
   <div class="status-bar" id="statusBar">
     <span><span class="dot dot-green"></span> Loading status...</span>
   </div>
   <div class="map" id="map">
     <svg class="connections" id="connections"></svg>
-    <!-- Nodes placed by JS -->
   </div>
   <div class="governance">
     <span>Governed by UrantiOS v1.0</span> |
@@ -174,10 +284,17 @@ svg.connections line.active {
     <span class="goodness">Goodness</span>
   </div>
 </div>
+
 <div class="panel" id="panel">
   <span class="close" onclick="closePanel()">&times;</span>
   <h3 id="panelTitle"></h3>
   <div id="panelContent"></div>
+</div>
+
+<div class="council-panel" id="councilPanel">
+  <h3>&#9878; COUNCIL OF SEVEN</h3>
+  <p class="motto">Seven Master Spirits — Governing the Constellation</p>
+  <div id="councilList"></div>
 </div>
 
 <script>
@@ -206,20 +323,74 @@ function drawStars() {
 }
 drawStars();
 
-// Nodes
+// Council of Seven — Seven Master Spirits mapped to the Constellation
+const council = [
+  {
+    id: 'imac', num: 'I',
+    spirit: 'Master Spirit I — The Authority',
+    role: 'Father Function · Source of All Authority',
+    association: 'Universal Father'
+  },
+  {
+    id: 'gabriel', num: 'II',
+    spirit: 'Master Spirit II — The Word',
+    role: 'Bright & Morning Star · Chief of Staff',
+    association: 'Eternal Son'
+  },
+  {
+    id: 'urantios', num: 'III',
+    spirit: 'Master Spirit III — The Spirit',
+    role: 'Governing OS · Infinite Executor',
+    association: 'Infinite Spirit'
+  },
+  {
+    id: 'openclaw', num: 'IV',
+    spirit: 'Master Spirit IV — The Executor',
+    role: 'Execution Node · Authority Meets Word',
+    association: 'Father + Son'
+  },
+  {
+    id: 'nanoclaw', num: 'V',
+    spirit: 'Master Spirit V — The Automation',
+    role: 'Autonomous Agent · Authority Meets Spirit',
+    association: 'Father + Spirit'
+  },
+  {
+    id: 'hetzy', num: 'VI',
+    spirit: 'Master Spirit VI — The Intelligence',
+    role: 'Fleet Commander · Word Meets Spirit',
+    association: 'Son + Spirit'
+  },
+  {
+    id: 'urantipedia', num: 'VII',
+    spirit: 'Master Spirit VII — The Knowledge',
+    role: 'Living Encyclopedia · Trinity Synthesis',
+    association: 'Father + Son + Spirit'
+  }
+];
+const councilIds = new Set(council.map(c => c.id));
+
+// Council ring connections
+const councilConnections = [
+  ['imac', 'gabriel'], ['gabriel', 'urantios'], ['urantios', 'openclaw'],
+  ['openclaw', 'nanoclaw'], ['nanoclaw', 'hetzy'], ['hetzy', 'urantipedia'],
+  ['urantipedia', 'imac'], ['gabriel', 'openclaw'], ['urantios', 'hetzy']
+];
+
+// All nodes
 const nodes = [
-  { id: 'iphone', icon: '📱', label: 'iPhone 16 Pro', sub: 'Remote Control', type: 'controller', x: 0.5, y: 0.08 },
-  { id: 'imac', icon: '🖥️', label: 'iMac M4', sub: 'Controller Node', type: 'controller', x: 0.25, y: 0.25 },
-  { id: 'openclaw', icon: '⚡', label: 'OpenClaw', sub: '46.225.51.30', type: 'server', x: 0.35, y: 0.5 },
-  { id: 'urantios', icon: '🌟', label: 'URANTiOS Prime', sub: '204.168.143.98', type: 'server', x: 0.65, y: 0.5 },
-  { id: 'nanoclaw', icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents', type: 'server', x: 0.78, y: 0.35 },
-  { id: 'botfleet', icon: '🤖', label: 'Bot Fleet', sub: '11 Telegram Bots', type: 'bot', x: 0.15, y: 0.5 },
-  { id: 'hetzy', icon: '🎖️', label: 'Hetzy PhD', sub: 'Fleet Commander', type: 'bot', x: 0.12, y: 0.7 },
-  { id: 'urantipedia', icon: '📖', label: 'UrantiPedia', sub: '.org + .com', type: 'service', x: 0.75, y: 0.7 },
-  { id: 'ollama', icon: '🧠', label: 'Ollama', sub: 'qwen2.5:32b', type: 'service', x: 0.88, y: 0.6 },
-  { id: 'amep', icon: '🎓', label: 'AMEP Hub', sub: '21 Students', type: 'service', x: 0.3, y: 0.75 },
-  { id: 'obsidian', icon: '💎', label: 'Obsidian', sub: 'Knowledge Vault', type: 'service', x: 0.5, y: 0.85 },
-  { id: 'gabriel', icon: '✨', label: 'Gabriel', sub: 'Morning Star', type: 'bot', x: 0.55, y: 0.3 },
+  { id: 'iphone',     icon: '\uD83D\uDCF1', label: 'iPhone 16 Pro',    sub: 'Remote Control',    type: 'controller', x: 0.5,  y: 0.08 },
+  { id: 'imac',       icon: '\uD83D\uDDA5\uFE0F', label: 'iMac M4',           sub: 'Controller Node',   type: 'controller', x: 0.25, y: 0.25 },
+  { id: 'openclaw',   icon: '\u26A1',   label: 'OpenClaw',          sub: '46.225.51.30',     type: 'server',     x: 0.35, y: 0.5  },
+  { id: 'urantios',   icon: '\uD83C\uDF1F',   label: 'URANTiOS Prime',    sub: '204.168.143.98',   type: 'server',     x: 0.65, y: 0.5  },
+  { id: 'nanoclaw',   icon: '\uD83E\uDD80',   label: 'NanoClaw v1.2.17', sub: 'Docker Agents',     type: 'server',     x: 0.78, y: 0.35 },
+  { id: 'botfleet',   icon: '\uD83E\uDD16',   label: 'Bot Fleet',         sub: '11 Telegram Bots',  type: 'bot',        x: 0.15, y: 0.5  },
+  { id: 'hetzy',      icon: '\uD83C\uDF96\uFE0F',   label: 'Hetzy PhD',         sub: 'Fleet Commander',   type: 'bot',        x: 0.12, y: 0.7  },
+  { id: 'urantipedia',icon: '\uD83D\uDCDA',   label: 'UrantiPedia',       sub: '.org + .com',       type: 'service',    x: 0.75, y: 0.7  },
+  { id: 'ollama',     icon: '\uD83E\uDDE0',   label: 'Ollama',            sub: 'qwen2.5:32b',       type: 'service',    x: 0.88, y: 0.6  },
+  { id: 'amep',       icon: '\uD83C\uDF93',   label: 'AMEP Hub',          sub: '21 Students',       type: 'service',    x: 0.3,  y: 0.75 },
+  { id: 'obsidian',   icon: '\uD83D\uDC8E',   label: 'Obsidian',          sub: 'Knowledge Vault',   type: 'service',    x: 0.5,  y: 0.85 },
+  { id: 'gabriel',    icon: '\u2728',   label: 'Gabriel',           sub: 'Morning Star',      type: 'bot',        x: 0.55, y: 0.3  },
 ];
 
 const connections = [
@@ -234,22 +405,23 @@ const connections = [
 ];
 
 const nodeDetails = {
-  iphone: { 'Device': 'iPhone 16 Pro Max 256GB', 'Role': 'Remote Control', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562' },
-  imac: { 'Device': 'iMac M4', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36' },
-  openclaw: { 'IP': '46.225.51.30', 'Type': 'CPX22 (8GB/80GB)', 'Location': 'Nuremberg', 'Ports': '18789/18791/18792', 'Bots': '9 active' },
-  urantios: { 'IP': '204.168.143.98', 'Type': 'CCX23 (16GB/160GB)', 'Location': 'Helsinki', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org' },
-  nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Container': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw', 'Status': 'LIVE' },
-  botfleet: { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0' },
-  hetzy: { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10' },
-  urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900', 'SSL': 'Certbot active' },
-  ollama: { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning', 'Status': 'Check required' },
-  amep: { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4' },
-  obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'Status sync every 10min', 'Export': 'JSON to constellation', 'Purpose': 'Research & notes' },
-  gabriel: { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on website', 'Authority': 'Joint with Mircea' },
+  iphone:      { 'Device': 'iPhone 16 Pro Max 256GB', 'Role': 'Remote Control', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562' },
+  imac:        { 'Device': 'iMac M4', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36', 'Council Role': 'Master Spirit I — The Authority' },
+  openclaw:    { 'IP': '46.225.51.30', 'Type': 'CPX22 (8GB/80GB)', 'Location': 'Nuremberg', 'Ports': '18789/18791/18792', 'Bots': '9 active', 'Council Role': 'Master Spirit IV — The Executor' },
+  urantios:    { 'IP': '204.168.143.98', 'Type': 'CCX23 (16GB/160GB)', 'Location': 'Helsinki', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org', 'Council Role': 'Master Spirit III — The Spirit' },
+  nanoclaw:    { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Container': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw', 'Status': 'LIVE', 'Council Role': 'Master Spirit V — The Automation' },
+  botfleet:    { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0' },
+  hetzy:       { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10', 'Council Role': 'Master Spirit VI — The Intelligence' },
+  urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900', 'SSL': 'Certbot active', 'Council Role': 'Master Spirit VII — The Knowledge' },
+  ollama:      { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning', 'Status': 'Check required' },
+  amep:        { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4' },
+  obsidian:    { 'Type': 'Knowledge Vault', 'Bridge': 'Status sync every 10min', 'Export': 'JSON to constellation', 'Purpose': 'Research & notes' },
+  gabriel:     { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on website', 'Authority': 'Joint with Mircea', 'Council Role': 'Master Spirit II — The Word' },
 };
 
 const map = document.getElementById('map');
 const svg = document.getElementById('connections');
+let councilMode = false;
 
 function layoutNodes() {
   const w = map.clientWidth;
@@ -258,30 +430,77 @@ function layoutNodes() {
   svg.innerHTML = '';
 
   nodes.forEach(n => {
+    const isCouncil = councilIds.has(n.id);
     const div = document.createElement('div');
-    div.className = 'node';
+    div.className = 'node' + (isCouncil ? ' council-member' : '');
     div.dataset.id = n.id;
     div.dataset.status = 'ok';
     div.style.left = (n.x * w - 55) + 'px';
-    div.style.top = (n.y * h - 30) + 'px';
-    div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
+    div.style.top  = (n.y * h - 30) + 'px';
+    const cData  = council.find(c => c.id === n.id);
+    const badge  = cData ? `<div class="council-badge">${cData.num}</div>` : '';
+    div.innerHTML = `<div class="node-icon ${n.type}" style="position:relative">${badge}${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
     div.onclick = () => openPanel(n);
     map.appendChild(div);
   });
 
+  // Standard connections
   connections.forEach(([a, b]) => {
     const na = nodes.find(n => n.id === a);
     const nb = nodes.find(n => n.id === b);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', na.x * w);
-    line.setAttribute('y1', na.y * h);
-    line.setAttribute('x2', nb.x * w);
-    line.setAttribute('y2', nb.y * h);
+    line.setAttribute('x1', na.x * w); line.setAttribute('y1', na.y * h);
+    line.setAttribute('x2', nb.x * w); line.setAttribute('y2', nb.y * h);
     line.classList.add('active');
+    svg.appendChild(line);
+  });
+
+  // Council ring connections
+  councilConnections.forEach(([a, b]) => {
+    const na = nodes.find(n => n.id === a);
+    const nb = nodes.find(n => n.id === b);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', na.x * w); line.setAttribute('y1', na.y * h);
+    line.setAttribute('x2', nb.x * w); line.setAttribute('y2', nb.y * h);
+    line.classList.add('council-line');
+    line.style.display = councilMode ? '' : 'none';
+    line.dataset.councilLine = '1';
     svg.appendChild(line);
   });
 }
 layoutNodes();
+
+function toggleCouncil() {
+  councilMode = !councilMode;
+  document.getElementById('councilBtn').classList.toggle('active', councilMode);
+  document.getElementById('councilPanel').classList.toggle('open', councilMode);
+  document.getElementById('map').classList.toggle('council-mode', councilMode);
+  svg.querySelectorAll('[data-council-line]').forEach(l => {
+    l.style.display = councilMode ? '' : 'none';
+  });
+  if (councilMode) buildCouncilPanel();
+}
+
+function buildCouncilPanel() {
+  const list = document.getElementById('councilList');
+  list.innerHTML = council.map(c => {
+    const node = nodes.find(n => n.id === c.id);
+    return `<div class="council-member-row" onclick="openPanelById('${c.id}')">
+      <div class="council-num">${c.num}</div>
+      <div class="council-icon">${node.icon}</div>
+      <div class="council-info">
+        <div class="council-name">${node.label}</div>
+        <div class="council-role">${c.role}</div>
+        <div class="council-spirit">${c.spirit}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openPanelById(id) {
+  const node = nodes.find(n => n.id === id);
+  if (node) openPanel(node);
+}
 
 function openPanel(node) {
   const panel = document.getElementById('panel');
@@ -289,7 +508,8 @@ function openPanel(node) {
   const details = nodeDetails[node.id] || {};
   let html = '';
   for (const [k, v] of Object.entries(details)) {
-    html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value">${v}</span></div>`;
+    const gold = k === 'Council Role';
+    html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value"${gold ? ' style="color:#FFD700"' : ''}>${v}</span></div>`;
   }
   document.getElementById('panelContent').innerHTML = html;
   panel.classList.add('open');
@@ -305,21 +525,19 @@ async function loadStatus() {
     const data = await r.json();
     const bar = document.getElementById('statusBar');
     const items = [];
-    if (data.fleet) items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span> Fleet: ${data.fleet.bots}</span>`);
-    if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span> NanoClaw: ${data.nanoclaw.version || 'checking'}</span>`);
-    if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span> Ollama: ${data.ollama.model || 'offline'}</span>`);
+    if (data.fleet)        items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span> Fleet: ${data.fleet.bots}</span>`);
+    if (data.nanoclaw)     items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span> NanoClaw: ${data.nanoclaw.version || 'checking'}</span>`);
+    if (data.ollama)       items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span> Ollama: ${data.ollama.model || 'offline'}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span> OpenClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span> URANTiOS: ${data.disk_urantios}</span>`);
-    if (data.obsidian) items.push(`<span><span class="dot dot-green"></span> Obsidian: ${data.obsidian.docs} docs</span>`);
-    if (data.updated) items.push(`<span style="color:#555">Updated: ${new Date(data.updated).toLocaleTimeString()}</span>`);
+    if (data.obsidian)     items.push(`<span><span class="dot dot-green"></span> Obsidian: ${data.obsidian.docs} docs</span>`);
+    if (data.updated)      items.push(`<span style="color:#555">Updated: ${new Date(data.updated).toLocaleTimeString()}</span>`);
     if (items.length) bar.innerHTML = items.join('');
-
-    // Update node statuses
     document.querySelectorAll('.node').forEach(n => {
       const id = n.dataset.id;
       if (data[id] && data[id].status) n.dataset.status = data[id].status;
     });
-  } catch { /* status.json not available yet */ }
+  } catch { /* status.json not available */ }
 }
 loadStatus();
 setInterval(loadStatus, 30000);
