@@ -73,7 +73,7 @@ nginx -t && systemctl enable nginx --quiet && systemctl restart nginx
 ufw allow 80/tcp 2>/dev/null || true
 ufw allow 443/tcp 2>/dev/null || true
 echo "NemoClaw nginx: OK"
-SSSHEOF
+SSHEOF
   ok "NemoClaw fixed — n8n now on port 80"
 else
   warn "Skipping NemoClaw fix (SSH unavailable)"
