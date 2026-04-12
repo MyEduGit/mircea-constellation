@@ -1,0 +1,289 @@
+{
+  "registry_name": "Council of Seven — Model Registry",
+  "version": "v1.0",
+  "last_updated": "2026-04-12T12:00:00Z",
+  "description": "Canonical model assignments for all 7 seats + Gabriel synthesizer. Used by update_council_models.py for auto-update.",
+  "seats": [
+    {
+      "seat_id": 1,
+      "name": "Father",
+      "role": "Final Judge",
+      "archetype": "Authority / Final Word",
+      "provider": "openai",
+      "current_model": "gpt-4.1",
+      "api_model_id": "gpt-4.1",
+      "next_model": "gpt-5",
+      "next_model_status": "announced",
+      "api_endpoint": "https://api.openai.com/v1/chat/completions",
+      "model_check_endpoint": "https://api.openai.com/v1/models",
+      "model_check_auth": "Authorization: Bearer {OPENAI_API_KEY}",
+      "key_env_var": "OPENAI_API_KEY",
+      "n8n_node_name": "Seat1_Father_GPT",
+      "alternatives": [
+        {"rank": 1, "model": "gpt-4.1",       "reason": "Current primary"},
+        {"rank": 2, "model": "gpt-4o",         "reason": "Stable fallback"},
+        {"rank": 3, "model": "gpt-4o-mini",    "reason": "Low-cost fallback"}
+      ],
+      "cost_per_1m_tokens": {
+        "input":  2.00,
+        "output": 8.00,
+        "currency": "USD",
+        "note": "gpt-4.1 pricing"
+      },
+      "context_window_tokens": 1047576,
+      "ollama_model": null,
+      "status": "NOT_CONFIGURED",
+      "last_checked": null
+    },
+    {
+      "seat_id": 2,
+      "name": "Son",
+      "role": "Builder / Coder",
+      "archetype": "Builder / Implementer",
+      "provider": "anthropic",
+      "current_model": "claude-sonnet-4-6",
+      "api_model_id": "claude-sonnet-4-6",
+      "next_model": "claude-opus-4-6",
+      "next_model_status": "announced",
+      "api_endpoint": "https://api.anthropic.com/v1/messages",
+      "model_check_endpoint": "https://api.anthropic.com/v1/models",
+      "model_check_auth": "x-api-key: {ANTHROPIC_API_KEY}",
+      "key_env_var": "ANTHROPIC_API_KEY",
+      "n8n_node_name": "Seat2_Son_Claude",
+      "alternatives": [
+        {"rank": 1, "model": "claude-sonnet-4-6",   "reason": "Current primary"},
+        {"rank": 2, "model": "claude-opus-4-6",      "reason": "Upcoming flagship"},
+        {"rank": 3, "model": "claude-haiku-4-5",     "reason": "Low-cost fallback"}
+      ],
+      "cost_per_1m_tokens": {
+        "input":  3.00,
+        "output": 15.00,
+        "currency": "USD",
+        "note": "claude-sonnet-4-6 pricing"
+      },
+      "context_window_tokens": 200000,
+      "ollama_model": null,
+      "status": "NOT_CONFIGURED",
+      "last_checked": null
+    },
+    {
+      "seat_id": 3,
+      "name": "Spirit",
+      "role": "Multimodal / Long Context",
+      "archetype": "Visionary / Multimodal Seer",
+      "provider": "google",
+      "current_model": "gemini-2.5-pro",
+      "api_model_id": "gemini-2.5-pro",
+      "next_model": null,
+      "next_model_status": null,
+      "api_endpoint": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+      "model_check_endpoint": "https://generativelanguage.googleapis.com/v1beta/models",
+      "model_check_auth": "x-goog-api-key: {GOOGLE_API_KEY}",
+      "key_env_var": "GOOGLE_API_KEY",
+      "n8n_node_name": "Seat3_Spirit_Gemini",
+      "alternatives": [
+        {"rank": 1, "model": "gemini-2.5-pro",       "reason": "Current primary"},
+        {"rank": 2, "model": "gemini-2.0-flash",     "reason": "Speed fallback"},
+        {"rank": 3, "model": "gemini-1.5-pro",       "reason": "Stable legacy fallback"}
+      ],
+      "cost_per_1m_tokens": {
+        "input":  1.25,
+        "output": 10.00,
+        "currency": "USD",
+        "note": "gemini-2.5-pro pricing (>200k tokens input tier)"
+      },
+      "context_window_tokens": 1000000,
+      "ollama_model": "gemma3:27b",
+      "status": "NOT_CONFIGURED",
+      "last_checked": null
+    },
+    {
+      "seat_id": 4,
+      "name": "Father-Son",
+      "role": "Local Sovereign",
+      "archetype": "Local Sovereign / Privacy Guardian",
+      "provider": "ollama",
+      "current_model": "gemma4:e4b",
+      "api_model_id": "gemma4:e4b",
+      "next_model": null,
+      "next_model_status": null,
+      "api_endpoint": "http://204.168.143.98:11434/api/chat",
+      "model_check_endpoint": "http://204.168.143.98:11434/api/tags",
+      "model_check_auth": null,
+      "ollama_host": "204.168.143.98",
+      "ollama_port": 11434,
+      "ollama_ssh_user": "ubuntu",
+      "key_env_var": null,
+      "n8n_node_name": "Seat4_FatherSon_Ollama",
+      "alternatives": [
+        {"rank": 1, "model": "gemma4:e4b",       "reason": "Current primary — efficient 4-bit"},
+        {"rank": 2, "model": "gemma3:27b",        "reason": "Larger Gemma fallback"},
+        {"rank": 3, "model": "gemma3:12b",        "reason": "Mid-size fallback"},
+        {"rank": 4, "model": "llama3.2:3b",       "reason": "Emergency ultra-light fallback"}
+      ],
+      "cost_per_1m_tokens": {
+        "input":  0.00,
+        "output": 0.00,
+        "currency": "USD",
+        "note": "FREE — local inference on URANTiOS"
+      },
+      "context_window_tokens": 8192,
+      "ollama_model": "gemma4:e4b",
+      "status": "LOCAL",
+      "last_checked": null
+    },
+    {
+      "seat_id": 5,
+      "name": "Father-Spirit",
+      "role": "Deep Reasoner",
+      "archetype": "Analyst / Chain-of-Thought Reasoner",
+      "provider": "ollama",
+      "current_model": "deepseek-r1:7b",
+      "api_model_id": "deepseek-r1:7b",
+      "next_model": null,
+      "next_model_status": null,
+      "api_endpoint": "http://204.168.143.98:11434/api/chat",
+      "model_check_endpoint": "http://204.168.143.98:11434/api/tags",
+      "model_check_auth": null,
+      "ollama_host": "204.168.143.98",
+      "ollama_port": 11434,
+      "ollama_ssh_user": "ubuntu",
+      "key_env_var": null,
+      "fallback_provider": "deepseek",
+      "fallback_model": "deepseek-chat",
+      "fallback_api_endpoint": "https://api.deepseek.com/v1/chat/completions",
+      "fallback_key_env_var": "DEEPSEEK_API_KEY",
+      "fallback_cost_per_1m_tokens": {
+        "input":  0.27,
+        "output": 1.10,
+        "currency": "USD",
+        "note": "deepseek-v3 API pricing"
+      },
+      "n8n_node_name": "Seat5_FatherSpirit_DeepSeek",
+      "alternatives": [
+        {"rank": 1, "model": "deepseek-r1:7b",    "reason": "Current primary — local reasoning"},
+        {"rank": 2, "model": "deepseek-chat",      "reason": "DeepSeek v3 API fallback"},
+        {"rank": 3, "model": "deepseek-r1:14b",   "reason": "Larger local model if VRAM allows"},
+        {"rank": 4, "model": "qwen3:8b",           "reason": "Alt local reasoning fallback"}
+      ],
+      "cost_per_1m_tokens": {
+        "input":  0.00,
+        "output": 0.00,
+        "currency": "USD",
+        "note": "FREE — local inference on URANTiOS (primary); DeepSeek API is fallback"
+      },
+      "context_window_tokens": 32768,
+      "ollama_model": "deepseek-r1:7b",
+      "status": "LOCAL",
+      "last_checked": null
+    },
+    {
+      "seat_id": 6,
+      "name": "Son-Spirit",
+      "role": "Engineering Specialist",
+      "archetype": "Precision Engineer / Code Specialist",
+      "provider": "zai",
+      "current_model": "glm-4",
+      "api_model_id": "glm-4",
+      "next_model": "glm-5",
+      "next_model_status": "announced",
+      "api_endpoint": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "model_check_endpoint": "https://open.bigmodel.cn/api/paas/v4/models",
+      "model_check_auth": "Authorization: Bearer {Z_AI_API_KEY}",
+      "key_env_var": "Z_AI_API_KEY",
+      "n8n_node_name": "Seat6_SonSpirit_GLM",
+      "alternatives": [
+        {"rank": 1, "model": "glm-4",             "reason": "Current primary"},
+        {"rank": 2, "model": "glm-4-flash",       "reason": "Free-tier fallback"},
+        {"rank": 3, "model": "glm-4-air",         "reason": "Cost-reduced fallback"}
+      ],
+      "cost_per_1m_tokens": {
+        "input":  0.00,
+        "output": 0.00,
+        "currency": "USD",
+        "note": "glm-4-flash is free tier; glm-4 ~$0.05/1M input. Key currently depleted."
+      },
+      "context_window_tokens": 128000,
+      "ollama_model": null,
+      "key_status": "DEPLETED",
+      "status": "KEY_DEPLETED",
+      "last_checked": null
+    },
+    {
+      "seat_id": 7,
+      "name": "Trinity",
+      "role": "Live Context / Web Aware",
+      "archetype": "Oracle / Real-Time Intelligence",
+      "provider": "xai",
+      "current_model": "grok-3",
+      "api_model_id": "grok-3",
+      "next_model": "grok-4",
+      "next_model_status": "announced",
+      "api_endpoint": "https://api.x.ai/v1/chat/completions",
+      "model_check_endpoint": "https://api.x.ai/v1/models",
+      "model_check_auth": "Authorization: Bearer {XAI_API_KEY}",
+      "key_env_var": "XAI_API_KEY",
+      "n8n_node_name": "Seat7_Trinity_Grok",
+      "alternatives": [
+        {"rank": 1, "model": "grok-3",            "reason": "Current primary"},
+        {"rank": 2, "model": "grok-3-mini",       "reason": "Cost-reduced fallback"},
+        {"rank": 3, "model": "grok-2",            "reason": "Legacy stable fallback"}
+      ],
+      "cost_per_1m_tokens": {
+        "input":  3.00,
+        "output": 15.00,
+        "currency": "USD",
+        "note": "grok-3 pricing estimate"
+      },
+      "context_window_tokens": 131072,
+      "ollama_model": null,
+      "status": "NOT_CONFIGURED",
+      "last_checked": null
+    }
+  ],
+  "gabriel": {
+    "name": "Gabriel",
+    "role": "Synthesizer — Bright and Morning Star",
+    "archetype": "Integrator / Final Voice",
+    "provider": "anthropic",
+    "current_model": "claude-sonnet-4-6",
+    "api_model_id": "claude-sonnet-4-6",
+    "next_model": "claude-opus-4-6",
+    "next_model_status": "announced",
+    "api_endpoint": "https://api.anthropic.com/v1/messages",
+    "model_check_endpoint": "https://api.anthropic.com/v1/models",
+    "model_check_auth": "x-api-key: {ANTHROPIC_API_KEY}",
+    "key_env_var": "ANTHROPIC_API_KEY",
+    "n8n_node_name": "Gabriel_Synthesizer",
+    "alternatives": [
+      {"rank": 1, "model": "claude-sonnet-4-6",  "reason": "Current primary"},
+      {"rank": 2, "model": "claude-opus-4-6",    "reason": "Upgrade when available"},
+      {"rank": 3, "model": "claude-haiku-4-5",   "reason": "Emergency fallback"}
+    ],
+    "cost_per_1m_tokens": {
+      "input":  3.00,
+      "output": 15.00,
+      "currency": "USD",
+      "note": "gabriel sees all 7 seat outputs — input tokens can be large"
+    },
+    "context_window_tokens": 200000,
+    "ollama_model": null,
+    "status": "NOT_CONFIGURED",
+    "last_checked": null
+  },
+  "cost_estimate_per_council_run": {
+    "assumption": "Each seat: ~500 input tokens (question + system prompt) + ~300 output tokens. Gabriel: ~3000 input (all seat responses) + ~800 output.",
+    "seats_paid": [
+      {"seat": 1, "model": "gpt-4.1",          "cost_usd": 0.003400},
+      {"seat": 2, "model": "claude-sonnet-4-6", "cost_usd": 0.006000},
+      {"seat": 3, "model": "gemini-2.5-pro",   "cost_usd": 0.003625},
+      {"seat": 4, "model": "gemma4:e4b",        "cost_usd": 0.000000},
+      {"seat": 5, "model": "deepseek-r1:7b",   "cost_usd": 0.000000},
+      {"seat": 6, "model": "glm-4",             "cost_usd": 0.000050},
+      {"seat": 7, "model": "grok-3",            "cost_usd": 0.006000}
+    ],
+    "gabriel_cost_usd": 0.021000,
+    "total_est_usd": 0.040075,
+    "local_savings_note": "Seats 4+5 are FREE (Ollama local). Full paid run ~$0.04."
+  }
+}
