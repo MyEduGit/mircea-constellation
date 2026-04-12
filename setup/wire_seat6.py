@@ -68,7 +68,7 @@ def main():
 
     # ── Login ───────────────────────────────────────────────────────
     info("Logging into n8n...")
-    result = client.post("/rest/login", {"email": email, "password": password})
+    result = client.post("/rest/login", {"emailOrLdapLoginId": email, "password": password})
     if not result.get("data"):
         err(f"Login failed — check email/password. Response: {result}")
     ok("Logged in\n")
