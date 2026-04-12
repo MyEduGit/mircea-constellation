@@ -3,11 +3,17 @@
 Wire Seat 6 (Z.ai / GLM) into the Council of Seven n8n workflow.
 Auto-imports the workflow from GitHub if not already in n8n.
 
-Run from iMac Terminal:
-  curl -fsSL https://raw.githubusercontent.com/MyEduGit/mircea-constellation/claude/count-claws-NrqRh/setup/wire_seat6.py -o /tmp/wire_seat6.py && python3 /tmp/wire_seat6.py
+Credentials can be set as env vars to avoid re-prompting:
+  export N8N_EMAIL=mircea8@me.com
+  export N8N_PASSWORD=yourpassword
+  export Z_AI_KEY=sk-...
+  python3 /tmp/wire_seat6.py
+
+Or just run and enter them when prompted.
 """
 import json
 import getpass
+import os
 import sys
 import urllib.request
 import urllib.error
@@ -39,12 +45,21 @@ class N8n:
             with self.opener.open(req) as r:
                 return json.loads(r.read())
         except urllib.error.HTTPError as e:
-            body = e.read().decode()[:600]
-            raise Exception(f"HTTP {e.code} on {method} {path}: {body}")
+            raise Exception(f"HTTP {e.code} {method} {path}: {e.read().decode()[:500]}")
 
-    def get(self, p):     return self._req("GET",  p)
-    def post(self, p, b): return self._req("POST", p, b)
-    def put(self, p, b):  return self._req("PUT",  p, b)
+    def get(self, p):       return self._req("GET",   p)
+    def post(self, p, b):   return self._req("POST",  p, b)
+    def patch(self, p, b):  return self._req("PATCH", p, b)
+    def put(self, p, b):    return self._req("PUT",   p, b)
+
+    def save_workflow(self, wf_id, wf):
+        """Try PATCH (n8n 1.x) then PUT (older), return result."""
+        for method in ("patch", "put"):
+            try:
+                return getattr(self, method)(f"/rest/workflows/{wf_id}", wf)
+            except Exception as e:
+                last_err = e
+        raise last_err
 
 
 def find_workflows(client):
@@ -55,13 +70,25 @@ def find_workflows(client):
     return ws if isinstance(ws, list) else []
 
 
+def get_cred(env_var, prompt, secret=False):
+    """Return env var if set, otherwise prompt."""
+    val = os.environ.get(env_var, "").strip()
+    if val:
+        label = "[from env]" if not secret else "[from env, hidden]"
+        print(f"{prompt}{label}")
+        return val
+    if secret:
+        return getpass.getpass(prompt)
+    return input(prompt).strip()
+
+
 def main():
     print(f"\n{B}=== WIRE SEAT 6 — Z.ai / GLM ==={E}")
-    print("Auto-imports Council of Seven if missing, then wires the Z.ai key.\n")
+    print("Set N8N_EMAIL / N8N_PASSWORD / Z_AI_KEY env vars to skip prompts.\n")
 
-    email    = input("n8n email:    ").strip()
-    password = getpass.getpass("n8n password: ")
-    z_key    = getpass.getpass("Z.ai API key: ")
+    email    = get_cred("N8N_EMAIL",    "n8n email:    ")
+    password = get_cred("N8N_PASSWORD", "n8n password: ", secret=True)
+    z_key    = get_cred("Z_AI_KEY",     "Z.ai API key: ", secret=True)
     print()
 
     client = N8n()
@@ -70,7 +97,7 @@ def main():
     info("Logging into n8n...")
     result = client.post("/rest/login", {"emailOrLdapLoginId": email, "password": password})
     if not result.get("data"):
-        err(f"Login failed — check email/password.\nResponse: {result}")
+        err(f"Login failed.\nResponse: {result}")
     ok("Logged in\n")
 
     # ── Find or import workflow ──────────────────────────────────────
@@ -78,25 +105,29 @@ def main():
     workflows = find_workflows(client)
     wf        = next((w for w in workflows if "Council" in w.get("name", "")), None)
 
-    if wf:
-        wf_id = wf["id"]
-        ok(f'Found: "{wf["name"]}" (ID: {wf_id})\n')
-        info("Fetching full workflow JSON...")
-        result  = client.get(f"/rest/workflows/{wf_id}")
-        full_wf = result.get("data", result)
-        ok(f"Fetched ({len(full_wf.get('nodes', []))} nodes)\n")
-    else:
+    if not wf:
         names = [w.get("name", "?") for w in workflows]
-        warn(f"Council of Seven not found. Existing: {names}")
+        warn(f"Not found. Existing: {names}")
         info("Importing from GitHub...")
         with urllib.request.urlopen(WORKFLOW_URL) as r:
             wf_data = json.loads(r.read())
-        result  = client.post("/rest/workflows", wf_data)
-        full_wf = result.get("data", result)
-        wf_id   = full_wf.get("id")
-        if not wf_id:
-            err(f"Import failed: {result}")
-        ok(f"Workflow imported: \"{full_wf.get('name')}\" (ID: {wf_id})\n")
+        client.post("/rest/workflows", wf_data)
+
+        # Re-fetch list to get the correct ID after import
+        workflows = find_workflows(client)
+        wf        = next((w for w in workflows if "Council" in w.get("name", "")), None)
+        if not wf:
+            err("Import appeared to succeed but workflow not found. Check n8n UI.")
+        ok(f"Imported: \"{wf['name']}\"\n")
+
+    wf_id = wf["id"]
+    ok(f"Workflow ID: {wf_id}\n")
+
+    # ── Fetch full workflow ──────────────────────────────────────────
+    info("Fetching full workflow...")
+    result  = client.get(f"/rest/workflows/{wf_id}")
+    full_wf = result.get("data", result)
+    ok(f"Fetched ({len(full_wf.get('nodes', []))} nodes)\n")
 
     # ── Patch Seat 6 ─────────────────────────────────────────────────
     info("Patching Seat6_SonSpirit_GLM...")
@@ -121,12 +152,12 @@ def main():
 
     if not patched:
         node_names = [n.get("name") for n in full_wf.get("nodes", [])]
-        err(f"Seat6_SonSpirit_GLM not found in nodes: {node_names}")
+        err(f"Seat6_SonSpirit_GLM not found in: {node_names}")
     print()
 
-    # ── Save ─────────────────────────────────────────────────────────
+    # ── Save (PATCH for n8n 1.x, PUT fallback) ───────────────────────
     info("Saving workflow...")
-    saved = client.put(f"/rest/workflows/{wf_id}", full_wf)
+    saved = client.save_workflow(wf_id, full_wf)
     if not any(k in saved for k in ("data", "id", "nodes", "name")):
         err(f"Unexpected save response: {str(saved)[:400]}")
     ok("Workflow saved\n")
@@ -138,9 +169,12 @@ def main():
     print(f"  → http://46.225.51.30")
     print(f"  → Workflows → Council of Seven Master Spirits v1")
     print(f"  → Execute Workflow")
-    print(f"  → Check Seat6_SonSpirit_GLM output for GLM response")
+    print(f"  → Check Seat6 output for GLM response")
     print()
-    print(f"  Next: Seat 4 (Ollama/Gemma — no key needed)")
+    print(f"  To skip prompts next time:")
+    print(f"  export N8N_EMAIL={email}")
+    print(f"  export N8N_PASSWORD=<your-password>")
+    print(f"  export Z_AI_KEY=<your-key>")
     print(f"{B}================================================={E}\n")
 
 
