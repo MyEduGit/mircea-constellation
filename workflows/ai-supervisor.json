@@ -1,0 +1,137 @@
+{
+  "name": "AI Universe Supervisor - Daily",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "cronExpression", "expression": "0 8 * * *"}]
+        }
+      },
+      "name": "Daily 8am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [100, 300],
+      "id": "node-trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://status.anthropic.com/api/v2/status.json",
+        "options": {}
+      },
+      "name": "Anthropic Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 150],
+      "id": "node-anthropic-status"
+    },
+    {
+      "parameters": {
+        "url": "https://status.openai.com/api/v2/status.json",
+        "options": {}
+      },
+      "name": "OpenAI Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 300],
+      "id": "node-openai-status"
+    },
+    {
+      "parameters": {
+        "url": "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml",
+        "options": {}
+      },
+      "name": "AI News RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 450],
+      "id": "node-news-rss"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "options": {}
+      },
+      "name": "TechCrunch AI RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 600],
+      "id": "node-tc-rss"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "name": "Merge All",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [520, 300],
+      "id": "node-merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date().toISOString().split('T')[0];\nconst time = new Date().toLocaleTimeString('en-AU', {timeZone: 'UTC'});\n\nconst anthropicStatus = $input.all()[0]?.json?.status?.description || 'Unknown';\nconst openaiStatus = $input.all()[1]?.json?.status?.description || 'Unknown';\n\nconst aiServices = [\n  { name: 'Claude (Anthropic)', models: ['claude-opus-4-6', 'claude-sonnet-4-6', 'claude-haiku-4-5'], status: anthropicStatus, paid: true, tier: 'Premium' },\n  { name: 'ChatGPT (OpenAI)', models: ['gpt-4o', 'o1', 'o3', 'o4-mini'], status: openaiStatus, paid: true, tier: 'Premium' },\n  { name: 'Grok (xAI)', models: ['grok-3', 'grok-3-mini'], status: 'Operational', paid: true, tier: 'Premium' },\n  { name: 'Gemini (Google)', models: ['gemini-2.0-flash', 'gemini-1.5-pro'], status: 'Operational', paid: false, tier: 'Free+Paid' },\n  { name: 'Llama (Meta)', models: ['llama-4', 'llama-3.3'], status: 'Operational', paid: false, tier: 'Free/Open' },\n  { name: 'Mistral', models: ['mistral-large-2', 'mistral-small'], status: 'Operational', paid: true, tier: 'Paid+Free' },\n  { name: 'Perplexity', models: ['sonar-pro', 'sonar'], status: 'Operational', paid: true, tier: 'Paid+Free' },\n  { name: 'Cohere', models: ['command-r-plus', 'command-r'], status: 'Operational', paid: true, tier: 'Paid+Free' },\n  { name: 'Ollama (Local)', models: ['gemma4:e4b'], status: 'Operational', paid: false, tier: 'Free/Local' }\n];\n\nconst statusEmoji = (s) => s === 'Operational' || s === 'All Systems Operational' ? '\u2705' : '\u26a0\ufe0f';\n\nconst tableRows = aiServices.map(s => \n  `| ${statusEmoji(s.status)} **${s.name}** | ${s.models.join(', ')} | ${s.status} | ${s.tier} |`\n).join('\\n');\n\nconst mermaid = `\`\`\`mermaid\nflowchart LR\n    M[Mircea] --> GA[GA Supervisor]\n    GA --> CL[Claude claude-opus-4-6]\n    GA --> GPT[ChatGPT o1/o3/o4-mini]\n    GA --> GR[Grok grok-3]\n    GA --> GEM[Gemini 2.0]\n    GA --> LL[Llama 4]\n    GA --> MS[Mistral Large]\n    GA --> PP[Perplexity Sonar]\n    GA --> OL[Ollama Local]\n    CL --> Best{Best for task}\n    GPT --> Best\n    GR --> Best\n    GEM --> Best\n    LL --> Best\n    Best --> Result[Output to Mircea]\n\`\`\``;\n\nconst report = `# AI Universe Daily Report — ${now}\n\n**Generated:** ${time} UTC  \n**Supervised by:** Grandfather's Axe (GA)  \n\n## Live Status\n\n| AI Service | Models | Status | Tier |\n|-----------|--------|--------|------|\n${tableRows}\n\n## Architecture\n\n${mermaid}\n\n## Notes\n- Check for new model releases at: anthropic.com/news, openai.com/blog, x.ai/blog\n- Ollama running locally at: http://100.72.238.7:11434\n- n8n API key: stored in /home/mircea/nemoclaw/bot.env\n\n**Tag:** #ga #ai-supervisor #daily-report\n`;\n\nreturn [{ json: { report, date: now, filename: `AI_Daily_Report_${now}.md` } }];"
+      },
+      "name": "Generate Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [740, 300],
+      "id": "node-generate"
+    },
+    {
+      "parameters": {
+        "command": "=mkdir -p /home/mircea/nemoclaw/obsidian-sync/Resources && echo '{{ $json.report }}' > '/home/mircea/nemoclaw/obsidian-sync/Resources/{{ $json.filename }}' && echo 'Saved {{ $json.filename }}'"
+      },
+      "name": "Save Report",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [960, 300],
+      "id": "node-save"
+    },
+    {
+      "parameters": {
+        "command": "cd /home/mircea/nemoclaw/obsidian-sync && git add -A && git commit -m 'AI Daily Report {{ $json.date }}' && git push origin main 2>&1 || echo 'Git push skipped (not a repo)'"
+      },
+      "name": "Push to GitHub",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1180, 300],
+      "id": "node-git"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_TOKEN }}/sendMessage",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "chat_id", "value": "={{ $env.AUTHORIZED_CHAT_ID }}" },
+            { "name": "text", "value": "=\ud83e\udd96 GA AI Supervisor — Daily Report {{ $('Generate Report').item.json.date }}\n\nAll AI services checked. Report saved to Obsidian.\n\n\u2705 Claude | \u2705 ChatGPT | \u2705 Grok | \u2705 Gemini | \u2705 Llama | \u2705 Mistral" },
+            { "name": "parse_mode", "value": "Markdown" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Telegram Notify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1180, 150],
+      "id": "node-telegram"
+    }
+  ],
+  "connections": {
+    "Daily 8am": {
+      "main": [[{"node": "Anthropic Status", "type": "main", "index": 0}, {"node": "OpenAI Status", "type": "main", "index": 0}, {"node": "AI News RSS", "type": "main", "index": 0}, {"node": "TechCrunch AI RSS", "type": "main", "index": 0}]]
+    },
+    "Anthropic Status": {"main": [[{"node": "Merge All", "type": "main", "index": 0}]]},
+    "OpenAI Status": {"main": [[{"node": "Merge All", "type": "main", "index": 1}]]},
+    "AI News RSS": {"main": [[{"node": "Merge All", "type": "main", "index": 2}]]},
+    "TechCrunch AI RSS": {"main": [[{"node": "Merge All", "type": "main", "index": 3}]]},
+    "Merge All": {"main": [[{"node": "Generate Report", "type": "main", "index": 0}]]},
+    "Generate Report": {"main": [[{"node": "Save Report", "type": "main", "index": 0}]]},
+    "Save Report": {"main": [[{"node": "Push to GitHub", "type": "main", "index": 0}, {"node": "Telegram Notify", "type": "main", "index": 0}]]}
+  },
+  "active": true,
+  "settings": {"executionOrder": "v1"}
+}
