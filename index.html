@@ -220,6 +220,7 @@ const nodes = [
   { id: 'amep', icon: '🎓', label: 'AMEP Hub', sub: '21 Students', type: 'service', x: 0.3, y: 0.75 },
   { id: 'obsidian', icon: '💎', label: 'Obsidian', sub: 'Knowledge Vault', type: 'service', x: 0.5, y: 0.85 },
   { id: 'gabriel', icon: '✨', label: 'Gabriel', sub: 'Morning Star', type: 'bot', x: 0.55, y: 0.3 },
+  { id: 'cognee', icon: '🧬', label: 'Cognee', sub: 'Knowledge Graph', type: 'service', x: 0.42, y: 0.68 },
 ];
 
 const connections = [
@@ -231,6 +232,7 @@ const connections = [
   ['imac', 'amep'], ['imac', 'obsidian'],
   ['botfleet', 'hetzy'], ['nanoclaw', 'iphone'],
   ['gabriel', 'urantipedia'],
+  ['imac', 'cognee'], ['cognee', 'urantios'], ['cognee', 'obsidian'],
 ];
 
 const nodeDetails = {
@@ -246,6 +248,7 @@ const nodeDetails = {
   amep: { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4' },
   obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'Status sync every 10min', 'Export': 'JSON to constellation', 'Purpose': 'Research & notes' },
   gabriel: { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on website', 'Authority': 'Joint with Mircea' },
+  cognee: { 'Version': '1.0.0', 'Host': 'iMac M4 (local)', 'API': 'remember / recall / forget', 'Dataset': 'urantia_book (197 papers)', 'Graph DB': 'LanceDB + Kuzu', 'Purpose': 'Semantic memory for URANTiOS' },
 };
 
 const map = document.getElementById('map');
@@ -311,6 +314,7 @@ async function loadStatus() {
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span> OpenClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span> URANTiOS: ${data.disk_urantios}</span>`);
     if (data.obsidian) items.push(`<span><span class="dot dot-green"></span> Obsidian: ${data.obsidian.docs} docs</span>`);
+    if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span> Cognee: ${data.cognee.version || 'offline'}</span>`);
     if (data.updated) items.push(`<span style="color:#555">Updated: ${new Date(data.updated).toLocaleTimeString()}</span>`);
     if (items.length) bar.innerHTML = items.join('');
 
