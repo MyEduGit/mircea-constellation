@@ -220,6 +220,7 @@ const nodes = [
   { id: 'amep', icon: '🎓', label: 'AMEP Hub', sub: '21 Students', type: 'service', x: 0.3, y: 0.75 },
   { id: 'obsidian', icon: '💎', label: 'Obsidian', sub: 'Knowledge Vault', type: 'service', x: 0.5, y: 0.85 },
   { id: 'gabriel', icon: '✨', label: 'Gabriel', sub: 'Morning Star', type: 'bot', x: 0.55, y: 0.3 },
+  { id: 'cleanmymac', icon: '🧹', label: 'CleanMyMac', sub: 'System Cleaner', type: 'service', x: 0.42, y: 0.65, url: 'cleanmymac.html' },
 ];
 
 const connections = [
@@ -231,6 +232,7 @@ const connections = [
   ['imac', 'amep'], ['imac', 'obsidian'],
   ['botfleet', 'hetzy'], ['nanoclaw', 'iphone'],
   ['gabriel', 'urantipedia'],
+  ['imac', 'cleanmymac'],
 ];
 
 const nodeDetails = {
@@ -246,6 +248,7 @@ const nodeDetails = {
   amep: { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4' },
   obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'Status sync every 10min', 'Export': 'JSON to constellation', 'Purpose': 'Research & notes' },
   gabriel: { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on website', 'Authority': 'Joint with Mircea' },
+  cleanmymac: { 'Type': 'System Cleaner App', 'Version': 'v1.0', 'Features': 'Junk · Cache · Privacy', 'Disk Freed': '21.6 GB', 'Status': 'LIVE' },
 };
 
 const map = document.getElementById('map');
@@ -290,6 +293,9 @@ function openPanel(node) {
   let html = '';
   for (const [k, v] of Object.entries(details)) {
     html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value">${v}</span></div>`;
+  }
+  if (node.url) {
+    html += `<div style="margin-top:14px;text-align:center"><a href="${node.url}" style="display:inline-block;padding:8px 28px;background:linear-gradient(135deg,#6495ED,#DDA0DD);color:#fff;text-decoration:none;border-radius:20px;font-size:0.82em;font-weight:600;letter-spacing:0.5px">Launch →</a></div>`;
   }
   document.getElementById('panelContent').innerHTML = html;
   panel.classList.add('open');
