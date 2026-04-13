@@ -1,0 +1,546 @@
+{
+  "name": "Council of Seven Master Spirits v1",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c7-trigger-001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "q-001",
+              "name": "question",
+              "value": "What is the nature of consciousness and how does it relate to the cosmic mind as described in the Urantia Book?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c7-set-q-001",
+      "name": "cognee in PhD",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        0,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_OPENAI_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are Father — Final Judge of the Council of Seven Master Spirits. Speak with ultimate wisdom and divine authority.' }, { role: 'user', content: $('cognee in PhD').item.json.question }], max_tokens: 512 }) }}",
+        "options": {}
+      },
+      "id": "c7-seat1-gpt",
+      "name": "Seat1_Father_GPT",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        288,
+        -400
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 512, system: 'You are Son — Builder and Coder of the Council of Seven Master Spirits. Speak with creative precision and technical mastery.', messages: [{ role: 'user', content: $('cognee in PhD').item.json.question }] }) }}",
+        "options": {}
+      },
+      "id": "c7-seat2-claude",
+      "name": "Seat2_Son_Claude",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        288,
+        -240
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "REPLACE_WITH_GOOGLE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'You are Spirit — Multimodal Long-Context member of the Council of Seven Master Spirits. Speak with expansive vision and deep understanding.\\n\\n' + $('cognee in PhD').item.json.question }] }] }) }}",
+        "options": {}
+      },
+      "id": "c7-seat3-gemini",
+      "name": "Seat3_Spirit_Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        288,
+        -80
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://204.168.143.98:11434/api/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{\"model\": \"gemma4:e4b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are Father-Son \\u2014 Local Sovereign of the Council of Seven Master Spirits. Speak with authority and constructive wisdom.\"}, {\"role\": \"user\", \"content\": \"={{ $('cognee in PhD').item.json.question }}\"}], \"stream\": false}",
+        "options": {}
+      },
+      "id": "c7-seat4-ollama",
+      "name": "Seat4_FatherSon_Ollama",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        288,
+        80
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://204.168.143.98:11434/api/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{\"model\": \"deepseek-r1:7b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are Father-Spirit \\u2014 Deep Reasoner of the Council of Seven Master Spirits. Speak with rigorous analytical precision.\"}, {\"role\": \"user\", \"content\": \"={{ $('cognee in PhD').item.json.question }}\"}], \"stream\": false}",
+        "options": {}
+      },
+      "id": "c7-seat5-deepseek",
+      "name": "Seat5_FatherSpirit_DeepSeek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        288,
+        240
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_ZHIPU_GLM_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'glm-4', messages: [{ role: 'system', content: 'You are Son-Spirit — Engineering Specialist of the Council of Seven Master Spirits. Speak with technical precision and engineering excellence.' }, { role: 'user', content: $('cognee in PhD').item.json.question }], max_tokens: 512 }) }}",
+        "options": {}
+      },
+      "id": "c7-seat6-glm",
+      "name": "Seat6_SonSpirit_GLM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        288,
+        400
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.x.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_XAI_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'grok-3', messages: [{ role: 'system', content: 'You are Trinity — Live Context and Web member of the Council of Seven Master Spirits. Speak with real-time awareness and cosmic perspective.' }, { role: 'user', content: $('cognee in PhD').item.json.question }], max_tokens: 512 }) }}",
+        "options": {}
+      },
+      "id": "c7-seat7-grok",
+      "name": "Seat7_Trinity_Grok",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        288,
+        560
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      },
+      "id": "c7-merge-001",
+      "name": "Merge Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        560,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const question = $('cognee in PhD').first().json.question || 'Unknown question';\n\nfunction extractText(json) {\n  // OpenAI / DeepSeek / xAI / Z.ai (GLM) format\n  if (json.choices && json.choices[0] && json.choices[0].message) {\n    return json.choices[0].message.content || '[empty]';\n  }\n  // Anthropic format\n  if (json.content && Array.isArray(json.content) && json.content[0] && json.content[0].text) {\n    return json.content[0].text;\n  }\n  // Gemini format\n  if (json.candidates && json.candidates[0]) {\n    const parts = json.candidates[0].content && json.candidates[0].content.parts;\n    if (parts && parts[0] && parts[0].text) return parts[0].text;\n  }\n  // Ollama format\n  if (json.message && json.message.content) {\n    return json.message.content;\n  }\n  // Error\n  if (json.error) {\n    return '[Error: ' + JSON.stringify(json.error).substring(0, 300) + ']';\n  }\n  return '[No response]';\n}\n\nconst seatLabels = [\n  'Father (GPT-4o) — Final Judge',\n  'Son (Claude) — Builder',\n  'Spirit (Gemini) — Multimodal',\n  'Father-Son (Gemma/Ollama) — Local Sovereign',\n  'Father-Spirit (DeepSeek) — Low-Cost Frontier',\n  'Son-Spirit (GLM) — Engineering Specialist',\n  'Trinity (Grok) — Live Context'\n];\n\nconst items = $input.all();\nconst responses = items.map(function(item, i) {\n  const text = extractText(item.json);\n  const label = seatLabels[i] || ('Seat ' + (i + 1));\n  return '## ' + label + '\\n' + text;\n});\n\nconst synthesisPrompt = 'You are Gabriel — the Bright and Morning Star, Synthesizer of the Council of Seven Master Spirits.\\n\\nThe Council was asked:\\n\"' + question + '\"\\n\\nHere are the perspectives from the Seven Seats:\\n\\n' + responses.join('\\n\\n---\\n\\n') + '\\n\\nSynthesize these perspectives into a single unified response. Identify areas of consensus, note meaningful disagreements, and provide your final authoritative judgment. Speak with the clarity and authority of Gabriel.';\n\nreturn [{\n  json: {\n    synthesis_prompt: synthesisPrompt,\n    question: question,\n    response_count: responses.length,\n    seat_responses: responses\n  }\n}];"
+      },
+      "id": "c7-code-001",
+      "name": "Build Synthesis Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1024, messages: [{ role: 'user', content: $json.synthesis_prompt }] }) }}",
+        "options": {}
+      },
+      "id": "c7-gabriel-001",
+      "name": "Gabriel_Synthesizer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1040,
+        80
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "out-question",
+              "name": "council_question",
+              "value": "={{ $('cognee in PhD').item.json.question }}",
+              "type": "string"
+            },
+            {
+              "id": "out-synthesis",
+              "name": "gabriel_synthesis",
+              "value": "={{ $json.content ? $json.content[0].text : ($json.error ? 'Error: ' + JSON.stringify($json.error) : 'No response from Gabriel') }}",
+              "type": "string"
+            },
+            {
+              "id": "out-model",
+              "name": "model",
+              "value": "={{ $json.model || 'unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "out-seats",
+              "name": "seats_responded",
+              "value": "={{ $('Build Synthesis Prompt').item.json.response_count }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c7-output-001",
+      "name": "Council Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        1280,
+        80
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "cognee in PhD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seat1_Father_GPT": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seat2_Son_Claude": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Seat3_Spirit_Gemini": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Seat4_FatherSon_Ollama": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Seat5_FatherSpirit_DeepSeek": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Seat6_SonSpirit_GLM": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Seat7_Trinity_Grok": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Merge Responses": {
+      "main": [
+        [
+          {
+            "node": "Build Synthesis Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Synthesis Prompt": {
+      "main": [
+        [
+          {
+            "node": "Gabriel_Synthesizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gabriel_Synthesizer": {
+      "main": [
+        [
+          {
+            "node": "Council Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cognee in PhD": {
+      "main": [
+        [
+          {
+            "node": "Seat1_Father_GPT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat2_Son_Claude",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat3_Spirit_Gemini",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat4_FatherSon_Ollama",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat5_FatherSpirit_DeepSeek",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat6_SonSpirit_GLM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat7_Trinity_Grok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fb3e24e8-db80-438c-bd1d-d4229d8d28f0",
+  "meta": {
+    "instanceId": "07cda1bdf143d79f7ab584ee40272d3072a27a58bb9d72053383d1059e93cba6"
+  },
+  "id": "wWeXIZMIp4gKDrVC",
+  "tags": []
+}
