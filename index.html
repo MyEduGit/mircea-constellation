@@ -36,6 +36,30 @@ header h1 {
   -webkit-text-fill-color: transparent;
   letter-spacing: 2px;
 }
+.priority-link {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 14px;
+  font-size: 0.7em;
+  color: #fff;
+  background: linear-gradient(90deg, #f44336, #FF9800);
+  border-radius: 14px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.priority-link:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(244,67,54,0.5);
+}
+.priority-link.has-alerts {
+  animation: priority-pulse 1s infinite alternate;
+}
+@keyframes priority-pulse {
+  0%   { box-shadow: 0 0 6px rgba(244,67,54,0.3); }
+  100% { box-shadow: 0 0 18px rgba(244,67,54,0.8); }
+}
 header .subtitle {
   font-size: 0.75em;
   color: #888;
@@ -159,6 +183,7 @@ svg.connections line.active {
   <header>
     <h1>MIRCEA'S CONSTELLATION</h1>
     <div class="subtitle">OpenClaw + NanoClaw Mission Control</div>
+    <a href="prioritiser.html" class="priority-link" id="priorityLink">TASK PRIORITISER</a>
   </header>
   <div class="status-bar" id="statusBar">
     <span><span class="dot dot-green"></span> Loading status...</span>
@@ -315,6 +340,7 @@ async function loadStatus() {
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span> URANTiOS: ${data.disk_urantios}</span>`);
     if (data.obsidian) items.push(`<span><span class="dot dot-green"></span> Obsidian: ${data.obsidian.docs} docs</span>`);
     if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span> Cognee: ${data.cognee.version || 'offline'}</span>`);
+    if (data.prioritiser) items.push(`<span><span class="dot dot-${data.prioritiser.overdue > 0 ? 'red' : data.prioritiser.critical > 0 ? 'yellow' : 'green'}"></span> Tasks: ${data.prioritiser.critical}P1/${data.prioritiser.total} total</span>`);
     if (data.updated) items.push(`<span style="color:#555">Updated: ${new Date(data.updated).toLocaleTimeString()}</span>`);
     if (items.length) bar.innerHTML = items.join('');
 
@@ -327,6 +353,32 @@ async function loadStatus() {
 }
 loadStatus();
 setInterval(loadStatus, 30000);
+
+// Check task prioritiser for alerts
+async function checkPrioritiserAlerts() {
+  try {
+    const r = await fetch('task-prioritiser.json?t=' + Date.now());
+    if (!r.ok) return;
+    const data = await r.json();
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const overdue = (data.tasks || []).filter(t => {
+      if (t.status === 'completed') return false;
+      const dl = new Date(t.deadline + 'T00:00:00');
+      return dl < today && (t.priority === 'P1' || t.priority === 'P2');
+    });
+    const link = document.getElementById('priorityLink');
+    if (overdue.length > 0) {
+      link.classList.add('has-alerts');
+      link.textContent = `TASK PRIORITISER (${overdue.length} OVERDUE)`;
+    } else {
+      link.classList.remove('has-alerts');
+      link.textContent = 'TASK PRIORITISER';
+    }
+  } catch { /* no prioritiser data */ }
+}
+checkPrioritiserAlerts();
+setInterval(checkPrioritiserAlerts, 60000);
 </script>
 </body>
 </html>

@@ -17,5 +17,15 @@
   "gabriel":      { "status": "ok" },
   "cognee":       { "status": "ok",   "version": "1.0.0" },
 
+  "prioritiser": {
+    "status": "ok",
+    "total": 14,
+    "critical": 3,
+    "high": 4,
+    "medium": 4,
+    "low": 2,
+    "overdue": 0
+  },
+
   "updated": "2026-04-13T13:18:00.000Z"
 }

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Prioritiser — Mircea's Constellation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0a1a;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* Alert banner — flashes when overdue P1 tasks exist */
+.alert-banner {
+  display: none;
+  background: linear-gradient(90deg, #f44336, #ff1744, #f44336);
+  color: #fff;
+  text-align: center;
+  padding: 14px 20px;
+  font-size: 1.1em;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: flash-banner 0.8s infinite alternate;
+  cursor: pointer;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.alert-banner.active { display: block; }
+@keyframes flash-banner {
+  0%   { background: linear-gradient(90deg, #f44336, #ff1744, #f44336); opacity: 1; }
+  100% { background: linear-gradient(90deg, #b71c1c, #d50000, #b71c1c); opacity: 0.7; }
+}
+
+header {
+  text-align: center;
+  padding: 18px 16px 12px;
+  background: rgba(10,10,26,0.9);
+  border-bottom: 1px solid rgba(100,149,237,0.3);
+}
+header h1 {
+  font-size: 1.6em;
+  background: linear-gradient(90deg, #f44336, #FF9800, #FFC107, #6495ED);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 3px;
+}
+header .subtitle {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 4px;
+}
+header .back-link {
+  position: absolute;
+  left: 16px;
+  top: 18px;
+  color: #6495ED;
+  text-decoration: none;
+  font-size: 0.85em;
+}
+header .back-link:hover { color: #DDA0DD; }
+
+/* Summary cards */
+.summary-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  flex-wrap: wrap;
+}
+.summary-card {
+  background: rgba(20,20,40,0.8);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 14px 22px;
+  text-align: center;
+  min-width: 140px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.summary-card:hover { transform: translateY(-2px); }
+.summary-card.p1 { border-color: #f44336; }
+.summary-card.p2 { border-color: #FF9800; }
+.summary-card.p3 { border-color: #FFC107; }
+.summary-card.p4 { border-color: #6495ED; }
+.summary-card .count {
+  font-size: 2.2em;
+  font-weight: 700;
+  line-height: 1;
+}
+.summary-card.p1 .count { color: #f44336; }
+.summary-card.p2 .count { color: #FF9800; }
+.summary-card.p3 .count { color: #FFC107; }
+.summary-card.p4 .count { color: #6495ED; }
+.summary-card .label {
+  font-size: 0.7em;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+.summary-card.overdue {
+  animation: pulse-card 1s infinite alternate;
+}
+@keyframes pulse-card {
+  0%   { box-shadow: 0 0 8px rgba(244,67,54,0.3); }
+  100% { box-shadow: 0 0 25px rgba(244,67,54,0.8); }
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 16px 16px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  background: rgba(30,30,60,0.8);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 6px 16px;
+  color: #ccc;
+  font-size: 0.75em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: rgba(100,149,237,0.2);
+  border-color: #6495ED;
+  color: #fff;
+}
+.filter-btn.active { font-weight: 600; }
+
+/* Task list */
+.task-list {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+.task-card {
+  background: rgba(15,15,35,0.9);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.task-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.task-card.overdue {
+  animation: overdue-pulse 1.5s infinite alternate;
+}
+@keyframes overdue-pulse {
+  0%   { border-color: rgba(244,67,54,0.4); box-shadow: 0 0 8px rgba(244,67,54,0.2); }
+  100% { border-color: rgba(244,67,54,1);   box-shadow: 0 0 20px rgba(244,67,54,0.5); }
+}
+.task-card.completed {
+  opacity: 0.45;
+  border-color: rgba(76,175,80,0.3);
+}
+
+/* Priority badge */
+.priority-badge {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.75em;
+  letter-spacing: 1px;
+}
+.priority-badge.p1 { background: rgba(244,67,54,0.2); color: #f44336; border: 2px solid #f44336; }
+.priority-badge.p2 { background: rgba(255,152,0,0.2); color: #FF9800; border: 2px solid #FF9800; }
+.priority-badge.p3 { background: rgba(255,193,7,0.15); color: #FFC107; border: 2px solid #FFC107; }
+.priority-badge.p4 { background: rgba(100,149,237,0.15); color: #6495ED; border: 2px solid #6495ED; }
+
+.task-body { flex: 1; min-width: 0; }
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.task-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7em;
+  color: #666;
+  background: rgba(255,255,255,0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.task-title {
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #e8e8e8;
+}
+.task-desc {
+  font-size: 0.78em;
+  color: #999;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.task-meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.7em;
+}
+.task-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.meta-icon { font-size: 0.9em; }
+.tag {
+  background: rgba(100,149,237,0.15);
+  color: #6495ED;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.68em;
+}
+
+/* Deadline colours */
+.deadline-ok { color: #4CAF50; }
+.deadline-warn { color: #FFC107; }
+.deadline-danger { color: #f44336; font-weight: 700; }
+.deadline-overdue { color: #ff1744; font-weight: 800; text-transform: uppercase; animation: blink-text 0.6s infinite alternate; }
+@keyframes blink-text {
+  0%   { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.progress-fill.p1 { background: #f44336; }
+.progress-fill.p2 { background: #FF9800; }
+.progress-fill.p3 { background: #FFC107; }
+.progress-fill.p4 { background: #6495ED; }
+
+/* Status badge */
+.status-badge {
+  font-size: 0.68em;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-badge.pending     { background: rgba(255,255,255,0.08); color: #aaa; }
+.status-badge.in_progress { background: rgba(100,149,237,0.2);  color: #6495ED; }
+.status-badge.blocked     { background: rgba(244,67,54,0.2);    color: #f44336; }
+.status-badge.completed   { background: rgba(76,175,80,0.2);    color: #4CAF50; }
+
+/* Repo badge */
+.repo-badge {
+  font-size: 0.68em;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.repo-badge.mircea-constellation { background: rgba(100,149,237,0.15); color: #6495ED; }
+.repo-badge.lobsterbot           { background: rgba(221,160,221,0.15); color: #DDA0DD; }
+.repo-badge.PhD-Triune-Monism    { background: rgba(255,215,0,0.15);   color: #FFD700; }
+.repo-badge.URANTiOS             { background: rgba(76,175,80,0.15);   color: #4CAF50; }
+
+/* Sound control */
+.sound-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(30,30,60,0.9);
+  border: 1px solid rgba(100,149,237,0.3);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.4em;
+  z-index: 50;
+  transition: all 0.2s;
+}
+.sound-toggle:hover { border-color: #6495ED; transform: scale(1.1); }
+.sound-toggle.muted { opacity: 0.4; }
+
+/* Governance footer */
+.governance {
+  text-align: center;
+  padding: 12px;
+  background: rgba(10,10,26,0.9);
+  border-top: 1px solid rgba(100,149,237,0.2);
+  font-size: 0.7em;
+  color: #555;
+  letter-spacing: 1px;
+}
+.governance .truth { color: #6495ED; }
+.governance .beauty { color: #DDA0DD; }
+.governance .goodness { color: #FFD700; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .summary-row { gap: 8px; }
+  .summary-card { min-width: 70px; padding: 10px 14px; }
+  .summary-card .count { font-size: 1.6em; }
+  .task-card { flex-direction: column; gap: 10px; }
+  .priority-badge { width: 36px; height: 36px; font-size: 0.65em; }
+  header h1 { font-size: 1.1em; }
+}
+</style>
+</head>
+<body>
+
+<div class="alert-banner" id="alertBanner" onclick="silenceAlarm()">
+  OVERDUE CRITICAL TASKS — CLICK TO SILENCE ALARM
+</div>
+
+<header style="position:relative">
+  <a href="index.html" class="back-link">&#8592; Constellation</a>
+  <h1>TASK PRIORITISER</h1>
+  <div class="subtitle">Cross-Repo Mission Priority Board — UrantiOS Governance</div>
+</header>
+
+<div class="summary-row" id="summaryRow"></div>
+
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-filter="all">All Tasks</button>
+  <button class="filter-btn" data-filter="P1">P1 Critical</button>
+  <button class="filter-btn" data-filter="P2">P2 High</button>
+  <button class="filter-btn" data-filter="P3">P3 Medium</button>
+  <button class="filter-btn" data-filter="P4">P4 Low</button>
+  <button class="filter-btn" data-filter="overdue">Overdue</button>
+  <button class="filter-btn" data-filter="PhD-Triune-Monism">PhD</button>
+  <button class="filter-btn" data-filter="URANTiOS">URANTiOS</button>
+  <button class="filter-btn" data-filter="lobsterbot">Lobsterbot</button>
+  <button class="filter-btn" data-filter="mircea-constellation">Constellation</button>
+</div>
+
+<div class="task-list" id="taskList"></div>
+
+<div class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alarm sound">
+  🔊
+</div>
+
+<div class="governance">
+  Governed by UrantiOS v1.0 |
+  <span class="truth">Truth</span>
+  <span class="beauty">Beauty</span>
+  <span class="goodness">Goodness</span>
+  | Task Prioritiser v1.0
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────
+let tasks = [];
+let currentFilter = 'all';
+let soundEnabled = true;
+let alarmActive = false;
+let alarmSilenced = false;
+let audioCtx = null;
+
+// ─── Load tasks ──────────────────────────────────────────────────
+async function loadTasks() {
+  try {
+    const r = await fetch('task-prioritiser.json?t=' + Date.now());
+    if (!r.ok) return;
+    const data = await r.json();
+    tasks = data.tasks || [];
+    render();
+    checkAlarms();
+  } catch (e) {
+    console.error('Failed to load tasks:', e);
+  }
+}
+
+// ─── Date helpers ────────────────────────────────────────────────
+function today() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function daysUntil(deadline) {
+  const dl = new Date(deadline + 'T00:00:00');
+  const diff = dl - today();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+function deadlineClass(days, status) {
+  if (status === 'completed') return 'deadline-ok';
+  if (days < 0) return 'deadline-overdue';
+  if (days <= 3) return 'deadline-danger';
+  if (days <= 7) return 'deadline-warn';
+  return 'deadline-ok';
+}
+
+function deadlineText(days, status) {
+  if (status === 'completed') return 'Done';
+  if (days < 0) return `OVERDUE by ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''}!`;
+  if (days === 0) return 'DUE TODAY!';
+  if (days === 1) return 'Due tomorrow';
+  return `${days} days left`;
+}
+
+// ─── Render ──────────────────────────────────────────────────────
+function render() {
+  renderSummary();
+  renderTasks();
+}
+
+function renderSummary() {
+  const counts = { P1: 0, P2: 0, P3: 0, P4: 0, overdue: 0, total: tasks.length };
+  const labels = { P1: 'Critical', P2: 'High', P3: 'Medium', P4: 'Low' };
+
+  tasks.forEach(t => {
+    if (t.status !== 'completed') {
+      counts[t.priority]++;
+      if (daysUntil(t.deadline) < 0) counts.overdue++;
+    }
+  });
+
+  const row = document.getElementById('summaryRow');
+  let html = '';
+  ['P1', 'P2', 'P3', 'P4'].forEach(p => {
+    const isOverdue = p === 'P1' && counts.overdue > 0;
+    html += `<div class="summary-card ${p.toLowerCase()} ${isOverdue ? 'overdue' : ''}">
+      <div class="count">${counts[p]}</div>
+      <div class="label">${labels[p]}</div>
+    </div>`;
+  });
+  html += `<div class="summary-card" style="border-color:${counts.overdue > 0 ? '#ff1744' : '#4CAF50'}">
+    <div class="count" style="color:${counts.overdue > 0 ? '#ff1744' : '#4CAF50'}">${counts.overdue}</div>
+    <div class="label">Overdue</div>
+  </div>`;
+  html += `<div class="summary-card">
+    <div class="count" style="color:#DDA0DD">${counts.total}</div>
+    <div class="label">Total</div>
+  </div>`;
+  row.innerHTML = html;
+}
+
+function renderTasks() {
+  const list = document.getElementById('taskList');
+  let filtered = tasks.slice();
+
+  // Apply filter
+  if (currentFilter === 'overdue') {
+    filtered = filtered.filter(t => t.status !== 'completed' && daysUntil(t.deadline) < 0);
+  } else if (['P1','P2','P3','P4'].includes(currentFilter)) {
+    filtered = filtered.filter(t => t.priority === currentFilter);
+  } else if (currentFilter !== 'all') {
+    filtered = filtered.filter(t => t.repo === currentFilter);
+  }
+
+  // Sort: overdue first, then by priority, then by deadline
+  const priorityOrder = { P1: 0, P2: 1, P3: 2, P4: 3 };
+  filtered.sort((a, b) => {
+    const aOverdue = a.status !== 'completed' && daysUntil(a.deadline) < 0 ? 0 : 1;
+    const bOverdue = b.status !== 'completed' && daysUntil(b.deadline) < 0 ? 0 : 1;
+    if (aOverdue !== bOverdue) return aOverdue - bOverdue;
+    const aCompleted = a.status === 'completed' ? 1 : 0;
+    const bCompleted = b.status === 'completed' ? 1 : 0;
+    if (aCompleted !== bCompleted) return aCompleted - bCompleted;
+    if (priorityOrder[a.priority] !== priorityOrder[b.priority]) return priorityOrder[a.priority] - priorityOrder[b.priority];
+    return new Date(a.deadline) - new Date(b.deadline);
+  });
+
+  let html = '';
+  filtered.forEach(t => {
+    const days = daysUntil(t.deadline);
+    const isOverdue = t.status !== 'completed' && days < 0;
+    const dlClass = deadlineClass(days, t.status);
+    const dlText = deadlineText(days, t.status);
+    const p = t.priority.toLowerCase();
+
+    html += `<div class="task-card ${isOverdue ? 'overdue' : ''} ${t.status === 'completed' ? 'completed' : ''}">
+      <div class="priority-badge ${p}">${t.priority}</div>
+      <div class="task-body">
+        <div class="task-header">
+          <span class="task-id">${t.id}</span>
+          <span class="repo-badge ${t.repo}">${t.repo}</span>
+          <span class="status-badge ${t.status}">${t.status === 'in_progress' ? 'In Progress' : t.status === 'blocked' ? 'Blocked' : t.status.charAt(0).toUpperCase() + t.status.slice(1)}</span>
+        </div>
+        <div class="task-title">${t.title}</div>
+        <div class="task-desc">${t.description}</div>
+        <div class="task-meta">
+          <span class="${dlClass}"><span class="meta-icon">&#128197;</span> ${t.deadline} — ${dlText}</span>
+          <span style="color:#888"><span class="meta-icon">&#128100;</span> ${t.assigned}</span>
+          ${t.blocked_by ? `<span style="color:#f44336"><span class="meta-icon">&#9940;</span> Blocked by ${t.blocked_by}</span>` : ''}
+        </div>
+        ${t.tags ? `<div class="task-meta" style="margin-top:4px">${t.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
+        <div class="progress-bar">
+          <div class="progress-fill ${p}" style="width:${t.progress_pct || 0}%"></div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  if (filtered.length === 0) {
+    html = '<div style="text-align:center;color:#555;padding:40px;font-size:0.9em">No tasks match this filter.</div>';
+  }
+
+  list.innerHTML = html;
+}
+
+// ─── Alarms ──────────────────────────────────────────────────────
+function checkAlarms() {
+  const overdueP1 = tasks.filter(t =>
+    t.priority === 'P1' && t.status !== 'completed' && daysUntil(t.deadline) < 0
+  );
+  const overdueP2 = tasks.filter(t =>
+    t.priority === 'P2' && t.status !== 'completed' && daysUntil(t.deadline) < 0
+  );
+
+  const banner = document.getElementById('alertBanner');
+
+  if (overdueP1.length > 0) {
+    banner.textContent = `RED ALERT: ${overdueP1.length} CRITICAL TASK${overdueP1.length > 1 ? 'S' : ''} OVERDUE — CLICK TO SILENCE`;
+    banner.classList.add('active');
+    if (soundEnabled && !alarmSilenced) {
+      playAlarm('critical');
+    }
+    alarmActive = true;
+  } else if (overdueP2.length > 0) {
+    banner.textContent = `WARNING: ${overdueP2.length} HIGH-PRIORITY TASK${overdueP2.length > 1 ? 'S' : ''} OVERDUE`;
+    banner.style.background = 'linear-gradient(90deg, #FF9800, #F57C00, #FF9800)';
+    banner.classList.add('active');
+    if (soundEnabled && !alarmSilenced) {
+      playAlarm('warning');
+    }
+    alarmActive = true;
+  } else {
+    banner.classList.remove('active');
+    alarmActive = false;
+    alarmSilenced = false;
+  }
+}
+
+function playAlarm(type) {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  const now = audioCtx.currentTime;
+
+  if (type === 'critical') {
+    // Aggressive alarm: three rapid descending tones repeated
+    for (let cycle = 0; cycle < 3; cycle++) {
+      const freqs = [880, 660, 440];
+      freqs.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.15, now + cycle * 0.6 + i * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + cycle * 0.6 + i * 0.15 + 0.12);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + cycle * 0.6 + i * 0.15);
+        osc.stop(now + cycle * 0.6 + i * 0.15 + 0.15);
+      });
+    }
+  } else {
+    // Warning: two gentle rising tones
+    [440, 554].forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.1, now + i * 0.25);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.25 + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + i * 0.25);
+      osc.stop(now + i * 0.25 + 0.25);
+    });
+  }
+}
+
+function silenceAlarm() {
+  alarmSilenced = true;
+  const banner = document.getElementById('alertBanner');
+  banner.style.animation = 'none';
+  banner.style.opacity = '0.5';
+  banner.textContent += ' (silenced)';
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById('soundToggle');
+  btn.textContent = soundEnabled ? '🔊' : '🔇';
+  btn.classList.toggle('muted', !soundEnabled);
+}
+
+// ─── Filters ─────────────────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderTasks();
+  });
+});
+
+// ─── Init ────────────────────────────────────────────────────────
+loadTasks();
+setInterval(loadTasks, 30000);
+
+// Re-check alarms every 60s to keep sounding if still overdue
+setInterval(() => {
+  if (alarmActive && !alarmSilenced && soundEnabled) {
+    playAlarm('critical');
+  }
+}, 60000);
+</script>
+</body>
+</html>
