@@ -1,0 +1,6 @@
+# NemoClaw Observer — Python dependencies
+# Install: pip3 install -r requirements.txt
+
+requests>=2.31
+psycopg2-binary>=2.9
+redis>=5.0

@@ -1,0 +1,119 @@
+{
+  "name": "NemoClaw Observer — 6hr Dashboard",
+  "active": true,
+  "tags": ["nemoclaw", "monitoring", "observer"],
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "nodes": [
+    {
+      "id": "cron-trigger",
+      "name": "Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300],
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "hours", "hoursInterval": 6 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "webhook-trigger",
+      "name": "Manual Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 480],
+      "parameters": {
+        "path": "nemoclaw-dashboard",
+        "method": "GET",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "webhookId": "nemoclaw-dashboard"
+    },
+    {
+      "id": "run-observer",
+      "name": "Run NemoClaw Observer",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [480, 380],
+      "parameters": {
+        "command": "cd /opt/nemoclaw && python3 nemoclaw_observer/observer.py telegram 2>&1"
+      }
+    },
+    {
+      "id": "check-exit-code",
+      "name": "Success?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [700, 380],
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.exitCode }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "alert-failure",
+      "name": "Alert: Observer Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [920, 500],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_TOKEN }}/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "chat_id", "value": "={{ $env.TELEGRAM_CHAT }}" },
+            {
+              "name": "text",
+              "value": "=\ud83d\udd34 *NemoClaw Observer* cron run FAILED\n\nTime: {{ $now.toFormat('yyyy-MM-dd HH:mm') }} AEDT\nExit code: {{ $json.exitCode }}\n\nCheck: `ssh 46.225.51.30` and inspect logs at `/opt/nemoclaw/observer.log`"
+            },
+            { "name": "parse_mode", "value": "Markdown" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [920, 300],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ok: true, ran_at: $now.toISO()}) }}"
+      }
+    }
+  ],
+  "connections": {
+    "Every 6 Hours": {
+      "main": [[{ "node": "Run NemoClaw Observer", "type": "main", "index": 0 }]]
+    },
+    "Manual Webhook Trigger": {
+      "main": [[{ "node": "Run NemoClaw Observer", "type": "main", "index": 0 }]]
+    },
+    "Run NemoClaw Observer": {
+      "main": [[{ "node": "Success?", "type": "main", "index": 0 }]]
+    },
+    "Success?": {
+      "main": [
+        [{ "node": "Webhook Response", "type": "main", "index": 0 }],
+        [{ "node": "Alert: Observer Failed", "type": "main", "index": 0 }]
+      ]
+    }
+  }
+}

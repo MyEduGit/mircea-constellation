@@ -16,5 +16,15 @@
   "amep":         { "status": "ok" },
   "gabriel":      { "status": "ok" },
 
-  "updated": "2026-04-11T18:00:00.000Z"
+  "nemoclaw_observer": {
+    "status":           "ok",
+    "version":          "1.0.0",
+    "last_run":         null,
+    "schedule":         "every 6 hours",
+    "layers_monitored": 5,
+    "zai_spend":        0.00,
+    "zai_cap":          5.00
+  },
+
+  "updated": "2026-04-13T01:47:00.000Z"
 }
