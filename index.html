@@ -25,35 +25,37 @@ canvas#stars { position: fixed; top: 0; left: 0; z-index: 0; }
 }
 header {
   text-align: center;
-  padding: 12px;
-  background: rgba(10,10,26,0.8);
+  padding: 10px;
+  background: rgba(10,10,26,0.85);
   border-bottom: 1px solid rgba(100,149,237,0.3);
 }
 header h1 {
-  font-size: 1.4em;
+  font-size: 1.3em;
   background: linear-gradient(90deg, #6495ED, #DDA0DD, #FFD700);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: 2px;
 }
 header .subtitle {
-  font-size: 0.75em;
+  font-size: 0.7em;
   color: #888;
   margin-top: 2px;
 }
 .status-bar {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  padding: 6px;
-  background: rgba(10,10,26,0.6);
-  font-size: 0.7em;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 5px 10px;
+  background: rgba(10,10,26,0.7);
+  font-size: 0.65em;
   color: #aaa;
 }
-.status-bar .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.status-bar .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
 .dot-green { background: #4CAF50; box-shadow: 0 0 6px #4CAF50; }
 .dot-yellow { background: #FFC107; box-shadow: 0 0 6px #FFC107; }
 .dot-red { background: #f44336; box-shadow: 0 0 6px #f44336; }
+.dot-blue { background: #6495ED; box-shadow: 0 0 6px #6495ED; }
 .map {
   flex: 1;
   position: relative;
@@ -61,29 +63,29 @@ header .subtitle {
 }
 .node {
   position: absolute;
-  width: 110px;
+  width: 100px;
   text-align: center;
   cursor: pointer;
   transition: transform 0.3s, filter 0.3s;
   z-index: 2;
 }
-.node:hover { transform: scale(1.15); filter: brightness(1.3); }
+.node:hover { transform: scale(1.18); filter: brightness(1.3); }
 .node-icon {
-  width: 50px; height: 50px;
+  width: 44px; height: 44px;
   border-radius: 50%;
-  margin: 0 auto 6px;
+  margin: 0 auto 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 19px;
   border: 2px solid rgba(255,255,255,0.2);
-  box-shadow: 0 0 15px rgba(100,149,237,0.4);
+  box-shadow: 0 0 12px rgba(100,149,237,0.3);
   position: relative;
 }
 .node-icon::after {
   content: '';
   position: absolute;
-  width: 10px; height: 10px;
+  width: 9px; height: 9px;
   border-radius: 50%;
   bottom: -2px; right: -2px;
   border: 2px solid #0a0a1a;
@@ -91,12 +93,17 @@ header .subtitle {
 .node[data-status="ok"] .node-icon::after { background: #4CAF50; box-shadow: 0 0 8px #4CAF50; }
 .node[data-status="warn"] .node-icon::after { background: #FFC107; box-shadow: 0 0 8px #FFC107; }
 .node[data-status="down"] .node-icon::after { background: #f44336; box-shadow: 0 0 8px #f44336; }
+.node[data-status="new"] .node-icon::after { background: #6495ED; box-shadow: 0 0 8px #6495ED; }
 .node-icon.controller { background: linear-gradient(135deg, #1a1a3e, #2a2a5e); border-color: #6495ED; }
 .node-icon.server { background: linear-gradient(135deg, #1a3a1a, #2a5a2a); border-color: #4CAF50; }
+.node-icon.claw { background: linear-gradient(135deg, #3a1a0a, #5a2a1a); border-color: #FF6B35; }
+.node-icon.ai { background: linear-gradient(135deg, #2a1a3a, #4a2a5a); border-color: #BB86FC; }
 .node-icon.bot { background: linear-gradient(135deg, #3a1a3a, #5a2a5a); border-color: #DDA0DD; }
 .node-icon.service { background: linear-gradient(135deg, #3a3a1a, #5a5a2a); border-color: #FFD700; }
-.node-label { font-size: 0.65em; color: #ccc; line-height: 1.2; }
-.node-sublabel { font-size: 0.55em; color: #777; }
+.node-icon.network { background: linear-gradient(135deg, #1a3a3a, #2a5a5a); border-color: #00BCD4; }
+.node-icon.governance { background: linear-gradient(135deg, #3a2a0a, #5a4a1a); border-color: #FFB300; box-shadow: 0 0 20px rgba(255,179,0,0.4); }
+.node-label { font-size: 0.6em; color: #ccc; line-height: 1.2; }
+.node-sublabel { font-size: 0.5em; color: #666; }
 svg.connections {
   position: absolute;
   top: 0; left: 0;
@@ -105,18 +112,26 @@ svg.connections {
   pointer-events: none;
 }
 svg.connections line {
-  stroke: rgba(100,149,237,0.15);
+  stroke: rgba(100,149,237,0.12);
   stroke-width: 1;
   stroke-dasharray: 4 4;
 }
 svg.connections line.active {
-  stroke: rgba(100,149,237,0.4);
-  stroke-width: 1.5;
+  stroke: rgba(100,149,237,0.35);
+  stroke-width: 1.2;
   animation: pulse-line 3s infinite;
 }
+svg.connections line.ai-link {
+  stroke: rgba(187,134,252,0.25);
+  stroke-width: 1;
+}
+svg.connections line.bot-link {
+  stroke: rgba(221,160,221,0.2);
+  stroke-width: 1;
+}
 @keyframes pulse-line {
-  0%, 100% { stroke-opacity: 0.2; }
-  50% { stroke-opacity: 0.6; }
+  0%, 100% { stroke-opacity: 0.15; }
+  50% { stroke-opacity: 0.5; }
 }
 .panel {
   display: none;
@@ -133,24 +148,48 @@ svg.connections line.active {
   box-shadow: 0 0 40px rgba(100,149,237,0.2);
 }
 .panel.open { display: block; }
-.panel h3 { color: #6495ED; margin-bottom: 10px; }
+.panel h3 { color: #6495ED; margin-bottom: 10px; font-size: 1em; }
 .panel .close { position: absolute; top: 8px; right: 12px; cursor: pointer; color: #888; font-size: 18px; }
-.panel .info-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8em; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.panel .info-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.75em; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .panel .info-label { color: #888; }
-.panel .info-value { color: #e0e0e0; }
+.panel .info-value { color: #e0e0e0; text-align: right; max-width: 60%; }
+.panel .tier-badge {
+  display: inline-block;
+  font-size: 0.6em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 6px;
+  font-weight: 600;
+}
+.tier-command { background: rgba(100,149,237,0.2); color: #6495ED; }
+.tier-infra { background: rgba(76,175,80,0.2); color: #4CAF50; }
+.tier-ai { background: rgba(187,134,252,0.2); color: #BB86FC; }
+.tier-bot { background: rgba(221,160,221,0.2); color: #DDA0DD; }
+.tier-service { background: rgba(255,215,0,0.2); color: #FFD700; }
 .governance {
   text-align: center;
-  padding: 6px;
-  background: rgba(10,10,26,0.8);
+  padding: 5px;
+  background: rgba(10,10,26,0.85);
   border-top: 1px solid rgba(100,149,237,0.2);
-  font-size: 0.65em;
+  font-size: 0.6em;
   color: #666;
   letter-spacing: 1px;
 }
-.governance span { margin: 0 12px; }
+.governance span { margin: 0 10px; }
 .governance .truth { color: #6495ED; }
 .governance .beauty { color: #DDA0DD; }
 .governance .goodness { color: #FFD700; }
+/* Zone labels */
+.zone-label {
+  position: absolute;
+  font-size: 0.5em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.08);
+  z-index: 0;
+  pointer-events: none;
+  font-weight: 700;
+}
 </style>
 </head>
 <body>
@@ -158,20 +197,20 @@ svg.connections line.active {
 <div class="container">
   <header>
     <h1>MIRCEA'S CONSTELLATION</h1>
-    <div class="subtitle">OpenClaw + NanoClaw Mission Control</div>
+    <div class="subtitle">Full System Map — OpenClaw + NanoClaw + AI + Bot Fleet + Services</div>
   </header>
   <div class="status-bar" id="statusBar">
-    <span><span class="dot dot-green"></span> Loading status...</span>
+    <span><span class="dot dot-green"></span> Loading...</span>
   </div>
   <div class="map" id="map">
     <svg class="connections" id="connections"></svg>
-    <!-- Nodes placed by JS -->
   </div>
   <div class="governance">
     <span>Governed by UrantiOS v1.0</span> |
     <span class="truth">Truth</span>
     <span class="beauty">Beauty</span>
     <span class="goodness">Goodness</span>
+    | <span>20 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
   </div>
 </div>
 <div class="panel" id="panel">
@@ -187,7 +226,7 @@ const ctx = canvas.getContext('2d');
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 resizeCanvas();
 window.addEventListener('resize', () => { resizeCanvas(); drawStars(); layoutNodes(); });
-const stars = Array.from({length: 200}, () => ({
+const stars = Array.from({length: 250}, () => ({
   x: Math.random(), y: Math.random(),
   r: Math.random() * 1.5 + 0.3,
   a: Math.random() * 0.5 + 0.3,
@@ -206,50 +245,149 @@ function drawStars() {
 }
 drawStars();
 
-// Nodes
+// ══════════════════════════════════════════════════════════════════════
+//  NODES — Complete System Map (20 nodes, 5 tiers)
+// ══════════════════════════════════════════════════════════════════════
+
 const nodes = [
-  { id: 'iphone', icon: '📱', label: 'iPhone 16 Pro', sub: 'Remote Control', type: 'controller', x: 0.5, y: 0.08 },
-  { id: 'imac', icon: '🖥️', label: 'iMac M4', sub: 'Controller Node', type: 'controller', x: 0.25, y: 0.25 },
-  { id: 'openclaw', icon: '⚡', label: 'OpenClaw', sub: '46.225.51.30', type: 'server', x: 0.35, y: 0.5 },
-  { id: 'urantios', icon: '🌟', label: 'URANTiOS Prime', sub: '204.168.143.98', type: 'server', x: 0.65, y: 0.5 },
-  { id: 'nanoclaw', icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents', type: 'server', x: 0.78, y: 0.35 },
-  { id: 'botfleet', icon: '🤖', label: 'Bot Fleet', sub: '11 Telegram Bots', type: 'bot', x: 0.15, y: 0.5 },
-  { id: 'hetzy', icon: '🎖️', label: 'Hetzy PhD', sub: 'Fleet Commander', type: 'bot', x: 0.12, y: 0.7 },
-  { id: 'urantipedia', icon: '📖', label: 'UrantiPedia', sub: '.org + .com', type: 'service', x: 0.75, y: 0.7 },
-  { id: 'ollama', icon: '🧠', label: 'Ollama', sub: 'qwen2.5:32b', type: 'service', x: 0.88, y: 0.6 },
-  { id: 'amep', icon: '🎓', label: 'AMEP Hub', sub: '21 Students', type: 'service', x: 0.3, y: 0.75 },
-  { id: 'obsidian', icon: '💎', label: 'Obsidian', sub: 'Knowledge Vault', type: 'service', x: 0.5, y: 0.85 },
-  { id: 'gabriel', icon: '✨', label: 'Gabriel', sub: 'Morning Star', type: 'bot', x: 0.55, y: 0.3 },
-  { id: 'cognee', icon: '🧬', label: 'Cognee', sub: 'Knowledge Graph', type: 'service', x: 0.42, y: 0.68 },
+  // ── TIER 1: COMMAND ──────────────────────────────────────────────
+  { id: 'iphone',   icon: '📱', label: 'iPhone 16 Pro',    sub: 'Remote Control',      type: 'controller', x: 0.50, y: 0.05, tier: 'command' },
+  { id: 'imac',     icon: '🖥️', label: 'iMac M4',          sub: 'Controller Node',      type: 'controller', x: 0.24, y: 0.16, tier: 'command' },
+
+  // ── TIER 2: INFRASTRUCTURE ───────────────────────────────────────
+  { id: 'tailscale',icon: '🔗', label: 'Tailscale',        sub: 'VPN Mesh',             type: 'network',    x: 0.50, y: 0.19, tier: 'infra' },
+  { id: 'openclaw', icon: '⚡', label: 'OpenClaw',         sub: '46.225.51.30',         type: 'server',     x: 0.28, y: 0.36, tier: 'infra' },
+  { id: 'urantios', icon: '🌟', label: 'URANTiOS Prime',   sub: '204.168.143.98',       type: 'server',     x: 0.72, y: 0.33, tier: 'infra' },
+  { id: 'nanoclaw', icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents',        type: 'claw',       x: 0.86, y: 0.22, tier: 'infra' },
+
+  // ── TIER 3: AI MODELS ───────────────────────────────────────────
+  { id: 'claude',   icon: '🟣', label: 'Claude',           sub: 'Opus 4.6',            type: 'ai',         x: 0.10, y: 0.28, tier: 'ai' },
+  { id: 'chatgpt',  icon: '🟢', label: 'ChatGPT',          sub: 'Hetzner Vault',        type: 'ai',         x: 0.06, y: 0.46, tier: 'ai' },
+  { id: 'ollama',   icon: '🧠', label: 'Ollama',           sub: 'qwen2.5:32b',         type: 'ai',         x: 0.90, y: 0.44, tier: 'ai' },
+  { id: 'cognee',   icon: '🧬', label: 'Cognee',           sub: 'Knowledge Graph',      type: 'ai',         x: 0.48, y: 0.50, tier: 'ai' },
+
+  // ── TIER 4: BOT FLEET ───────────────────────────────────────────
+  { id: 'hetzy',    icon: '🎖️', label: 'Hetzy PhD',        sub: 'Fleet Commander',      type: 'bot',        x: 0.16, y: 0.58, tier: 'bot' },
+  { id: 'gabriel',  icon: '✨', label: 'Gabriel',           sub: 'Morning Star',         type: 'bot',        x: 0.62, y: 0.48, tier: 'bot' },
+  { id: 'uragent',  icon: '🤖', label: 'UrantiPedia Agent', sub: '@UrantiPedia_Agent_01', type: 'bot',       x: 0.30, y: 0.52, tier: 'bot' },
+  { id: 'botfleet', icon: '🤖', label: 'Bot Fleet',        sub: '11 Telegram Bots',     type: 'bot',        x: 0.08, y: 0.70, tier: 'bot' },
+  { id: 'ncbot',    icon: '🦞', label: 'NanoClaw Bot',     sub: '@nanoclaw_openclaw',   type: 'bot',        x: 0.82, y: 0.55, tier: 'bot' },
+  { id: 'lobster',  icon: '🦞', label: 'LobsterBot',       sub: 'Name Reservation',     type: 'bot',        x: 0.04, y: 0.58, tier: 'bot' },
+
+  // ── TIER 5: SERVICES ────────────────────────────────────────────
+  { id: 'urantipedia', icon: '📖', label: 'UrantiPedia',   sub: '.org + .com',          type: 'service',    x: 0.78, y: 0.65, tier: 'service' },
+  { id: 'amep',     icon: '🎓', label: 'AMEP Hub',         sub: '21 Students',          type: 'service',    x: 0.34, y: 0.72, tier: 'service' },
+  { id: 'obsidian', icon: '💎', label: 'Obsidian',         sub: 'Knowledge Vault',      type: 'service',    x: 0.55, y: 0.76, tier: 'service' },
+  { id: 'phd',      icon: '📜', label: 'PhD Research',     sub: 'Triune Monism',        type: 'service',    x: 0.88, y: 0.68, tier: 'service' },
+
+  // ── FOUNDATION: GOVERNANCE ──────────────────────────────────────
+  { id: 'urantios_os', icon: '☀️', label: 'UrantiOS v1.0', sub: 'Truth · Beauty · Goodness', type: 'governance', x: 0.50, y: 0.92, tier: 'governance' },
 ];
+
+// ══════════════════════════════════════════════════════════════════════
+//  CONNECTIONS — How everything links
+// ══════════════════════════════════════════════════════════════════════
 
 const connections = [
-  ['iphone', 'imac'], ['iphone', 'botfleet'],
-  ['imac', 'openclaw'], ['imac', 'urantios'],
-  ['openclaw', 'botfleet'], ['openclaw', 'urantios'],
-  ['urantios', 'nanoclaw'], ['urantios', 'urantipedia'],
-  ['urantios', 'ollama'], ['urantios', 'gabriel'],
-  ['imac', 'amep'], ['imac', 'obsidian'],
-  ['botfleet', 'hetzy'], ['nanoclaw', 'iphone'],
-  ['gabriel', 'urantipedia'],
-  ['imac', 'cognee'], ['cognee', 'urantios'], ['cognee', 'obsidian'],
+  // Command layer
+  ['iphone', 'imac',       'active'],
+  ['iphone', 'botfleet',   'active'],
+  ['iphone', 'nanoclaw',   'active'],
+
+  // iMac hub (controller to everything it touches)
+  ['imac', 'openclaw',     'active'],
+  ['imac', 'urantios',     'active'],
+  ['imac', 'tailscale',    'active'],
+  ['imac', 'claude',       'ai-link'],
+  ['imac', 'cognee',       'ai-link'],
+  ['imac', 'obsidian',     'active'],
+  ['imac', 'amep',         'active'],
+
+  // Tailscale mesh
+  ['tailscale', 'openclaw',  'active'],
+  ['tailscale', 'urantios',  'active'],
+
+  // Server-to-server
+  ['openclaw', 'urantios',   'active'],
+
+  // OpenClaw connections
+  ['openclaw', 'botfleet',   'active'],
+  ['openclaw', 'chatgpt',    'ai-link'],
+  ['openclaw', 'uragent',    'bot-link'],
+
+  // URANTiOS connections
+  ['urantios', 'nanoclaw',     'active'],
+  ['urantios', 'urantipedia',  'active'],
+  ['urantios', 'ollama',       'ai-link'],
+  ['urantios', 'gabriel',      'active'],
+  ['urantios', 'cognee',       'ai-link'],
+  ['urantios', 'phd',          'active'],
+
+  // NanoClaw
+  ['nanoclaw', 'ncbot',        'active'],
+  ['nanoclaw', 'ollama',       'ai-link'],
+
+  // AI connections
+  ['claude', 'phd',          'ai-link'],
+  ['chatgpt', 'phd',         'ai-link'],
+  ['ollama', 'gabriel',       'ai-link'],
+  ['ollama', 'cognee',        'ai-link'],
+  ['cognee', 'obsidian',      'active'],
+  ['cognee', 'phd',           'ai-link'],
+
+  // Bot fleet
+  ['botfleet', 'hetzy',        'bot-link'],
+  ['botfleet', 'lobster',      'bot-link'],
+  ['hetzy', 'uragent',         'bot-link'],
+  ['gabriel', 'urantipedia',   'active'],
+  ['ncbot', 'urantios',        'bot-link'],
+
+  // Services
+  ['obsidian', 'phd',          'active'],
+  ['amep', 'imac',             'active'],
+
+  // Governance (subtle connections to key nodes)
+  ['urantios_os', 'urantios',     'active'],
+  ['urantios_os', 'cognee',       'ai-link'],
+  ['urantios_os', 'gabriel',      'bot-link'],
 ];
 
+// ══════════════════════════════════════════════════════════════════════
+//  NODE DETAILS — Click-panel data
+// ══════════════════════════════════════════════════════════════════════
+
 const nodeDetails = {
-  iphone: { 'Device': 'iPhone 16 Pro Max 256GB', 'Role': 'Remote Control', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562' },
-  imac: { 'Device': 'iMac M4', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36' },
-  openclaw: { 'IP': '46.225.51.30', 'Type': 'CPX22 (8GB/80GB)', 'Location': 'Nuremberg', 'Ports': '18789/18791/18792', 'Bots': '9 active' },
-  urantios: { 'IP': '204.168.143.98', 'Type': 'CCX23 (16GB/160GB)', 'Location': 'Helsinki', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org' },
-  nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Container': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw', 'Status': 'LIVE' },
-  botfleet: { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0' },
-  hetzy: { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10' },
-  urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900', 'SSL': 'Certbot active' },
-  ollama: { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning', 'Status': 'Check required' },
-  amep: { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4' },
-  obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'Status sync every 10min', 'Export': 'JSON to constellation', 'Purpose': 'Research & notes' },
-  gabriel: { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on website', 'Authority': 'Joint with Mircea' },
-  cognee: { 'Version': '1.0.0', 'Host': 'iMac M4 (local)', 'API': 'remember / recall / forget', 'Dataset': 'urantia_book (197 papers)', 'Graph DB': 'LanceDB + Kuzu', 'Purpose': 'Semantic memory for URANTiOS' },
+  iphone:   { 'Device': 'iPhone 16 Pro Max 256GB', 'Role': 'Remote Control', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562', 'Tier': 'COMMAND' },
+  imac:     { 'Device': 'iMac M4 (Apple Silicon)', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36', 'Local AI': 'Cognee 1.0.0', 'Tier': 'COMMAND' },
+
+  tailscale:{ 'Type': 'VPN Mesh Network', 'iMac IP': '100.75.177.36', 'Purpose': 'Secure tunnel between iMac, OpenClaw, URANTiOS', 'Tier': 'INFRASTRUCTURE' },
+  openclaw: { 'IP': '46.225.51.30', 'Hardware': 'CPX22 (8GB / 80GB)', 'Location': 'Nuremberg, DE', 'Ports': '18789 / 18791 / 18792', 'Bots Hosted': '9 active', 'Disk': '46% used', 'Tier': 'INFRASTRUCTURE' },
+  urantios: { 'IP': '204.168.143.98', 'Hardware': 'CCX23 (16GB / 160GB)', 'Location': 'Helsinki, FI', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org', 'Disk': '38% used', 'Tier': 'INFRASTRUCTURE' },
+  nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Runtime': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw in Telegram', 'Status': 'LIVE', 'Tier': 'INFRASTRUCTURE' },
+
+  claude:   { 'Model': 'Claude Opus 4.6 (1M ctx)', 'Provider': 'Anthropic', 'Role': 'Primary AI partner', 'Used For': 'PhD analysis, code, deep reasoning', 'Workspace': 'iMac Obsidian vault', 'Tier': 'AI' },
+  chatgpt:  { 'Model': 'ChatGPT (OpenAI)', 'Role': 'Secondary AI partner', 'Used For': 'Summaries, vault mgmt, verification', 'Workspace': 'Hetzner vault', 'Tier': 'AI' },
+  ollama:   { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning (no cloud)', 'Powers': 'Gabriel brain, Cognee LLM', 'Status': 'Check required', 'Tier': 'AI' },
+  cognee:   { 'Version': '1.0.0', 'Host': 'iMac M4 (local)', 'API': 'remember / recall / forget / improve', 'Dataset': 'urantia_book (197 papers)', 'Graph DB': 'LanceDB + Kuzu', 'Embedding': 'fastembed (384d)', 'Purpose': 'Semantic memory for all systems', 'Tier': 'AI' },
+
+  hetzy:    { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30-min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10', 'Tier': 'BOT FLEET' },
+  gabriel:  { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on urantipedia.org', 'LLM': 'Ollama qwen2.5:32b', 'Authority': 'Joint with Mircea', 'Tier': 'BOT FLEET' },
+  uragent:  { 'Bot': '@UrantiPedia_Agent_01_bot', 'Role': 'Primary Telegram gateway', 'Server': 'OpenClaw (Nuremberg)', 'Token': 'in secrets.env', 'User ID': '828807562', 'Tier': 'BOT FLEET' },
+  botfleet: { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0', 'Tier': 'BOT FLEET' },
+  ncbot:    { 'Bot': '@nanoclaw_openclaw_bot', 'Trigger': '@NanoClaw', 'Runtime': 'Docker on URANTiOS', 'API': 'Claude SDK', 'Tier': 'BOT FLEET' },
+  lobster:  { 'Bot': 'LobsterBot', 'Purpose': 'Name reservation (Telegram)', 'Status': 'Skeleton — awaiting implementation', 'Repo': 'myedugit/lobsterbot', 'Tier': 'BOT FLEET' },
+
+  urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900+', 'SSL': 'Certbot active', 'Chat': 'Gabriel (floating star)', 'Tier': 'SERVICES' },
+  amep:     { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
+  obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Content': 'Ontology, comparisons, Foreword analysis', 'Tier': 'SERVICES' },
+  phd:      { 'Title': 'PhD — Triune Monism', 'Thesis': 'Three irreducible domains: matter, mind, spirit', 'AI Partners': 'Claude (deep analysis) + ChatGPT (summaries)', 'Repo': 'myedugit/phd-triune-monism', 'Papers': '196 Urantia Book papers as source', 'Tier': 'SERVICES' },
+
+  urantios_os: { 'Version': '1.0', 'Type': 'Governing AI Operating System', 'Source': 'The Urantia Book (Foreword + Papers 1-196)', 'Values': 'Truth, Beauty, Goodness', 'Scope': 'ALL AI, bots, agents, processes', 'Lucifer Test': 'Transparent? Honest? Within mandate? Serves mission?', 'Spawn Mandate': 'Every process must load UrantiOS', 'Repo': 'myedugit/URANTiOS', 'Tier': 'GOVERNANCE' },
 };
+
+// ══════════════════════════════════════════════════════════════════════
+//  RENDERING
+// ══════════════════════════════════════════════════════════════════════
 
 const map = document.getElementById('map');
 const svg = document.getElementById('connections');
@@ -258,29 +396,50 @@ function layoutNodes() {
   const w = map.clientWidth;
   const h = map.clientHeight;
   map.querySelectorAll('.node').forEach(n => n.remove());
+  map.querySelectorAll('.zone-label').forEach(n => n.remove());
   svg.innerHTML = '';
 
+  // Zone labels
+  const zones = [
+    { text: 'COMMAND', x: 0.50, y: 0.01 },
+    { text: 'INFRASTRUCTURE', x: 0.50, y: 0.28 },
+    { text: 'AI MODELS', x: 0.06, y: 0.35 },
+    { text: 'BOT FLEET', x: 0.06, y: 0.65 },
+    { text: 'SERVICES', x: 0.88, y: 0.62 },
+  ];
+  zones.forEach(z => {
+    const lbl = document.createElement('div');
+    lbl.className = 'zone-label';
+    lbl.textContent = z.text;
+    lbl.style.left = (z.x * w) + 'px';
+    lbl.style.top = (z.y * h) + 'px';
+    map.appendChild(lbl);
+  });
+
+  // Render nodes
   nodes.forEach(n => {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = 'ok';
-    div.style.left = (n.x * w - 55) + 'px';
-    div.style.top = (n.y * h - 30) + 'px';
+    div.dataset.status = n.id === 'lobster' ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.style.left = (n.x * w - 50) + 'px';
+    div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
     div.onclick = () => openPanel(n);
     map.appendChild(div);
   });
 
-  connections.forEach(([a, b]) => {
+  // Render connections
+  connections.forEach(([a, b, cls]) => {
     const na = nodes.find(n => n.id === a);
     const nb = nodes.find(n => n.id === b);
+    if (!na || !nb) return;
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', na.x * w);
     line.setAttribute('y1', na.y * h);
     line.setAttribute('x2', nb.x * w);
     line.setAttribute('y2', nb.y * h);
-    line.classList.add('active');
+    line.classList.add(cls || 'active');
     svg.appendChild(line);
   });
 }
@@ -292,15 +451,23 @@ function openPanel(node) {
   const details = nodeDetails[node.id] || {};
   let html = '';
   for (const [k, v] of Object.entries(details)) {
-    html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value">${v}</span></div>`;
+    if (k === 'Tier') {
+      const cls = { 'COMMAND':'tier-command','INFRASTRUCTURE':'tier-infra','AI':'tier-ai','BOT FLEET':'tier-bot','SERVICES':'tier-service','GOVERNANCE':'tier-command' }[v] || 'tier-command';
+      html += `<div style="text-align:center;margin-top:6px"><span class="tier-badge ${cls}">${v}</span></div>`;
+    } else {
+      html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value">${v}</span></div>`;
+    }
   }
   document.getElementById('panelContent').innerHTML = html;
   panel.classList.add('open');
 }
 function closePanel() { document.getElementById('panel').classList.remove('open'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+document.getElementById('map').addEventListener('click', e => {
+  if (e.target === map || e.target === svg) closePanel();
+});
 
-// Load live status
+// Live status
 async function loadStatus() {
   try {
     const r = await fetch('status.json?t=' + Date.now());
@@ -308,22 +475,22 @@ async function loadStatus() {
     const data = await r.json();
     const bar = document.getElementById('statusBar');
     const items = [];
-    if (data.fleet) items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span> Fleet: ${data.fleet.bots}</span>`);
-    if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span> NanoClaw: ${data.nanoclaw.version || 'checking'}</span>`);
-    if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span> Ollama: ${data.ollama.model || 'offline'}</span>`);
-    if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span> OpenClaw: ${data.disk_openclaw}</span>`);
-    if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span> URANTiOS: ${data.disk_urantios}</span>`);
-    if (data.obsidian) items.push(`<span><span class="dot dot-green"></span> Obsidian: ${data.obsidian.docs} docs</span>`);
-    if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span> Cognee: ${data.cognee.version || 'offline'}</span>`);
-    if (data.updated) items.push(`<span style="color:#555">Updated: ${new Date(data.updated).toLocaleTimeString()}</span>`);
+    if (data.fleet) items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span>Fleet: ${data.fleet.bots}</span>`);
+    if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span>NanoClaw: ${data.nanoclaw.version || '?'}</span>`);
+    if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
+    if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
+    if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
+    if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
+    if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
+    items.push(`<span><span class="dot dot-blue"></span>Nodes: ${nodes.length}</span>`);
+    if (data.updated) items.push(`<span style="color:#555">${new Date(data.updated).toLocaleTimeString()}</span>`);
     if (items.length) bar.innerHTML = items.join('');
 
-    // Update node statuses
     document.querySelectorAll('.node').forEach(n => {
       const id = n.dataset.id;
       if (data[id] && data[id].status) n.dataset.status = data[id].status;
     });
-  } catch { /* status.json not available yet */ }
+  } catch { /* status.json not yet available */ }
 }
 loadStatus();
 setInterval(loadStatus, 30000);
