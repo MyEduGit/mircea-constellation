@@ -1,0 +1,19 @@
+[Unit]
+Description=NemoClaw Observer — mission-control dashboard agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adjust User and WorkingDirectory to match the deploy location.
+User=mircea
+WorkingDirectory=/opt/mircea-constellation/nemoclaw_observer
+EnvironmentFile=/opt/mircea-constellation/nemoclaw_observer/.env
+ExecStart=/opt/mircea-constellation/nemoclaw_observer/run.sh loop telegram
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
