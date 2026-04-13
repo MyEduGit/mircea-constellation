@@ -210,7 +210,7 @@ svg.connections line.bot-link {
     <span class="truth">Truth</span>
     <span class="beauty">Beauty</span>
     <span class="goodness">Goodness</span>
-    | <span>20 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
+    | <span>22 nodes &middot; 4 repos &middot; 12 bots &middot; 4 AI models</span>
   </div>
 </div>
 <div class="panel" id="panel">
@@ -273,6 +273,7 @@ const nodes = [
   { id: 'botfleet', icon: '🤖', label: 'Bot Fleet',        sub: '11 Telegram Bots',     type: 'bot',        x: 0.08, y: 0.70, tier: 'bot' },
   { id: 'ncbot',    icon: '🦞', label: 'NanoClaw Bot',     sub: '@nanoclaw_openclaw',   type: 'bot',        x: 0.82, y: 0.55, tier: 'bot' },
   { id: 'lobster',  icon: '🦞', label: 'LobsterBot',       sub: 'Name Reservation',     type: 'bot',        x: 0.04, y: 0.58, tier: 'bot' },
+  { id: 'instantlyclaw', icon: '📧', label: 'InstantlyClaw', sub: 'Instantly.ai Bridge', type: 'claw',       x: 0.94, y: 0.38, tier: 'bot' },
 
   // ── TIER 5: SERVICES ────────────────────────────────────────────
   { id: 'urantipedia', icon: '📖', label: 'UrantiPedia',   sub: '.org + .com',          type: 'service',    x: 0.78, y: 0.65, tier: 'service' },
@@ -327,6 +328,11 @@ const connections = [
   ['nanoclaw', 'ncbot',        'active'],
   ['nanoclaw', 'ollama',       'ai-link'],
 
+  // InstantlyClaw — Instantly.ai email outreach bridge
+  ['instantlyclaw', 'openclaw', 'active'],
+  ['instantlyclaw', 'hetzy',    'bot-link'],
+  ['instantlyclaw', 'claude',   'ai-link'],
+
   // AI connections
   ['claude', 'phd',          'ai-link'],
   ['chatgpt', 'phd',         'ai-link'],
@@ -376,6 +382,7 @@ const nodeDetails = {
   botfleet: { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0', 'Tier': 'BOT FLEET' },
   ncbot:    { 'Bot': '@nanoclaw_openclaw_bot', 'Trigger': '@NanoClaw', 'Runtime': 'Docker on URANTiOS', 'API': 'Claude SDK', 'Tier': 'BOT FLEET' },
   lobster:  { 'Bot': 'LobsterBot', 'Purpose': 'Name reservation (Telegram)', 'Status': 'Skeleton — awaiting implementation', 'Repo': 'myedugit/lobsterbot', 'Tier': 'BOT FLEET' },
+  instantlyclaw: { 'Bot': 'InstantlyClaw', 'Purpose': 'Instantly.ai outreach bridge', 'Integration': 'Instantly.ai API → fleet bus', 'Runtime': 'Docker (planned on OpenClaw)', 'API': 'Claude SDK + Instantly REST', 'Status': 'Bootstrap — setup branch active', 'Branch': 'claude/setup-instantlyclaw-KEA23', 'Tier': 'BOT FLEET' },
 
   urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900+', 'SSL': 'Certbot active', 'Chat': 'Gabriel (floating star)', 'Tier': 'SERVICES' },
   amep:     { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
@@ -421,7 +428,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = n.id === 'lobster' ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = (n.id === 'lobster' || n.id === 'instantlyclaw') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;

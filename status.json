@@ -21,10 +21,11 @@
   "botfleet":     { "status": "ok" },
   "ncbot":        { "status": "ok" },
   "lobster":      { "status": "new" },
+  "instantlyclaw":{ "status": "new" },
   "urantipedia":  { "status": "ok" },
   "amep":         { "status": "ok" },
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
 
-  "updated": "2026-04-13T13:18:00.000Z"
+  "updated": "2026-04-13T14:00:00.000Z"
 }
