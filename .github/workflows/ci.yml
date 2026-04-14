@@ -11,30 +11,19 @@ permissions:
 jobs:
   validate-claude-doc:
     name: Validate claude-doc package
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04   # pinned for reproducible shellcheck version
     steps:
       - uses: actions/checkout@v4
 
-      - name: Shellcheck installer and hooks
+      - name: Install shellcheck + jq
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq shellcheck
-          shopt -s nullglob
-          files=(setup/claude-doc/install.sh setup/claude-doc/hooks/*.sh)
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "no scripts to check"
-            exit 0
-          fi
-          shellcheck "${files[@]}"
+          sudo apt-get install -y -qq shellcheck jq
+          shellcheck --version
+          jq --version
 
-      - name: Validate settings.snippet.json
-        run: |
-          jq . setup/claude-doc/settings.snippet.json > /dev/null
+      - name: Ensure validator is executable
+        run: chmod +x setup/claude-doc/scripts/validate.sh
 
-      - name: Verify skill frontmatter present
-        run: |
-          first_line=$(head -n 1 setup/claude-doc/skills/diagram-on-completion.md)
-          if [ "$first_line" != "---" ]; then
-            echo "skill file missing YAML frontmatter (first line was: '$first_line')"
-            exit 1
-          fi
+      - name: Run package validator
+        run: ./setup/claude-doc/scripts/validate.sh

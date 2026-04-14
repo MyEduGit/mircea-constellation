@@ -65,6 +65,8 @@ setup/claude-doc/
 ├── rule.md                              (DOC rule → CLAUDE.md)
 ├── rules/
 │   └── show-everything.md               (SE rule → CLAUDE.md)
+├── scripts/
+│   └── validate.sh                      (local pre-push validator, mirrors CI)
 ├── settings.snippet.json                (for manual merge if jq absent)
 ├── skills/
 │   └── diagram-on-completion.md         (the /doc skill)
@@ -72,6 +74,16 @@ setup/claude-doc/
     ├── doc-reminder.sh                  (Stop hook)
     └── doc-verify.sh                    (SessionStart hook)
 ```
+
+## Validate before you push
+
+```bash
+./setup/claude-doc/scripts/validate.sh
+```
+
+Runs everything CI runs: shellcheck, JSON parse, frontmatter, required
+files, executable bits. Exits 0 = safe to push. CI calls the exact same
+script, so a local pass predicts a CI pass.
 
 ## Uninstall
 
