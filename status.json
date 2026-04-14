@@ -2,19 +2,29 @@
   "fleet":        { "status": "ok",   "bots": "10/11 active" },
   "nanoclaw":     { "status": "ok",   "version": "1.2.17" },
   "ollama":       { "status": "warn", "model": "qwen2.5:32b" },
+  "cognee":       { "status": "ok",   "version": "1.0.0" },
   "disk_openclaw": "46% used",
   "disk_urantios": "38% used",
   "obsidian":     { "docs": 477 },
 
   "iphone":       { "status": "ok" },
   "imac":         { "status": "ok" },
+  "tailscale":    { "status": "ok" },
   "openclaw":     { "status": "ok" },
   "urantios":     { "status": "ok" },
-  "botfleet":     { "status": "ok" },
+  "nanoclaw_node":{ "status": "ok" },
+  "claude":       { "status": "ok" },
+  "chatgpt":      { "status": "ok" },
   "hetzy":        { "status": "ok" },
+  "gabriel":      { "status": "ok" },
+  "uragent":      { "status": "ok" },
+  "botfleet":     { "status": "ok" },
+  "ncbot":        { "status": "ok" },
+  "lobster":      { "status": "new" },
   "urantipedia":  { "status": "ok" },
   "amep":         { "status": "ok" },
-  "gabriel":      { "status": "ok" },
+  "phd":          { "status": "ok" },
+  "urantios_os":  { "status": "ok" },
 
   "nemoclaw_observer": {
     "status":           "ok",
@@ -26,5 +36,5 @@
     "zai_cap":          5.00
   },
 
-  "updated": "2026-04-13T01:47:00.000Z"
+  "updated": "2026-04-13T13:18:00.000Z"
 }
