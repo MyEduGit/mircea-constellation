@@ -6,15 +6,24 @@
 
 unit:
   code: "VU22398"
+  # seeded from training.gov.au public register — verify in tga unit PDF
+  title_seed: "TBD — verify at tga"
+  tga_url: "https://training.gov.au/Training/Details/VU22398"
   title: "TBD_FROM_VRQA_COURSE_DOC"
   nominal_hours_total: 0
   parent_courses:
     - code: "22251VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22251VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22486VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22486VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22643VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22643VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"

@@ -4,9 +4,14 @@
 
 unit:
   code: "VU22592"
+  # seeded from training.gov.au public register — verify in tga unit PDF
+  title_seed: "Give and respond to short, simple instruction and information"
+  tga_url: "https://training.gov.au/Training/Details/VU22592"
   title: "TBD_FROM_VRQA_COURSE_DOC"
   nominal_hours_total: 0
   parent_courses:
     - code: "22484VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22484VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"

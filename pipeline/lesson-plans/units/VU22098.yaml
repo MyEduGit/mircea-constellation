@@ -11,6 +11,9 @@
 
 unit:
   code: "VU22098"
+  # seeded from training.gov.au public register — verify in tga unit PDF
+  title_seed: "Recognise and use basic mathematical symbols and processes"
+  tga_url: "https://training.gov.au/Training/Details/VU22098"
   title: "TBD_FROM_VRQA_COURSE_DOC"
   nominal_hours_total: 0
   prerequisites: "TBD_FROM_VRQA_COURSE_DOC"
@@ -19,7 +22,9 @@ unit:
 
   parent_courses:
     - code: "22484VIC"
-      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"   # expected: Course in Initial EAL
+
+      public_register_url: "https://training.gov.au/Training/Details/22484VIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"   # expected: Certificate I in EAL (Access)
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
 
   elements:

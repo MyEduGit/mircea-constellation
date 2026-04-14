@@ -9,56 +9,92 @@
 # Parent-course titles are marked "verify" — confirm exact titles against the
 # VRQA accredited course register before publishing any generated plan.
 
+# Parent-course titles below are seeded from training.gov.au + VRQA public
+# registers (see SOURCES.md). Re-verify each exact title + accreditation
+# period in the tga record before using the generated plan for audit.
+
+parent_course_titles:
+  "22251VIC": "Certificate II in EAL (Access) — non-current (2014–2018); superseded by 22485VIC"
+  "22476VIC": "Certificate I in General Education for Adults (Introductory) — verify"
+  "22484VIC": "Certificate I in EAL (Access)"
+  "22485VIC": "Certificate II in EAL (Access)"
+  "22486VIC": "Certificate III in EAL (Access)"
+  "22489VIC": "Certificate III in EAL (Employment)"
+  "22491VIC": "Certificate IV in EAL (Employment) — verify"
+  "22639VIC": "Certificate II in EAL (Access) — reaccredited 2022/23"
+  "22640VIC": "Certificate III in EAL (Access) — reaccredited 2022/23"
+  "22643VIC": "Certificate III in EAL (Employment) — reaccredited 2022/23"
+
 units:
 
   - code: VU22098
+    title_seed: "Recognise and use basic mathematical symbols and processes"
+    tga_url: "https://training.gov.au/Training/Details/VU22098"
     parent_courses: [22484VIC]
-    stream: Initial EAL
+    stream: "Numeracy within Cert I in EAL (Access)"
     status: stub
 
   - code: VU22358
+    title_seed: "Develop learning goals"
+    tga_url: "https://training.gov.au/Training/Details/VU22358"
     parent_courses: [22485VIC, 22476VIC, 22639VIC]
-    stream: Certificate I in EAL (family)
+    stream: "Cert II EAL (Access) + CGEA Introductory family"
     status: stub
 
   - code: VU22369
+    title_seed: "Work with simple numbers and money in familiar situations"
+    tga_url: "https://training.gov.au/Training/Details/VU22369"
     parent_courses: [22485VIC, 22484VIC, 22476VIC, 22639VIC]
-    stream: Certificate I / Initial EAL (family)
+    stream: "Numeracy across EAL / CGEA family"
     status: stub
 
   - code: VU22384
+    title_seed: "Develop and document a learning plan and portfolio"
+    tga_url: "https://training.gov.au/Training/Details/VU22384"
     parent_courses: [22486VIC, 22489VIC, 22491VIC, 22640VIC, 22643VIC]
-    stream: Certificate II–IV in EAL (family)
+    stream: "Cert III–IV EAL (Access + Employment) family"
     status: stub
 
   - code: VU22398
+    title_seed: "TBD — verify at tga"
+    tga_url: "https://training.gov.au/Training/Details/VU22398"
     parent_courses: [22251VIC, 22486VIC, 22643VIC]
-    stream: Certificate II / IV in EAL (family)
+    stream: "Cert II / III EAL family"
     status: stub
 
   - code: VU22590
+    title_seed: "Plan language learning with support"
+    tga_url: "https://training.gov.au/Training/Details/VU22590"
     parent_courses: [22484VIC]
-    stream: Initial EAL
+    stream: "Cert I in EAL (Access)"
     status: stub
 
   - code: VU22591
+    title_seed: "Participate in short simple exchanges"
+    tga_url: "https://training.gov.au/Training/Details/VU22591"
     parent_courses: [22484VIC]
-    stream: Initial EAL
+    stream: "Cert I in EAL (Access)"
     status: stub
 
   - code: VU22592
+    title_seed: "Give and respond to short, simple instruction and information"
+    tga_url: "https://training.gov.au/Training/Details/VU22592"
     parent_courses: [22484VIC]
-    stream: Initial EAL
+    stream: "Cert I in EAL (Access)"
     status: stub
 
   - code: VU22593
+    title_seed: "Read and write short simple messages and forms (verify at tga)"
+    tga_url: "https://training.gov.au/Training/Details/VU22593"
     parent_courses: [22484VIC]
-    stream: Initial EAL
+    stream: "Cert I in EAL (Access)"
     status: stub
 
   - code: VU22594
+    title_seed: "Read and write short, simple informational and instructional texts"
+    tga_url: "https://training.gov.au/Training/Details/VU22594"
     parent_courses: [22484VIC]
-    stream: Initial EAL
+    stream: "Cert I in EAL (Access)"
     status: stub
 
 # status values:

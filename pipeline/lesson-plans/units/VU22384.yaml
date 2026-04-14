@@ -6,21 +6,34 @@
 
 unit:
   code: "VU22384"
+  # seeded from training.gov.au public register — verify in tga unit PDF
+  title_seed: "Develop and document a learning plan and portfolio"
+  tga_url: "https://training.gov.au/Training/Details/VU22384"
   title: "TBD_FROM_VRQA_COURSE_DOC"
   nominal_hours_total: 0
   parent_courses:
     - code: "22486VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22486VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22489VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22489VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22491VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22491VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22640VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22640VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22643VIC"
+
+      public_register_url: "https://training.gov.au/Training/Details/22643VIC"
       title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
