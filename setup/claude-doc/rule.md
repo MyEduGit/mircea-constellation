@@ -17,6 +17,21 @@ Never silently skip archival.
 
 ### Required sequence
 
+0. **VERIFY BEFORE DISPLAY (hard gate).** No Mermaid diagram may be shown to
+   the user, written to disk, committed, or mirrored until it has been
+   rendered by `setup/claude-doc/scripts/verify-diagram.sh` with exit code
+   0. "Rendered" means: mmdc produced an SVG AND the log contains no
+   "Parse error" AND the SVG itself does not contain the "Syntax error in
+   text" bomb glyph (mmdc exits 0 even on bad sources, so grep the log and
+   the SVG). This gate is non-negotiable. If verification is not possible
+   (mmdc missing, no network), **do not display a diagram at all** —
+   describe the structure in prose and say so.
+
+   Quoting rule: quote every label with `[...]` that contains any of
+   `@ # ( ) : — , / \` or Unicode punctuation. Safest default: quote all
+   labels. Unquoted labels with `@` (e.g. email addresses) are the most
+   common cause of the "Syntax error" bomb.
+
 1. **Generate a diagram of the work done.**
    - Default: **Mermaid** (flowchart / sequence / state — choose the type that
      fits the job). Include: inputs, decisions, actions taken, tools/MCPs used,

@@ -118,10 +118,24 @@ elif command -v npm >/dev/null 2>&1; then
   if npm install -g @mermaid-js/mermaid-cli --no-audit --no-fund >/dev/null 2>&1; then
     ok "mmdc installed"
   else
-    warn "mmdc install failed - SVG/PNG will fall back to inline"
+    warn "mmdc install failed - verify-diagram.sh will exit 2; DOC rule will suppress diagrams"
   fi
 else
-  warn "npm absent - skipping mmdc install"
+  warn "npm absent - skipping mmdc install; DOC rule will suppress diagrams until mmdc exists"
+fi
+
+# --- 7. verify-diagram smoke test --------------------------------------------
+if command -v mmdc >/dev/null 2>&1; then
+  say "Smoke-testing verify-diagram.sh with a trivial diagram"
+  TEST="$(mktemp --suffix=.mmd)"
+  TEST_OUT="$(mktemp --suffix=.svg)"
+  printf 'flowchart LR\n  A["start"] --> B["end"]\n' > "$TEST"
+  if "$SRC_DIR/scripts/verify-diagram.sh" "$TEST" "$TEST_OUT" >/dev/null 2>&1; then
+    ok "verify-diagram.sh works end-to-end"
+  else
+    warn "verify-diagram.sh failed its own smoke test - check puppeteer / chromium install"
+  fi
+  rm -f "$TEST" "$TEST_OUT"
 fi
 
 echo ""

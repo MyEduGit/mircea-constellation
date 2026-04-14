@@ -35,8 +35,26 @@ Draft Mermaid source covering: inputs → decisions → actions → tools/MCPs
 used → artifacts → outcome. Include at least one `subgraph` when the job
 touches multiple systems. Validate syntax mentally before writing.
 
+**Quote every label.** `A1["Label text"]`, not `A1[Label text]`. Unquoted
+labels with `@`, `#`, `(`, `)`, `:`, em-dash, or other punctuation cause
+silent Mermaid parse failures that mmdc reports but still exits 0 on.
+
+**Verification gate (REQUIRED).** Before displaying the diagram in chat,
+writing it to disk, committing it, or mirroring to Notion:
+
+```bash
+setup/claude-doc/scripts/verify-diagram.sh /tmp/candidate.mmd /tmp/candidate.svg
+```
+
+- Exit 0 → safe to display and archive.
+- Exit 1 → fix the source and re-run. Never display an unverified diagram.
+- Exit 2 → mmdc not installed. Describe the diagram in prose instead;
+  do NOT display an unverified Mermaid block.
+
 If Mermaid is genuinely insufficient, call `generate-design-structured`
-(Canva MCP) and capture the thumbnail URL via `get-design-thumbnail`.
+(Canva MCP) and capture the thumbnail URL via `get-design-thumbnail`. Canva
+output does not require verify-diagram.sh but must still render successfully
+before display.
 
 ### 2. Write to Obsidian vault
 

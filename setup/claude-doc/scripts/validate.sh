@@ -69,6 +69,7 @@ required=(
   "$PKG/rules/show-everything.md"
   "$PKG/settings.snippet.json"
   "$PKG/skills/diagram-on-completion.md"
+  "$PKG/scripts/verify-diagram.sh"
   "$PKG/hooks/doc-reminder.sh"
   "$PKG/hooks/doc-verify.sh"
   "$PKG/README.md"
@@ -82,7 +83,7 @@ done
 
 # --- 5. Executable bits -------------------------------------------------------
 say "executable bits"
-for f in "$PKG/install.sh" "$PKG/hooks/doc-reminder.sh" "$PKG/hooks/doc-verify.sh"; do
+for f in "$PKG/install.sh" "$PKG/hooks/doc-reminder.sh" "$PKG/hooks/doc-verify.sh" "$PKG/scripts/verify-diagram.sh" "$PKG/scripts/validate.sh"; do
   if [ ! -x "$f" ]; then
     bad "not executable: ${f#"$REPO_ROOT/"} (run: chmod +x '$f')"
   fi
