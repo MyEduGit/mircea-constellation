@@ -214,11 +214,15 @@ session:
 # ─────────────────────────────────────────────────────────────────────
 cohort:
   count: 0
-  islpr_range: ""
-  pre_literacy_count: 0
+  # ACSF is the AMEP-mandated proficiency framework since 1 July 2017.
+  # Express as "R: L1.03 / W: Pre L1B / L: L1.08 / OC: L1.10" etc.
+  acsf_range: ""
+  pre_level_1_count: 0        # learners at ACSF Pre Level 1A or 1B
+  islpr_range: ""             # optional secondary benchmark (EAL Framework)
+  pre_literacy_count: 0       # kept for backward compatibility
   ilp_themes: ""
   settlement_content: ""
-  pathway: "Social English"               # or Pre-Employment English / Further Study
+  pathway: "Social English"   # or Pre-Employment English / Further Study
   feedback_method: "exit ticket + end-of-term survey"
 
 # ─────────────────────────────────────────────────────────────────────

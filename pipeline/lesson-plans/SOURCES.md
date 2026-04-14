@@ -55,17 +55,45 @@ its `source_urls` block so auditors can reproduce the lineage.
 > contractual instrument and should be sourced from the CommunityPlus AMEP
 > contract file.
 
-### DEWR — Australian Core Skills Framework (ACSF)
+### DEWR — Australian Core Skills Framework (ACSF) — the AMEP proficiency framework
+
+Under the current AMEP contracts (since 1 July 2017, continuing under Home
+Affairs from 2019), the **ACSF** is the mandated framework for both Initial
+Assessment and progress reporting. It replaced the legacy **ISLPR** (used
+pre-July 2017) and the legacy **CSWE** curriculum.
+
+Progress is reported against **8 ACSF indicators** — two each for
+**Reading, Writing, Learning, and Oral Communication** (Numeracy is *not*
+used for AMEP progress reporting, because AMEP is an English programme).
+Learners can progress **Pre Level 1A → Pre Level 1B → Level 1 → Level 2 →
+Level 3**, mapped to the Victorian EAL Framework certificates:
+
+| AMEP level (ACSF) | Maps to Victorian EAL course |
+|---|---|
+| Pre Level 1A / 1B      | 22484VIC Certificate I in EAL (Access) — entry point |
+| Exit Pre Level 1B → Level 1 | 22485VIC Certificate II in EAL (Access)       |
+| Exit Level 1 → Level 2 | 22486VIC Certificate III in EAL (Access)            |
+| Exit Level 2 → Level 3 | 22487/22491VIC Certificate IV in EAL (Access/Employment) |
+
+ISLPR remains permitted as a *secondary* benchmark under the EAL Framework
+for triangulation but is not the AMEP progress-reporting instrument.
 
 | Document | URL |
 |---|---|
 | ACSF landing | https://www.dewr.gov.au/skills-information-training-providers/australian-core-skills-framework |
 | Foundation Skills / ACSF overview | https://www.dewr.gov.au/foundation-skills/australian-core-skills-framework-acsf |
 | Key features of the ACSF | https://www.dewr.gov.au/foundation-skills/australian-core-skills-framework-acsf/key-features-acsf |
-| ACSF PDF download | https://www.dewr.gov.au/download/6976/australian-core-skills-framework/10893/document/pdf |
+| ACSF PDF download (main framework) | https://www.dewr.gov.au/download/6976/australian-core-skills-framework/10893/document/pdf |
+| ACSF Pre Level 1 Supplement (1A + 1B) | https://www.dewr.gov.au/skills-information-training-providers/australian-core-skills-framework/download-acsf |
 | ACSF Key Changes (2012) | https://www.dewr.gov.au/download/6977/australian-core-skills-framework-key-changes/10894/document/pdf |
-| Download page (Word + ePub + Pre Level 1) | https://www.dewr.gov.au/skills-information-training-providers/australian-core-skills-framework/download-acsf |
-| VOCEDplus record | https://www.voced.edu.au/content/ngv:52101 |
+| ACER — Review of the ACSF and Digital Literacy Skills Framework (2022) | https://research.acer.edu.au/cgi/viewcontent.cgi?article=1042&context=transitions_misc |
+| DEWR — SEE/AMEP alignment report (ACIL Allen) | https://www.dewr.gov.au/download/7097/see-amep-alignment-report/11102/document/pdf |
+| TESOL Victoria — intro to the new Victorian EAL Framework (ACSF mapping) | https://victesol.vic.edu.au/wp-content/uploads/Angela-Presentation-1.pdf |
+| ACTA — submission on ACSF appropriateness for AMEP | https://tesol.org.au/wp-content/uploads/2019/01/620_ACTA_submission_to_the_AMEP_Evaluation_-_supplementary_submission_1_May_2019.pdf |
+| ACTA — feedback on ACER review of ACSF/DLSF | https://tesol.org.au/wp-content/uploads/2023/12/ACTA-Feedback-on-the-ACER-Review-of-the-ACSF-and-DLSF-and-relevant-assessment-tools.pdf |
+| Legacy — ISLPR (International Second Language Proficiency Ratings) | pre-2017 AMEP tool; Queensland University of Technology is the ISLPR custodian |
+| Legacy — CSWE (Certificates in Spoken and Written English) | pre-2017 AMEP curriculum; superseded by the Victorian EAL Framework |
+| VOCEDplus record — ACSF (revised version) | https://www.voced.edu.au/content/ngv:52101 |
 
 ## 2. Parent-course documents — VRQA accredited EAL/CGEA suite
 

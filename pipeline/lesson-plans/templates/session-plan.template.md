@@ -50,16 +50,23 @@
 {% for rsk in session.required_skills_knowledge %}- [{{ rsk.id }}] {{ rsk.text }}
 {% endfor %}
 
-### Foundation Skills (ACSF / Core Skills for Work)
+### Foundation Skills — ACSF (AMEP-mandated framework since 1 July 2017)
 
-{% for fs in session.foundation_skills %}- {{ fs.domain }} — Level {{ fs.level }}: {{ fs.indicator }}
+AMEP progress is reported against 8 ACSF indicators (two each for Reading,
+Writing, Learning, Oral Communication). Numeracy is tracked for the
+Victorian EAL Framework unit but is not used for AMEP progress reporting.
+Pre Level 1A / 1B from the ACSF Pre Level 1 Supplement applies where the
+learner is below ACSF Level 1.
+
+{% for fs in session.foundation_skills %}- {{ fs.domain }} — ACSF Level {{ fs.level }}{% if fs.pre_level %} ({{ fs.pre_level }}){% endif %}: {{ fs.indicator }}
 {% endfor %}
 
 ## 3. Cohort & Individual Learning Plan linkage (AMEP)
 
 - Learner count: {{ cohort.count }}
-- ISLPR / ACSF profile range: {{ cohort.islpr_range }}
-- Pre-literacy learners in cohort: {{ cohort.pre_literacy_count }}
+- **ACSF profile range** (R / W / L / OC): {{ cohort.acsf_range }}
+- Pre Level 1 learners in cohort (1A / 1B): {{ cohort.pre_level_1_count }}
+- ISLPR secondary benchmark (optional triangulation): {{ cohort.islpr_range }}
 - ILP themes this session addresses: {{ cohort.ilp_themes }}
 - Settlement content integrated: {{ cohort.settlement_content }}
 - Pathway alignment: {{ cohort.pathway }}  <!-- Social English / Pre-Employment English / Further Study -->
