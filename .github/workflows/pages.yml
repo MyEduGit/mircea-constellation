@@ -1,5 +1,9 @@
 name: Deploy to GitHub Pages
 
+# Deploys ONLY the dashboard (index.html + status.json) to Pages.
+# Explicitly excludes setup/, scripts, config, env files, and the /jobs/
+# archive created by the DOC rule — none of those belong on the public site.
+
 on:
   push:
     branches: [main]
@@ -19,12 +23,25 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+
+      - name: Stage site (index.html + status.json only)
+        run: |
+          mkdir -p _site
+          cp index.html   _site/
+          cp status.json  _site/
+          # Prevent Jekyll processing (safe default for hand-written HTML)
+          touch _site/.nojekyll
+          echo "Staged files:"
+          ls -la _site/
+
       - uses: actions/configure-pages@v5
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
+
       - id: deployment
         uses: actions/deploy-pages@v4
