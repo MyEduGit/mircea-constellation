@@ -33,5 +33,8 @@ jobs:
 
       - name: Verify skill frontmatter present
         run: |
-          head -1 setup/claude-doc/skills/diagram-on-completion.md | grep -qx '---' \
-            || { echo "skill file missing YAML frontmatter"; exit 1; }
+          first_line=$(head -n 1 setup/claude-doc/skills/diagram-on-completion.md)
+          if [ "$first_line" != "---" ]; then
+            echo "skill file missing YAML frontmatter (first line was: '$first_line')"
+            exit 1
+          fi
