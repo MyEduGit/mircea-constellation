@@ -279,6 +279,7 @@ const nodes = [
   { id: 'amep',     icon: '🎓', label: 'AMEP Hub',         sub: '21 Students',          type: 'service',    x: 0.34, y: 0.72, tier: 'service' },
   { id: 'obsidian', icon: '💎', label: 'Obsidian',         sub: 'Knowledge Vault',      type: 'service',    x: 0.55, y: 0.76, tier: 'service' },
   { id: 'phd',      icon: '📜', label: 'PhD Research',     sub: 'Triune Monism',        type: 'service',    x: 0.88, y: 0.68, tier: 'service' },
+  { id: 'bookwriter', icon: '📚', label: 'BookWriter',     sub: 'Automated Authoring',  type: 'service',    x: 0.68, y: 0.82, tier: 'service' },
 
   // ── FOUNDATION: GOVERNANCE ──────────────────────────────────────
   { id: 'urantios_os', icon: '☀️', label: 'UrantiOS v1.0', sub: 'Truth · Beauty · Goodness', type: 'governance', x: 0.50, y: 0.92, tier: 'governance' },
@@ -322,6 +323,13 @@ const connections = [
   ['urantios', 'gabriel',      'active'],
   ['urantios', 'cognee',       'ai-link'],
   ['urantios', 'phd',          'active'],
+  ['urantios', 'bookwriter',   'active'],
+
+  // BookWriter — reads corpus, writes into Obsidian + PhD vault
+  ['bookwriter', 'claude',     'ai-link'],
+  ['bookwriter', 'obsidian',   'active'],
+  ['bookwriter', 'phd',        'active'],
+  ['bookwriter', 'lobster',    'bot-link'],
 
   // NanoClaw
   ['nanoclaw', 'ncbot',        'active'],
@@ -381,6 +389,7 @@ const nodeDetails = {
   amep:     { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
   obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Content': 'Ontology, comparisons, Foreword analysis', 'Tier': 'SERVICES' },
   phd:      { 'Title': 'PhD — Triune Monism', 'Thesis': 'Three irreducible domains: matter, mind, spirit', 'AI Partners': 'Claude (deep analysis) + ChatGPT (summaries)', 'Repo': 'myedugit/phd-triune-monism', 'Papers': '196 Urantia Book papers as source', 'Tier': 'SERVICES' },
+  bookwriter: { 'App': 'URANTiOS BookWriter v1.0', 'Purpose': 'Writes full books grounded in The Urantia Book', 'Corpus': '197 papers · 14,596 paragraphs', 'Pipeline': 'evidence → outline → draft → Lucifer Test → revise', 'Output': 'Obsidian-ready Markdown (MOC, wikilinks, frontmatter)', 'Vaults': 'Obsidian + PhD-Triune-Monism/07_Generated_Books', 'Model': 'claude-opus-4-6 (+ sonnet for drafts)', 'Repo': 'myedugit/URANTiOS (bookwriter/)', 'Tier': 'SERVICES' },
 
   urantios_os: { 'Version': '1.0', 'Type': 'Governing AI Operating System', 'Source': 'The Urantia Book (Foreword + Papers 1-196)', 'Values': 'Truth, Beauty, Goodness', 'Scope': 'ALL AI, bots, agents, processes', 'Lucifer Test': 'Transparent? Honest? Within mandate? Serves mission?', 'Spawn Mandate': 'Every process must load UrantiOS', 'Repo': 'myedugit/URANTiOS', 'Tier': 'GOVERNANCE' },
 };
@@ -421,7 +430,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = n.id === 'lobster' ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = (n.id === 'lobster' || n.id === 'bookwriter') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;

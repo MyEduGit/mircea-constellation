@@ -25,6 +25,7 @@
   "amep":         { "status": "ok" },
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
+  "bookwriter":   { "status": "new",  "version": "1.0.0", "corpus": "197 papers", "vaults": ["obsidian", "phd-triune-monism", "archive"] },
 
-  "updated": "2026-04-13T13:18:00.000Z"
+  "updated": "2026-04-14T12:30:00.000Z"
 }
