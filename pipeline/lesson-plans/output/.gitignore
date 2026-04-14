@@ -1,0 +1,3 @@
+# generated session plans — regenerable from units/*.yaml, do not commit
+*.md
+!.gitignore

@@ -1,0 +1,118 @@
+# VU22098 — unit YAML stub
+#
+# Seeded parent-course mapping: 22484VIC (Course in Initial EAL — verify title
+# against VRQA accredited course register).
+#
+# Populate every TBD_FROM_* field from:
+#   - VRQA accredited course document for 22484VIC
+#   - CommunityPlus Mapping for VU22098
+#   - CommunityPlus Assessor Guide for VU22098
+# Then run: python3 ../generate.py VU22098 --session <n> --date <YYYY-MM-DD>
+
+unit:
+  code: "VU22098"
+  title: "TBD_FROM_VRQA_COURSE_DOC"
+  nominal_hours_total: 0
+  prerequisites: "TBD_FROM_VRQA_COURSE_DOC"
+  assessment_conditions: "TBD_FROM_VRQA_COURSE_DOC"
+  last_validation_date: "YYYY-MM-DD"
+
+  parent_courses:
+    - code: "22484VIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"   # expected: Course in Initial EAL
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+
+  elements:
+    - id: "1"
+      title: "TBD_FROM_VRQA_COURSE_DOC"
+      performance_criteria:
+        - id: "1.1"
+          text: "TBD_FROM_VRQA_COURSE_DOC"
+
+  required_skills_knowledge:
+    - id: "RSK-01"
+      text: "TBD_FROM_VRQA_COURSE_DOC"
+
+  foundation_skills:
+    - domain: "Reading"
+      level: 1
+      indicator: "TBD_FROM_VRQA_COURSE_DOC"
+
+  mapping:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    rows:
+      - id: "MAP-01"
+        assessment_task: "AT-01"
+        performance_criteria: ["1.1"]
+        required_skills_knowledge: ["RSK-01"]
+        foundation_skills: ["Reading L1"]
+        evidence_type: "TBD_FROM_MAPPING"
+        description: "TBD_FROM_MAPPING"
+
+  assessor_guide:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    tasks:
+      - id: "AT-01"
+        title: "TBD_FROM_ASSESSOR_GUIDE"
+        mode: "TBD_FROM_ASSESSOR_GUIDE"
+        benchmark_summary: "TBD_FROM_ASSESSOR_GUIDE"
+        reasonable_adjustment: "TBD_FROM_ASSESSOR_GUIDE"
+        reassessment_rule: "TBD_FROM_ASSESSOR_GUIDE"
+
+rto:
+  code: "TBD"
+delivery:
+  campus: "TBD"
+  class_code: "CPxxxExx"
+  funding_stream: "AMEP"
+  tas_version: "0.0"
+trainer:
+  name: ""
+  credential: "TAE40122"
+  vocational_competency: ""
+  industry_currency: ""
+coordinator:
+  name: ""
+
+session:
+  number: 1
+  total: 0
+  date: "YYYY-MM-DD"
+  duration_hours: 3
+  nominal_hours_used_prior: 0
+  elements_addressed: []
+  required_skills_knowledge: []
+  foundation_skills: []
+  learning_outcomes: []
+  activities: []
+  differentiation:
+    below: ""
+    at: ""
+    above: ""
+    pre_literacy: ""
+    reasonable_adjustment: ""
+    cultural: ""
+  resources: []
+  room_setup: "U-shape; whiteboard + projector"
+  digital_platforms: "Moodle; MS Teams"
+  formative_checks: []
+  whs: ""
+  trauma_informed: ""
+  referrals: "Settlement services; AMEP counsellor; CommunityPlus wellbeing"
+  homework: ""
+  homework_hours: 1
+  next_session_link: ""
+
+cohort:
+  count: 0
+  islpr_range: ""
+  pre_literacy_count: 0
+  ilp_themes: ""
+  settlement_content: ""
+  pathway: "Social English"
+  feedback_method: "exit ticket + end-of-term survey"
+
+template:
+  version: "1.0"

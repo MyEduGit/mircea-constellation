@@ -1,0 +1,68 @@
+# Unit catalogue — CommunityPlus AMEP
+#
+# Mapping of VU unit codes to the parent Victorian accredited courses they
+# appear in (source: Mircea Matthews' CommunityPlus catalogue extract).
+# Each unit has a corresponding per-unit YAML in this directory which, once
+# filled from the VRQA course doc + CommunityPlus Mapping + Assessor Guide,
+# is the input for generate.py.
+#
+# Parent-course titles are marked "verify" — confirm exact titles against the
+# VRQA accredited course register before publishing any generated plan.
+
+units:
+
+  - code: VU22098
+    parent_courses: [22484VIC]
+    stream: Initial EAL
+    status: stub
+
+  - code: VU22358
+    parent_courses: [22485VIC, 22476VIC, 22639VIC]
+    stream: Certificate I in EAL (family)
+    status: stub
+
+  - code: VU22369
+    parent_courses: [22485VIC, 22484VIC, 22476VIC, 22639VIC]
+    stream: Certificate I / Initial EAL (family)
+    status: stub
+
+  - code: VU22384
+    parent_courses: [22486VIC, 22489VIC, 22491VIC, 22640VIC, 22643VIC]
+    stream: Certificate II–IV in EAL (family)
+    status: stub
+
+  - code: VU22398
+    parent_courses: [22251VIC, 22486VIC, 22643VIC]
+    stream: Certificate II / IV in EAL (family)
+    status: stub
+
+  - code: VU22590
+    parent_courses: [22484VIC]
+    stream: Initial EAL
+    status: stub
+
+  - code: VU22591
+    parent_courses: [22484VIC]
+    stream: Initial EAL
+    status: stub
+
+  - code: VU22592
+    parent_courses: [22484VIC]
+    stream: Initial EAL
+    status: stub
+
+  - code: VU22593
+    parent_courses: [22484VIC]
+    stream: Initial EAL
+    status: stub
+
+  - code: VU22594
+    parent_courses: [22484VIC]
+    stream: Initial EAL
+    status: stub
+
+# status values:
+#   stub      — YAML exists with TBD_FROM_* placeholders; cannot generate
+#               non-draft plan yet
+#   ready     — all TBDs resolved; passes generate.py --check
+#   in-review — coordinator reviewing before delivery use

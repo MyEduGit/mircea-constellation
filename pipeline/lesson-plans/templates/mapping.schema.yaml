@@ -1,0 +1,228 @@
+# Per-unit mapping schema — CommunityPlus AMEP session-plan pipeline
+#
+# Copy this file to pipeline/lesson-plans/units/<UNIT_CODE>.yaml and fill every
+# field marked TBD_FROM_* from the authoritative source:
+#   - TBD_FROM_VRQA_COURSE_DOC  → the VRQA accredited course document
+#   - TBD_FROM_MAPPING          → the CommunityPlus internal mapping document
+#   - TBD_FROM_ASSESSOR_GUIDE   → the CommunityPlus assessor guide
+#
+# Fields with TBD_FROM_* placeholders will cause generate.py to refuse to
+# produce a non-draft session plan.
+
+# ─────────────────────────────────────────────────────────────────────
+# 1. Unit identity (source: VRQA accredited course document)
+# ─────────────────────────────────────────────────────────────────────
+unit:
+  code:  "VUxxxxx"
+  title: "TBD_FROM_VRQA_COURSE_DOC"
+  nominal_hours_total: 0       # e.g. 40
+  prerequisites: "TBD_FROM_VRQA_COURSE_DOC"
+  assessment_conditions: |
+    TBD_FROM_VRQA_COURSE_DOC
+    (paste verbatim — must be reproducible in audit)
+  last_validation_date: "YYYY-MM-DD"
+
+  # Parent qualifications the unit sits in (from Mircea's catalogue + VRQA)
+  parent_courses:
+    - code: "22xxxVIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"  # dd/mm/yyyy–dd/mm/yyyy
+
+  # Elements of Competency (from course doc) — verbatim
+  elements:
+    - id: "1"
+      title: "TBD_FROM_VRQA_COURSE_DOC"
+      performance_criteria:
+        - id: "1.1"
+          text: "TBD_FROM_VRQA_COURSE_DOC"
+        - id: "1.2"
+          text: "TBD_FROM_VRQA_COURSE_DOC"
+    # add more elements as the course doc defines
+
+  # Required Skills and Knowledge (from course doc) — verbatim, with an id
+  # that the mapping + session activities can reference
+  required_skills_knowledge:
+    - id: "RSK-01"
+      text: "TBD_FROM_VRQA_COURSE_DOC"
+
+  # Foundation Skills (ACSF / CSfW) from course doc
+  foundation_skills:
+    - domain: "Reading"      # or Writing / Oral Communication / Learning / Numeracy
+      level: 1
+      indicator: "TBD_FROM_VRQA_COURSE_DOC"
+
+  # ──────────────────────────────────────────────────────────────────
+  # 2. Mapping (source: CommunityPlus internal Mapping document)
+  # ──────────────────────────────────────────────────────────────────
+  mapping:
+    version: "0.0"
+    issued:  "YYYY-MM-DD"
+    # Each row = one mapping line: an assessable moment tied to PCs/RSKs
+    # and to an Assessor Guide task.
+    rows:
+      - id: "MAP-01"
+        assessment_task: "AT-01"              # id in assessor_guide.tasks
+        performance_criteria: ["1.1"]
+        required_skills_knowledge: ["RSK-01"]
+        foundation_skills: ["Reading L1"]
+        evidence_type: "TBD_FROM_MAPPING"     # observation / portfolio / task
+        description: "TBD_FROM_MAPPING"
+
+  # ──────────────────────────────────────────────────────────────────
+  # 3. Assessor Guide (source: CommunityPlus Assessor Guide)
+  # ──────────────────────────────────────────────────────────────────
+  assessor_guide:
+    version: "0.0"
+    issued:  "YYYY-MM-DD"
+    tasks:
+      - id: "AT-01"
+        title: "TBD_FROM_ASSESSOR_GUIDE"
+        mode:  "TBD_FROM_ASSESSOR_GUIDE"   # observation / written / oral / portfolio
+        benchmark_summary: "TBD_FROM_ASSESSOR_GUIDE"
+        reasonable_adjustment: "TBD_FROM_ASSESSOR_GUIDE"
+        reassessment_rule: "TBD_FROM_ASSESSOR_GUIDE"
+
+# ─────────────────────────────────────────────────────────────────────
+# 4. RTO + delivery (filled per cohort)
+# ─────────────────────────────────────────────────────────────────────
+rto:
+  code: "TBD"                            # CommunityPlus RTO code on training.gov / VRQA
+
+delivery:
+  campus: "TBD"
+  class_code: "CPxxxExx"
+  funding_stream: "AMEP"                 # or Skills First / FFS
+  tas_version: "0.0"
+
+trainer:
+  name: ""
+  credential: "TAE40122"
+  vocational_competency: ""
+  industry_currency: ""
+
+coordinator:
+  name: ""
+
+# ─────────────────────────────────────────────────────────────────────
+# 5. Session (filled per session — supplied on generate.py invocation)
+# ─────────────────────────────────────────────────────────────────────
+session:
+  number: 1
+  total:  0
+  date:   "YYYY-MM-DD"
+  duration_hours: 3
+  nominal_hours_used_prior: 0
+
+  # Which Elements / PCs this session addresses (subset of unit.elements)
+  elements_addressed:
+    - element_id: "1"
+      element_title: "TBD_FROM_VRQA_COURSE_DOC"
+      performance_criteria:
+        - id: "1.1"
+          text: "TBD_FROM_VRQA_COURSE_DOC"
+
+  required_skills_knowledge:
+    - id: "RSK-01"
+      text: "TBD_FROM_VRQA_COURSE_DOC"
+
+  foundation_skills:
+    - domain: "Reading"
+      level: 1
+      indicator: "TBD_FROM_VRQA_COURSE_DOC"
+
+  learning_outcomes:
+    - text: "By the end of this session, learners will …"
+      pc_refs: ["1.1"]
+
+  activities:
+    - stage: "Warm-up"
+      minutes: 10
+      description: ""
+      differentiation: ""
+      maps_to: []                         # list of mapping row ids, e.g. ["MAP-01"]
+    - stage: "Introduction"
+      minutes: 10
+      description: ""
+      differentiation: ""
+      maps_to: []
+    - stage: "Input"
+      minutes: 20
+      description: ""
+      differentiation: ""
+      maps_to: []
+    - stage: "Controlled practice"
+      minutes: 30
+      description: ""
+      differentiation: ""
+      maps_to: []
+    - stage: "Guided practice"
+      minutes: 30
+      description: ""
+      differentiation: ""
+      maps_to: []
+    - stage: "Independent practice"
+      minutes: 30
+      description: ""
+      differentiation: ""
+      maps_to: []
+    - stage: "Review"
+      minutes: 15
+      description: ""
+      differentiation: ""
+      maps_to: []
+    - stage: "Closure"
+      minutes: 5
+      description: ""
+      differentiation: ""
+      maps_to: []
+
+  differentiation:
+    below: ""
+    at: ""
+    above: ""
+    pre_literacy: ""
+    reasonable_adjustment: ""
+    cultural: ""
+
+  resources:
+    - title: ""
+      role: "learner handout"
+      source: ""
+      licence: ""
+
+  room_setup: "U-shape; whiteboard + projector"
+  digital_platforms: "Moodle; MS Teams"
+
+  formative_checks:
+    - id: "F-01"
+      description: ""
+      mapping_row: "MAP-01"
+      assessor_guide_task: "AT-01"
+      evidence_artefact: ""
+      evidence_location: "LMS + learner portfolio"
+
+  whs: ""
+  trauma_informed: ""
+  referrals: "Settlement services; AMEP counsellor; CommunityPlus wellbeing"
+
+  homework: ""
+  homework_hours: 1
+  next_session_link: ""
+
+# ─────────────────────────────────────────────────────────────────────
+# 6. Cohort (filled per cohort — AMEP-specific)
+# ─────────────────────────────────────────────────────────────────────
+cohort:
+  count: 0
+  islpr_range: ""
+  pre_literacy_count: 0
+  ilp_themes: ""
+  settlement_content: ""
+  pathway: "Social English"               # or Pre-Employment English / Further Study
+  feedback_method: "exit ticket + end-of-term survey"
+
+# ─────────────────────────────────────────────────────────────────────
+# 7. Template version expected (generator enforces ≤ TEMPLATE_VERSION)
+# ─────────────────────────────────────────────────────────────────────
+template:
+  version: "1.0"

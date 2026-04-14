@@ -1,0 +1,12 @@
+# VU22591 — unit YAML stub (compact; deep-merges onto templates/mapping.schema.yaml)
+#
+# Seeded parent-course mapping: 22484VIC (Course in Initial EAL — verify).
+
+unit:
+  code: "VU22591"
+  title: "TBD_FROM_VRQA_COURSE_DOC"
+  nominal_hours_total: 0
+  parent_courses:
+    - code: "22484VIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"

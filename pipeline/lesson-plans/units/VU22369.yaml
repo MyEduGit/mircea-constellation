@@ -1,0 +1,23 @@
+# VU22369 — unit YAML stub (compact; deep-merges onto templates/mapping.schema.yaml)
+#
+# Seeded parent-course mapping: 22485VIC, 22484VIC, 22476VIC, 22639VIC
+# (Certificate I in EAL + Initial EAL family — verify exact titles + periods
+# against VRQA accredited course register.)
+
+unit:
+  code: "VU22369"
+  title: "TBD_FROM_VRQA_COURSE_DOC"
+  nominal_hours_total: 0
+  parent_courses:
+    - code: "22485VIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+    - code: "22484VIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+    - code: "22476VIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+    - code: "22639VIC"
+      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
