@@ -16,7 +16,8 @@ set -euo pipefail
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="${HOME}/.claude"
 VAULT="${HOME}/Documents/Obsidian/Jobs"
-MARKER="# [[DOC-RULE v1]]"
+MARKER_DOC="# [[DOC-RULE v1]]"
+MARKER_SE="# [[SE-RULE v1]]"
 
 say() { printf "\033[1;36m[doc-install]\033[0m %s\n" "$*"; }
 ok()  { printf "\033[1;32m  ✓\033[0m %s\n" "$*"; }
@@ -47,20 +48,36 @@ else
   ok "README.md already present"
 fi
 
-# ── 2. CLAUDE.md rule (append once, idempotent via marker) ──────────────────
-say "Installing DOC rule into $CLAUDE_DIR/CLAUDE.md"
+# ── 2. CLAUDE.md rules (append once each, idempotent via markers) ──────────
+say "Installing rules into $CLAUDE_DIR/CLAUDE.md"
 touch "$CLAUDE_DIR/CLAUDE.md"
-if grep -qF "$MARKER" "$CLAUDE_DIR/CLAUDE.md"; then
-  ok "Rule already present (marker found)"
+
+# 2a. DOC rule
+if grep -qF "$MARKER_DOC" "$CLAUDE_DIR/CLAUDE.md"; then
+  ok "DOC rule already present"
 else
   {
     echo ""
-    echo "$MARKER"
+    echo "$MARKER_DOC"
     cat "$SRC_DIR/rule.md"
     echo ""
     echo "<!-- end DOC-RULE v1 -->"
   } >> "$CLAUDE_DIR/CLAUDE.md"
-  ok "Appended rule (marker: $MARKER)"
+  ok "Appended DOC rule (marker: $MARKER_DOC)"
+fi
+
+# 2b. Show Everything rule
+if grep -qF "$MARKER_SE" "$CLAUDE_DIR/CLAUDE.md"; then
+  ok "SE rule already present"
+else
+  {
+    echo ""
+    echo "$MARKER_SE"
+    cat "$SRC_DIR/rules/show-everything.md"
+    echo ""
+    echo "<!-- end SE-RULE v1 -->"
+  } >> "$CLAUDE_DIR/CLAUDE.md"
+  ok "Appended SE rule (marker: $MARKER_SE)"
 fi
 
 # ── 3. Skill ────────────────────────────────────────────────────────────────

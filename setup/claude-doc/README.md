@@ -18,7 +18,7 @@ Idempotent — safe to re-run.
 | Destination | Purpose |
 |---|---|
 | `~/Documents/Obsidian/Jobs/` | Standalone Obsidian vault (local source of truth) |
-| `~/.claude/CLAUDE.md` | Appends the DOC rule (marker-guarded, appended once) |
+| `~/.claude/CLAUDE.md` | Appends the **DOC rule** and **Show Everything rule** (marker-guarded, appended once each) |
 | `~/.claude/skills/diagram-on-completion.md` | The `/doc` skill |
 | `~/.claude/hooks/doc-reminder.sh` | Stop hook — nudges Claude if a job wasn't archived |
 | `~/.claude/hooks/doc-verify.sh` | SessionStart hook — verifies vault + git + mmdc |
@@ -62,7 +62,9 @@ The `/doc` skill POSTs job metadata JSON to that URL after every archive.
 setup/claude-doc/
 ├── README.md                            (this file)
 ├── install.sh                           (one-shot installer)
-├── rule.md                              (the CLAUDE.md block)
+├── rule.md                              (DOC rule → CLAUDE.md)
+├── rules/
+│   └── show-everything.md               (SE rule → CLAUDE.md)
 ├── settings.snippet.json                (for manual merge if jq absent)
 ├── skills/
 │   └── diagram-on-completion.md         (the /doc skill)
@@ -74,8 +76,9 @@ setup/claude-doc/
 ## Uninstall
 
 ```bash
-# Remove the appended block between marker tags
+# Remove the appended blocks between marker tags
 sed -i.bak '/# \[\[DOC-RULE v1\]\]/,/<!-- end DOC-RULE v1 -->/d' ~/.claude/CLAUDE.md
+sed -i.bak '/# \[\[SE-RULE v1\]\]/,/<!-- end SE-RULE v1 -->/d' ~/.claude/CLAUDE.md
 rm -f ~/.claude/skills/diagram-on-completion.md
 rm -f ~/.claude/hooks/doc-reminder.sh ~/.claude/hooks/doc-verify.sh
 # Then edit ~/.claude/settings.json to remove the two hook entries
