@@ -33,7 +33,8 @@ its `source_urls` block so auditors can reproduce the lineage.
 | Course accreditation overview | https://www2.vrqa.vic.gov.au/course-accreditation |
 | Manage an accredited course | https://www2.vrqa.vic.gov.au/manage-accredited-course |
 | Course accreditation (historical index) | https://www.vrqa.vic.gov.au/VET/Pages/course-accreditation-vet.aspx |
-| Victorian EAL Framework — 22482VIC / 22483VIC etc. (Dept of Education) | https://www.education.vic.gov.au/Documents/training/providers/rto/VIC-EAL-Framework.pdf |
+| Victorian EAL Framework — 22482VIC / 22483VIC etc. (Dept of Education, 2019 cohort) | https://www.education.vic.gov.au/Documents/training/providers/rto/VIC-EAL-Framework.pdf |
+| Victorian EAL Framework — 22636VIC–22646VIC (2023 reaccreditation, vic.gov.au) | https://www.vic.gov.au/sites/default/files/2023-10/22636VIC-22646VIC_EAL-Framework.pdf |
 
 ### Department of Home Affairs — AMEP
 
@@ -107,7 +108,7 @@ to the current VRQA accredited course document (PDF) via the
 | 22485VIC | Certificate II in EAL (Access) | supersedes 22251VIC; superseded by 22639VIC | https://training.gov.au/Training/Details/22485VIC |
 | 22486VIC | Certificate III in EAL (Access) | superseded by 22640VIC | https://training.gov.au/Training/Details/22486VIC |
 | 22489VIC | Certificate III in EAL (Employment) | superseded by 22643VIC | https://training.gov.au/Training/Details/22489VIC |
-| 22491VIC | Certificate IV in EAL (Employment) — verify | — | https://training.gov.au/Training/Details/22491VIC |
+| 22491VIC | Certificate III in EAL (Further Study) | — | https://training.gov.au/Training/Details/22491VIC |
 | 22251VIC | Certificate II in EAL (Access) | **non-current** — accreditation 01/Jan/2014 to 31/Dec/2018; superseded by 22485VIC | https://training.gov.au/Training/Details/22251VIC |
 | 22476VIC | Certificate I in General Education for Adults (Introductory) — verify | — | https://training.gov.au/Training/Details/22476VIC |
 | 22639VIC | Certificate II in EAL (Access) | current (reaccredited 2022/23) | https://training.gov.au/Training/Details/22639VIC |
@@ -147,7 +148,50 @@ Assessment Conditions, and a downloadable PDF of the unit.
 Also useful (secondary, public): MySkills consumer portal — e.g.
 https://www.myskills.gov.au/courses/unit?Code=VU22384.
 
-## 4. How the pipeline consumes these sources
+## 4. Internal (non-public) data sources — CommunityPlus
+
+These are authenticated / RTO-internal sources. They are **not** committed to
+this repo. Any field derived from them must be pasted into the YAML inputs
+**anonymised** (no learner PII) before generation.
+
+### CommunityPlus SharePoint (TAS / Mapping / Assessor Guide)
+
+- Training and Assessment Strategy (TAS) document per parent course — provides
+  the `delivery.tas_version` value and the authoritative sequence of units.
+- Per-unit **Mapping** document — pasted into `unit.mapping.rows` in the unit
+  YAML.
+- Per-unit **Assessor Guide** — pasted into `unit.assessor_guide.tasks`.
+
+### aXcelerate (CommunityPlus Student Management System)
+
+aXcelerate is the operative SMS for CommunityPlus. It is the authoritative
+source for:
+
+- enrolments (per class / per learner)
+- attendance and progression
+- class-code registry (convention: `CP123E<n>` — AMEP Evening class index
+  `n` — observed values `CP123E1` Cert I, `CP123E2` Cert II, `CP123E3` Cert
+  III class A, `CP123E4` Cert III class B)
+- semester/term structure (S<semester>T<term>, e.g. S1T1 → S2T4)
+
+Authenticated endpoints (RTO coordinator access only — **do not paste
+response bodies into this repo**):
+
+| Endpoint | Role |
+|---|---|
+| `https://comm-unityplus.app.axcelerate.com/management/` | dashboard root |
+| `https://comm-unityplus.app.axcelerate.com/management/management2/ContactsSearch.cfm` | contacts search |
+| `https://comm-unityplus.app.axcelerate.com/management/management2/ContactsResults.cfm?class=CP123E3` | Cert III class A enrolments |
+| `https://comm-unityplus.app.axcelerate.com/management/management2/ContactsResults.cfm?class=CP123E4` | Cert III class B enrolments |
+
+The pipeline consumes aXcelerate output via a coordinator-produced
+**anonymised cohort YAML** (see `templates/cohort.schema.yaml`) — learner
+count, ACSF profile range, ILP themes, settlement content — never names, DOBs,
+phones, or CHESSN/USI. This aligns with the AMEP Deed data-handling clauses
+and the *Privacy Act 1988* (Cth) + *Privacy and Data Protection Act 2014*
+(Vic) obligations.
+
+## 5. How the pipeline consumes these sources
 
 1. For each `VU22xxx.yaml` in `units/`, paste verbatim from the tga unit PDF
    into the `unit.elements`, `unit.required_skills_knowledge`,
@@ -165,7 +209,7 @@ https://www.myskills.gov.au/courses/unit?Code=VU22384.
    plan back to the exact public-register + internal-document versions it was
    built from.
 
-## 5. Change-control / re-verification cadence
+## 6. Change-control / re-verification cadence
 
 | Source | Check cadence | Trigger for update |
 |---|---|---|
@@ -175,6 +219,7 @@ https://www.myskills.gov.au/courses/unit?Code=VU22384.
 | ACSF | annually | DEWR re-issue |
 | AMEP Deed / Business Rules | per contract variation | Home Affairs Deed of Variation |
 | CommunityPlus Mapping + Assessor Guide | per validation cycle | RTO validation outcome |
+| aXcelerate cohort extract | per enrolment intake + mid-term | enrolment / withdrawal / ACSF re-assessment |
 
 Re-run `generate.py` after any source update; the SHA-256 footer hash will
 change, which is the audit signal that the plan was regenerated against a new

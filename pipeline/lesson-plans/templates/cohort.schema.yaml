@@ -1,0 +1,104 @@
+# Cohort schema — anonymised cohort YAML for CommunityPlus AMEP classes
+#
+# This file is the **bridge between aXcelerate (internal SMS) and the
+# session-plan generator**. Coordinators distil the aXcelerate enrolment into
+# this structure, which contains NO learner PII (no names, no DOBs, no phones,
+# no CHESSN / USI, no addresses). Only aggregate counts and profile ranges.
+#
+# Obligations this reflects:
+#   - Privacy Act 1988 (Cth), Australian Privacy Principles (APPs)
+#   - Privacy and Data Protection Act 2014 (Vic)
+#   - AMEP Deed of Standing Offer — data-handling clauses
+#   - ASQA Standards for RTOs 2025 — learner information handling
+#
+# Copy this file to pipeline/lesson-plans/cohorts/<CLASS_CODE>.yaml and fill
+# from aXcelerate:
+#   Dashboard → ContactsSearch → filter by class code (e.g. CP123E3).
+#
+# This schema is consumed by generate.py when the --cohort <CLASS_CODE> flag
+# is added (future extension); for now it documents the contract so the
+# coordinator can produce cohort YAMLs ahead of that wiring.
+
+# ─────────────────────────────────────────────────────────────────────
+# 1. Class identity (from aXcelerate ContactsResults filter)
+# ─────────────────────────────────────────────────────────────────────
+class:
+  code: "CP123Exx"              # CP123E1 Cert I, CP123E2 Cert II, CP123E3/E4 Cert III — AMEP Evening
+  parent_course: "22xxxVIC"     # e.g. 22484VIC / 22485VIC / 22486VIC
+  delivery_mode: "face-to-face evening"   # AMEP Evening convention
+  campus: "TBD"
+  term_structure:
+    # CommunityPlus AMEP Evening runs 4 terms across 2 semesters per cert.
+    # Each unit is anchored to one or more (semester, term) slots.
+    - semester: 1
+      term: 1
+      code: "S1T1"
+    - semester: 1
+      term: 2
+      code: "S1T2"
+    - semester: 2
+      term: 3
+      code: "S2T3"
+    - semester: 2
+      term: 4
+      code: "S2T4"
+  nominal_hours_total: 0        # sum of all units in this cert's TAS (e.g. 460 or 470)
+
+# ─────────────────────────────────────────────────────────────────────
+# 2. Aggregate cohort profile (NO PII)
+# ─────────────────────────────────────────────────────────────────────
+cohort:
+  count: 0                      # number of enrolled learners
+  # ACSF profile — AMEP-mandated framework since 1 July 2017.
+  # Express as a tight range covering the cohort's initial assessment, e.g.
+  # "R: Pre L1B – L1.03 / W: Pre L1A – L1.02 / L: L1.05 – L1.08 / OC: L1.04 – L1.10"
+  acsf_range: ""
+  pre_level_1_count: 0          # learners at ACSF Pre Level 1A or 1B
+  islpr_range: ""               # optional secondary benchmark (EAL Framework)
+  # Country-of-origin / L1 distribution — aggregate only, no individual linkage.
+  # Format as coarse categorical buckets, e.g.
+  #   ["Arabic-speaking: 4", "Hazaragi/Dari: 3", "Mandarin: 2", "Vietnamese: 2"]
+  l1_mix: []
+  # Visa category mix — aggregate counts only, no individual linkage.
+  #   ["humanitarian: 6", "family: 3", "skilled: 2"]
+  visa_mix: []
+  # Individual Learning Plan (ILP) themes — aggregate patterns, no names.
+  ilp_themes: ""
+  # Settlement content integrated into this term's delivery
+  settlement_content: ""
+  pathway: "Social English"     # Social English / Pre-Employment English / Further Study
+  feedback_method: "exit ticket + end-of-term survey"
+
+# ─────────────────────────────────────────────────────────────────────
+# 3. Unit → term anchor map (per TAS)
+# ─────────────────────────────────────────────────────────────────────
+# Which unit is delivered in which term. The generator uses this to pre-fill
+# session.nominal_hours_used_prior and session.total across a course run.
+tas_sequence:
+  - unit: "VUxxxxx"
+    anchor: "S1T1"
+    sessions: 0                 # e.g. 10 evening sessions of 3 hrs
+  # repeat for each unit in the cert
+
+# ─────────────────────────────────────────────────────────────────────
+# 4. Privacy contract
+# ─────────────────────────────────────────────────────────────────────
+privacy:
+  # True iff this file was produced by the coordinator from aXcelerate
+  # using the PII-strip process below.
+  pii_free: true
+  process: |
+    1. Export ContactsResults for the class from aXcelerate.
+    2. Drop all columns except: count, ACSF levels, L1 country, visa category.
+    3. Aggregate to bucket counts; discard individual rows.
+    4. Paste aggregates into this YAML.
+    5. Delete the exported CSV from local disk.
+  source: "aXcelerate (comm-unityplus.app.axcelerate.com) — authenticated"
+  source_extracted_at: "YYYY-MM-DD"
+
+# ─────────────────────────────────────────────────────────────────────
+# 5. Template contract
+# ─────────────────────────────────────────────────────────────────────
+template:
+  kind: "cohort"
+  version: "1.0"
