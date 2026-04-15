@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
 """
-CommunityPlus AMEP — session-plan pipeline generator.
+CommunityPlus EAL — term-plan + session-plan pipeline generator.
 
-Reads:
-    templates/session-plan.template.md     (Jinja2-style template)
-    templates/mapping.schema.yaml          (default unit shape)
-    units/<UNIT>.yaml                      (per-unit overrides)
+Two modes:
 
-Produces:
-    output/<UNIT>_S<NN>_<DATE>.md          (audit-ready session plan)
+  session  (default)  — single-session plan
+    Reads:  templates/session-plan.template.md   (Jinja2)
+            templates/mapping.schema.yaml        (default unit shape)
+            units/<UNIT>.yaml                    (per-unit overrides)
+    Writes: output/<UNIT>_S<NN>_<DATE>.md
+
+  term               — term macro-skills matrix plan
+    Reads:  templates/term-plan.template.md      (Jinja2)
+            terms/<TERM_SLUG>.yaml               (per-term YAML)
+            units/<UNIT>.yaml                    (for each unit threaded in)
+    Writes: output/<TERM_SLUG>.md
 
 Usage:
     python3 generate.py VU22358 --session 3 --date 2026-04-22
     python3 generate.py VU22358 --session 3 --date 2026-04-22 --draft
     python3 generate.py --check VU22358
+    python3 generate.py --mode term 22640VIC-cert3-term1-2026
 
 Governing frame enforced: VRQA accredited course doc + Standards for RTOs 2025
-(ASQA) + AMEP Deed + CommunityPlus audit trail. See COMPLIANCE.md.
+(ASQA) + AMEP Deed or SEE contract + CommunityPlus audit trail. See
+COMPLIANCE.md.
 """
 
 from __future__ import annotations
@@ -51,6 +59,7 @@ TEMPLATE_VERSION = "1.0"   # bump + add CHANGELOG entry when template changes
 ROOT = Path(__file__).resolve().parent
 TEMPLATES_DIR = ROOT / "templates"
 UNITS_DIR = ROOT / "units"
+TERMS_DIR = ROOT / "terms"
 OUTPUT_DIR = ROOT / "output"
 
 TBD_RE = re.compile(r"TBD_FROM_[A-Z_]+")
@@ -204,20 +213,97 @@ def _hash_context(ctx: dict) -> str:
 
 
 # ──────────────────────────────────────────────────────────────────────
+# Term-plan mode
+# ──────────────────────────────────────────────────────────────────────
+def load_term_context(term_slug: str) -> dict:
+    term_path = TERMS_DIR / f"{term_slug}.yaml"
+    if not term_path.exists():
+        sys.exit(f"error: term YAML not found: {term_path}")
+    with term_path.open() as f:
+        term = yaml.safe_load(f) or {}
+
+    # Resolve each threaded unit via its unit_yaml pointer (or fallback
+    # to units/<code>.yaml).
+    unit_index: dict[str, dict] = {}
+    for u in term.get("units", []):
+        code = u.get("code")
+        rel = u.get("unit_yaml") or f"units/{code}.yaml"
+        path = ROOT / rel
+        if not path.exists():
+            sys.exit(f"error: unit YAML for {code} not found: {path}")
+        with path.open() as f:
+            data = yaml.safe_load(f) or {}
+        unit_index[code] = data.get("unit", {})
+    term["unit_index"] = unit_index
+    return term
+
+
+def render_term(ctx: dict) -> str:
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+        undefined=StrictUndefined,
+        trim_blocks=False,
+        lstrip_blocks=False,
+        keep_trailing_newline=True,
+    )
+    tpl = env.get_template("term-plan.template.md")
+    ctx = dict(ctx)
+    ctx.setdefault("template", {})["version"] = TEMPLATE_VERSION
+    ctx["doc"] = {
+        "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
+        "input_sha256": _hash_context(ctx),
+    }
+    return tpl.render(**ctx)
+
+
+# ──────────────────────────────────────────────────────────────────────
 # CLI
 # ──────────────────────────────────────────────────────────────────────
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("unit", help="unit code, e.g. VU22358")
-    p.add_argument("--session", type=int, help="session number (overrides YAML)")
-    p.add_argument("--date", help="delivery date YYYY-MM-DD (overrides YAML)")
+    p.add_argument("target",
+                   help="unit code (session mode) or term slug (term mode) — "
+                        "e.g. VU22358  or  22640VIC-cert3-term1-2026")
+    p.add_argument("--mode", choices=("session", "term"), default="session",
+                   help="artefact to produce (default: session)")
+    p.add_argument("--session", type=int, help="session number (session mode only)")
+    p.add_argument("--date", help="delivery date YYYY-MM-DD (session mode only)")
     p.add_argument("--draft", action="store_true",
                    help="allow unresolved TBD_FROM_* placeholders")
     p.add_argument("--check", action="store_true",
                    help="run compliance checks and exit (no output file)")
     args = p.parse_args()
 
-    ctx = load_context(args.unit)
+    if args.mode == "term":
+        ctx = load_term_context(args.target)
+        # Basic TBD sweep (term plans don't have the session-level checks).
+        if not args.draft:
+            flat = json.dumps(ctx, default=str)
+            found = sorted(set(TBD_RE.findall(flat)))
+            if found:
+                sys.stderr.write("compliance errors:\n")
+                sys.stderr.write(
+                    "  - unresolved placeholders: " + ", ".join(found) + "\n"
+                )
+                sys.stderr.write(
+                    "refusing to generate non-draft term plan; "
+                    "fix the YAML or re-run with --draft\n"
+                )
+                if args.check:
+                    return 1
+                return 1
+        if args.check:
+            print(f"OK: term plan {args.target} passes (basic TBD check)")
+            return 0
+        rendered = render_term(ctx)
+        OUTPUT_DIR.mkdir(exist_ok=True)
+        out_path = OUTPUT_DIR / f"{args.target}.md"
+        out_path.write_text(rendered)
+        print(f"wrote {out_path}")
+        return 0
+
+    # ── session mode ──
+    ctx = load_context(args.target)
 
     if args.session is not None:
         ctx.setdefault("session", {})["number"] = args.session
@@ -241,7 +327,7 @@ def main() -> int:
             for e in errs:
                 print(f"FAIL: {e}")
             return 1
-        print(f"OK: {args.unit} passes compliance checks")
+        print(f"OK: {args.target} passes compliance checks")
         return 0
 
     rendered = render(ctx)
@@ -249,7 +335,7 @@ def main() -> int:
     OUTPUT_DIR.mkdir(exist_ok=True)
     session_n = ctx.get("session", {}).get("number") or 0
     session_d = ctx.get("session", {}).get("date") or "undated"
-    out_path = OUTPUT_DIR / f"{args.unit}_S{int(session_n):02d}_{session_d}.md"
+    out_path = OUTPUT_DIR / f"{args.target}_S{int(session_n):02d}_{session_d}.md"
     out_path.write_text(rendered)
     print(f"wrote {out_path}")
     return 0

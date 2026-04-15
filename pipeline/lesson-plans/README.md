@@ -1,8 +1,29 @@
-# CommunityPlus AMEP — Session Plan Pipeline
+# CommunityPlus — EAL / AMEP / SEE Planning Pipeline
 
-Reproducible pipeline for producing audit-ready session plans for every
-`VU22xxx` unit CommunityPlus delivers inside AMEP (and Skills First / fee-for-
-service where the same units sit in Victorian accredited EAL courses).
+Reproducible pipeline for producing audit-ready **term plans** and
+**session plans** for every VU unit CommunityPlus delivers across its
+Victorian-accredited EAL courses, under whichever funding stream applies:
+
+- **AMEP** — Adult Migrant English Program (Home Affairs)
+- **SEE** — Skills for Education and Employment (DEWR)
+- **Skills First** — Victorian state funding
+- **Fee-for-service**
+
+All four streams share the same VRQA-accredited EAL framework courses
+and the same ACSF proficiency reporting, so a single pipeline can serve
+all of them.
+
+## Two artefact types
+
+| Artefact | Scope | Schema | Template | Worked example |
+|---|---|---|---|---|
+| **Term plan** — "SEE/AMEP Unit Session Plan: Term N" | one 10-week term | `templates/term-plan.schema.yaml` | `templates/term-plan.template.md` | `terms/22640VIC-cert3-term1-2026.yaml` |
+| **Session plan** — single 3-hour evening | one class session | `templates/mapping.schema.yaml` | `templates/session-plan.template.md` | *to be added* |
+
+The **term plan is the primary artefact** trainers fill in (matrix of 7
+macro skills × theme × 2–3 units × ACSF indicators, with verbatim unit
+PCs appended). The session plan is an in-term drill-down when a specific
+3-hour session needs its own documented sequence.
 
 ## What this solves
 
@@ -41,20 +62,42 @@ audit checklist each generated plan is measured against.
 
 ## Units in scope (v1)
 
-| Unit     | Parent qualifications (from Mircea's catalogue)                              |
-|----------|------------------------------------------------------------------------------|
-| VU22098  | 22484VIC                                                                     |
-| VU22358  | 22485VIC, 22476VIC, 22639VIC                                                 |
-| VU22369  | 22485VIC, 22484VIC, 22476VIC, 22639VIC                                       |
-| VU22384  | 22486VIC, 22489VIC, 22491VIC, 22640VIC, 22643VIC                             |
-| VU22398  | 22251VIC, 22486VIC, 22643VIC                                                 |
-| VU22590  | 22484VIC                                                                     |
-| VU22591  | 22484VIC                                                                     |
-| VU22592  | 22484VIC                                                                     |
-| VU22593  | 22484VIC                                                                     |
-| VU22594  | 22484VIC                                                                     |
+| Unit     | Status     | Parent qualifications                                         |
+|----------|------------|---------------------------------------------------------------|
+| VU22098  | stub       | 22484VIC                                                      |
+| VU22358  | stub       | 22485VIC, 22476VIC, 22639VIC                                  |
+| VU22369  | stub       | 22485VIC, 22484VIC, 22476VIC, 22639VIC                        |
+| VU22384  | populated  | 22486VIC, 22489VIC, 22491VIC, 22640VIC, 22643VIC              |
+| VU22398  | stub       | 22251VIC, 22486VIC, 22643VIC                                  |
+| VU22590  | stub       | 22484VIC                                                      |
+| VU22591  | stub       | 22484VIC                                                      |
+| VU22592  | stub       | 22484VIC                                                      |
+| VU22593  | stub       | 22484VIC                                                      |
+| VU22594  | stub       | 22484VIC                                                      |
+| VU23524  | populated  | 22640VIC                                                      |
+| VU23560  | populated  | 22640VIC                                                      |
 
 All parent qualifications are Victorian accredited EAL courses (VRQA).
+`populated` units have their Elements / Performance Criteria / KS-KE /
+PE / FS transcribed verbatim from the pattern source Denis's Cert3_Term1
+2026 plan. Mapping + Assessor Guide blocks remain TBD until the
+coordinator pastes the CommunityPlus internal LWA mapping and assessor
+guide documents.
+
+## Worked example: 22640VIC Cert III — SEE Term 1 — Year 2026
+
+`terms/22640VIC-cert3-term1-2026.yaml` is the canonical populated term
+plan (transcribed from Denis's 13-page Word doc). It demonstrates:
+
+- Stream: **SEE — Basic**
+- Framework: **22640VIC** Certificate III in EAL (Access) — reaccredited 2022/23
+- Theme: "Education and Employment — Everyday English" (personal info,
+  school, looking for work, celebrations)
+- Units threaded: **VU22384** (ongoing portfolio unit) + **VU23524** (spoken
+  conversations — Term 1) + **VU23560** (internet and email — Term 1)
+- ACSF indicators claimed: 3.01–3.11 across 6 of 7 strands; Digital
+  Literacy ACSF anchor marked "yet to confirm" (as in the source doc)
+- LWA mapping + class-global document referenced (internal, not in repo)
 
 ## How to use
 

@@ -1,0 +1,141 @@
+# VU23560 — Access the internet and email to develop language
+#
+# Content verbatim from Denis's Cert3_Term1 2026 lesson planning appendix.
+# Re-verify against the training.gov.au unit PDF before audit use.
+#
+# Parent-course mapping: 22640VIC Cert III in EAL (Access) — reaccredited 2022/23.
+
+unit:
+  code: "VU23560"
+  title: "Access the internet and email to develop language"
+  tga_url: "https://training.gov.au/Training/Details/VU23560"
+  nominal_hours_total: 0               # TBD_FROM_VRQA_COURSE_DOC
+  prerequisites: "TBD_FROM_VRQA_COURSE_DOC"
+  assessment_conditions: "TBD_FROM_VRQA_COURSE_DOC"
+  last_validation_date: "YYYY-MM-DD"
+
+  parent_courses:
+    - code: "22640VIC"
+      public_register_url: "https://training.gov.au/Training/Details/22640VIC"
+      title_verified_from_vrqa: "Certificate III in EAL (Access) — reaccredited 2022/23"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+
+  elements:
+    - id: "1"
+      title: "Identify information found on the internet"
+      performance_criteria:
+        - id: "1.1"
+          text: "Identify type of information available on the internet"
+        - id: "1.2"
+          text: "Identify and open an internet browser"
+        - id: "1.3"
+          text: "Access and navigate an informational website"
+        - id: "1.4"
+          text: "Close the browser"
+    - id: "2"
+      title: "Access and use internet to develop digital communication skills"
+      performance_criteria:
+        - id: "2.1"
+          text: "Identify internet resources suited to develop language / communication skills"
+        - id: "2.2"
+          text: "Use the basic features of web navigation to launch program and use communication skills"
+        - id: "2.3"
+          text: "Observe safe internet practices"
+        - id: "2.4"
+          text: "Complete the activity"
+    - id: "3"
+      title: "Communicate using simple email messages"
+      performance_criteria:
+        - id: "3.1"
+          text: "Open an email program"
+        - id: "3.2"
+          text: "Locate the key menu items for composing, sending and replying to email messages"
+        - id: "3.3"
+          text: "Identify the features of email addresses"
+        - id: "3.4"
+          text: "Compose and send a simple message"
+        - id: "3.5"
+          text: "Open, read and reply to a received message"
+        - id: "3.6"
+          text: "Close the email program"
+
+  required_knowledge_skills:
+    - id: "KS1"
+      text: |
+        Accessing the internet to develop language learning including:
+        - Terminology related to digital devices, functions, programs
+          and internet
+        - Spoken and written language related to accessing internet and
+          internet programs for language learning
+        - Simple verbal and on screen written instructions, such as open
+          the program, double click on... next
+    - id: "KS2"
+      text: "Simple prepositions and prepositional phrases related to accessing digital technology, such as move the mouse under / over / on that word / scroll up / down"
+    - id: "KS3"
+      text: "Simple connectives used in instructions and routine email communications"
+    - id: "KS4"
+      text: "Simple of adjectives, adverbs and adverbial phrases as used in routine instructions and communication"
+    - id: "KS5"
+      text: |
+        Simple sentence structures for email communication, such as:
+        • simple compound sentences
+        • simple question forms
+    - id: "KS6"
+      text: "Simple common informal expressions, conventions and protocols used in internet use and email communication"
+    - id: "KS7"
+      text: "Simple understanding of register in email communications"
+
+  performance_evidence:
+    - id: "PE1"
+      text: "locate and navigate one informational website"
+    - id: "PE2"
+      text: "access the internet on one occasion to develop digital communication skills"
+    - id: "PE3"
+      text: |
+        use an email program on one occasion to:
+        • locate, open and close an email
+        • read, compose and send one simple email
+
+  foundation_skills_block:
+    - id: "FS1"
+      text: |
+        Learning skills to:
+        • understand common informal expressions, conventions and
+          protocols used in internet use and email communication
+    - id: "FS2"
+      text: |
+        Technology skills to:
+        • use basic digital technology skills, such as simple keyboard
+          functions including location of letters, shift key, symbols
+          and enter key
+        • access simple on-screen graphics, menus and navigational tools
+
+  # ACSF indicator for Digital Literacy at Cert III in the CommunityPlus
+  # term plan is annotated "Yet to confirm" — keep empty until mapped.
+  foundation_skills: []
+
+  mapping:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    rows:
+      - id: "MAP-01"
+        assessment_task: "AT-01"
+        performance_criteria: ["1.3", "2.2", "3.4"]
+        required_skills_knowledge: ["KS1", "KS5"]
+        foundation_skills: ["Learning (FS1)", "Technology (FS2)"]
+        evidence_type: "TBD_FROM_LWA_MAPPING"
+        description: "TBD_FROM_LWA_MAPPING"
+
+  assessor_guide:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    tasks:
+      - id: "AT-01"
+        title: "TBD_FROM_ASSESSOR_GUIDE"
+        mode: "TBD_FROM_ASSESSOR_GUIDE"
+        benchmark_summary: "TBD_FROM_ASSESSOR_GUIDE"
+        reasonable_adjustment: "TBD_FROM_ASSESSOR_GUIDE"
+        reassessment_rule: "TBD_FROM_ASSESSOR_GUIDE"
+
+template:
+  version: "1.0"

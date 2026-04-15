@@ -36,6 +36,24 @@ its `source_urls` block so auditors can reproduce the lineage.
 | Victorian EAL Framework — 22482VIC / 22483VIC etc. (Dept of Education, 2019 cohort) | https://www.education.vic.gov.au/Documents/training/providers/rto/VIC-EAL-Framework.pdf |
 | Victorian EAL Framework — 22636VIC–22646VIC (2023 reaccreditation, vic.gov.au) | https://www.vic.gov.au/sites/default/files/2023-10/22636VIC-22646VIC_EAL-Framework.pdf |
 
+### DEWR — Skills for Education and Employment (SEE) Programme
+
+CommunityPlus runs an **SEE** stream alongside AMEP. Denis's Cert III
+Term 1 2026 plan (the pattern source for the term-plan schema) is an
+SEE-stream delivery — its co-branded masthead reads "Learning for
+Employment" (SEE programme colophon) + "CommunityPlus" (RTO).
+
+| Document | URL |
+|---|---|
+| SEE Programme landing | https://www.dewr.gov.au/skills-education-and-employment |
+| SEE Programme — about | https://www.dewr.gov.au/skills-education-and-employment/about-skills-education-and-employment-program |
+| SEE — Key requirements for providers | https://www.dewr.gov.au/skills-education-and-employment/service-delivery-plans |
+| SEE/AMEP Alignment Report (ACIL Allen for DEWR) | https://www.dewr.gov.au/download/7097/see-amep-alignment-report/11102/document/pdf |
+| DEWR — Foundation Skills homepage | https://www.dewr.gov.au/foundation-skills |
+
+> The operative SEE **contract** and **Service Delivery Plan** are issued
+> per provider — source from the CommunityPlus SEE contract file.
+
 ### Department of Home Affairs — AMEP
 
 | Document | URL |
@@ -144,6 +162,8 @@ Assessment Conditions, and a downloadable PDF of the unit.
 | VU22592 | Give and respond to short, simple instruction and information | https://training.gov.au/Training/Details/VU22592 |
 | VU22593 | Read and write short simple messages and forms (verify) | https://training.gov.au/Training/Details/VU22593 |
 | VU22594 | Read and write short, simple informational and instructional texts | https://training.gov.au/Training/Details/VU22594 |
+| VU23524 | Engage in straightforward casual conversations and spoken transactions | https://training.gov.au/Training/Details/VU23524 |
+| VU23560 | Access the internet and email to develop language | https://training.gov.au/Training/Details/VU23560 |
 
 Also useful (secondary, public): MySkills consumer portal — e.g.
 https://www.myskills.gov.au/courses/unit?Code=VU22384.
@@ -154,13 +174,31 @@ These are authenticated / RTO-internal sources. They are **not** committed to
 this repo. Any field derived from them must be pasted into the YAML inputs
 **anonymised** (no learner PII) before generation.
 
-### CommunityPlus SharePoint (TAS / Mapping / Assessor Guide)
+### CommunityPlus SharePoint (TAS / LWA Mapping / Assessor Guide / Class-Global)
 
-- Training and Assessment Strategy (TAS) document per parent course — provides
-  the `delivery.tas_version` value and the authoritative sequence of units.
-- Per-unit **Mapping** document — pasted into `unit.mapping.rows` in the unit
-  YAML.
+- **Training and Assessment Strategy (TAS)** document per parent course —
+  provides the `delivery.tas_version` value and the authoritative sequence
+  of units.
+- Per-unit **LWA Mapping** document (the "LWA" = Learning / Work /
+  Assessment matrix CommunityPlus references from each term-plan row) —
+  pasted into `unit.mapping.rows` in the unit YAML.
 - Per-unit **Assessor Guide** — pasted into `unit.assessor_guide.tasks`.
+- **Class-name global document** per class (referenced from every term
+  plan's banner) — the RTO's single source of truth for cohort-level
+  assessment rules for a named class.
+
+### CommunityPlus term-plan pattern source
+
+The authoritative *shape* of the term-plan artefact (macro-skills matrix,
+colour coding, verbatim unit appendices) is anchored on:
+
+- `Denis's Cert3_Term1 2026 lesson planning.docx` — 13-page co-branded
+  "Learning for Employment + CommunityPlus" document for 22640VIC Cert III
+  EAL (Access), SEE Stream: Basic, Year 2026, Term 1.
+
+Transcribed verbatim (no learner PII) into
+`terms/22640VIC-cert3-term1-2026.yaml`. That file is the canonical
+worked example every other term plan in the pipeline is shaped against.
 
 ### aXcelerate (CommunityPlus Student Management System)
 

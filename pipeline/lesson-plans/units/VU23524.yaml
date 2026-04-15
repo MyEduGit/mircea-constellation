@@ -1,0 +1,130 @@
+# VU23524 — Engage in straightforward casual conversations and spoken transactions
+#
+# Content verbatim from Denis's Cert3_Term1 2026 lesson planning appendix.
+# Re-verify against the training.gov.au unit PDF before audit use.
+#
+# Parent-course mapping: 22640VIC Cert III in EAL (Access) — reaccredited 2022/23.
+
+unit:
+  code: "VU23524"
+  title: "Engage in straightforward casual conversations and spoken transactions"
+  tga_url: "https://training.gov.au/Training/Details/VU23524"
+  nominal_hours_total: 0               # TBD_FROM_VRQA_COURSE_DOC
+  prerequisites: "TBD_FROM_VRQA_COURSE_DOC"
+  assessment_conditions: "TBD_FROM_VRQA_COURSE_DOC"
+  last_validation_date: "YYYY-MM-DD"
+
+  parent_courses:
+    - code: "22640VIC"
+      public_register_url: "https://training.gov.au/Training/Details/22640VIC"
+      title_verified_from_vrqa: "Certificate III in EAL (Access) — reaccredited 2022/23"
+      accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+
+  elements:
+    - id: "1"
+      title: "Participate in casual conversations"
+      performance_criteria:
+        - id: "1.1"
+          text: "Initiate conversation using appropriate opening expressions and conventions"
+        - id: "1.2"
+          text: "Contribute comments, opinions, information or questions on everyday topics"
+        - id: "1.3"
+          text: "Give responses with some detail"
+        - id: "1.4"
+          text: "Use conversational strategies to participate in the conversation"
+        - id: "1.5"
+          text: "Clarify misunderstandings and ambiguous points if required"
+        - id: "1.6"
+          text: "Close conversation using customary steps"
+    - id: "2"
+      title: "Participate in straightforward transactions"
+      performance_criteria:
+        - id: "2.1"
+          text: "Initiate a straightforward transaction and make request or state problem clearly"
+        - id: "2.2"
+          text: "Give an explanation with some detail"
+        - id: "2.3"
+          text: "State desired outcome of the transaction"
+        - id: "2.4"
+          text: "Identify and respond to suggestions or solutions offered"
+        - id: "2.5"
+          text: "Clarify outcome / result or follow up action where necessary"
+
+  # Required Knowledge and Skills — "KE Checklist" format in this unit
+  required_knowledge_skills:
+    - id: "KE1"
+      text: "vocabulary and expressions related to selected conversation topics and transactions"
+    - id: "KE2"
+      text: "sentence structures for compound and some complex sentences"
+    - id: "KE3"
+      text: "verb tenses, such as present perfect continuous, past perfect, present and past simple passive, conditional, such as with, if, and unless, to express different points in time"
+    - id: "KE4"
+      text: "modal forms, including some negative forms, such as need to and have to"
+    - id: "KE5"
+      text: "phrasal verbs, colloquial or idiomatic expressions in casual conversations or transactions"
+    - id: "KE6"
+      text: "adjectives, adverbs and adverbial phrases to explain and qualify information"
+    - id: "KE7"
+      text: "common discourse markers and conjunctions appropriate to spoken information to organise or link what is said, such as actually, I mean, anyway, as I was saying"
+    - id: "KE8"
+      text: "question forms and strategies to seek further information"
+    - id: "KE9"
+      text: "use of tone, stress and intonation to modify or emphasise meaning"
+    - id: "KE10"
+      text: "strategies used to participate in straightforward conversations and spoken transactions"
+    - id: "KE11"
+      text: "register appropriate to the context"
+    - id: "KE12"
+      text: "expression of opinions and attitudes in spoken texts"
+    - id: "KE13"
+      text: "cues to recognise inferred meaning in spoken text"
+    - id: "KE14"
+      text: "paralinguistic features to support interactions, such as confirming understanding, clarifying misunderstandings and ambiguity"
+
+  performance_evidence:
+    - id: "PE1"
+      text: "initiate and sustain three different straightforward spoken interactions with one or more people"
+    - id: "PE1a"
+      text: "at least one casual conversation based on a straightforward topic"
+    - id: "PE1b"
+      text: "at least one spoken transaction for a specific purpose"
+
+  foundation_skills_block:
+    - id: "FS1"
+      text: "Problem-solving skills to: identify and apply strategies to participate in spoken transactions"
+    - id: "FS2"
+      text: "Self-management skills to: manage participation in conversations and transactions"
+
+  foundation_skills:
+    - domain: "Oral Communication"
+      level: 3
+      indicator: "3.07"                 # Speaking
+    - domain: "Oral Communication"
+      level: 3
+      indicator: "3.08"                 # Listening
+
+  mapping:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    rows:
+      - id: "MAP-01"
+        assessment_task: "AT-01"
+        performance_criteria: ["1.1", "1.2", "1.6"]
+        required_skills_knowledge: ["KE1", "KE10", "KE11"]
+        foundation_skills: ["Oral Communication L3 (3.07 Speaking)"]
+        evidence_type: "TBD_FROM_LWA_MAPPING"
+        description: "TBD_FROM_LWA_MAPPING"
+
+  assessor_guide:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    tasks:
+      - id: "AT-01"
+        title: "TBD_FROM_ASSESSOR_GUIDE"
+        mode: "TBD_FROM_ASSESSOR_GUIDE"
+        benchmark_summary: "TBD_FROM_ASSESSOR_GUIDE"
+        reasonable_adjustment: "TBD_FROM_ASSESSOR_GUIDE"
+        reassessment_rule: "TBD_FROM_ASSESSOR_GUIDE"
+
+template:
+  version: "1.0"

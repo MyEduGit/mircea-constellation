@@ -1,8 +1,27 @@
-# Governance — which bodies must a CommunityPlus AMEP session plan satisfy?
+# Governance — which bodies must a CommunityPlus EAL plan satisfy?
 
-Answer up front: **four overlapping authorities**, and every session plan must
-demonstrably align to all four. The pipeline's template enforces that by
-making each alignment a mandatory field.
+Answer up front: **four overlapping authorities** plus the **funding stream
+overlay** (AMEP or SEE), and every term / session plan must demonstrably
+align to all of them. The pipeline's template enforces that by making each
+alignment a mandatory field.
+
+## Funding stream overlay — AMEP, SEE, Skills First, FFS
+
+The same VRQA-accredited EAL unit can be delivered under any of these
+streams. The governance of the *unit* doesn't change, but the funding body
+and its programme rules do:
+
+| Stream | Funder | Rule set | Progress framework |
+|---|---|---|---|
+| **AMEP** | Dept of Home Affairs | AMEP Deed of Standing Offer + Business Rules | ACSF (8 indicators across R/W/L/OC) |
+| **SEE** | DEWR | SEE Programme contract + Service Delivery Plan | ACSF (same instrument) |
+| **Skills First** | Vic Dept of Jobs, Skills, Industry and Regions | Skills First Funding Contract | ACSF / EAL Framework |
+| **FFS** | Learner | RTO policy | internal |
+
+CommunityPlus delivers both **AMEP** and **SEE** — Denis's Cert III Term 1
+2026 plan (`terms/22640VIC-cert3-term1-2026.yaml`) is a SEE-stream delivery
+of the same 22640VIC course that other cohorts take under AMEP. The term-plan
+schema captures the stream in `course.stream`.
 
 ## 1. VRQA — Victorian Registration and Qualifications Authority
 
@@ -61,21 +80,46 @@ Standards and Compliance Requirements):
 - Continuous improvement — post-session reflection and validation outputs are
   recorded and fed back into the plan.
 
-## 3. Department of Home Affairs — AMEP Programme
+## 3. Funding programme — AMEP (Home Affairs) or SEE (DEWR)
+
+Whichever stream funds the delivery, the plan must satisfy that stream's
+rules in addition to the unit-level accreditation requirements above.
+
+### 3a. Department of Home Affairs — AMEP Programme
 
 **What it governs:** funded delivery of EAL to eligible migrants through the
 AMEP Deed of Standing Offer and the AMEP Business Rules / Performance
 Framework.
 
-**Session-plan-relevant expectations:**
-- Session content traceable to each learner's **Individual Learning Plan
-  (ILP)** and to the results of the Initial Assessment (ISLPR / ACSF).
+**Plan-relevant expectations:**
+- Session / term content traceable to each learner's **Individual Learning
+  Plan (ILP)** and to the results of the Initial Assessment (ACSF; ISLPR
+  as optional secondary benchmark).
 - **Settlement content** (e.g. Life in Australia, services, civic
   participation) integrated contextually into EAL delivery.
 - **Pre-Employment English (PEE)** or Social English pathway alignment where
   the learner is on that stream.
 - Attendance and participation data captured per session.
 - Learner voice / feedback captured and actioned.
+
+### 3b. DEWR — Skills for Education and Employment (SEE)
+
+**What it governs:** funded delivery of adult LLN to eligible job seekers
+under the SEE Programme (DEWR contract). SEE co-exists with AMEP for adult
+LLN learners; CommunityPlus's "Learning for Employment" colophon on the
+term-plan masthead is the SEE-stream branding.
+
+**Plan-relevant expectations:**
+- Learner progress reported against **ACSF** (same framework as AMEP —
+  the DEWR *SEE/AMEP alignment report* formally confirms the shared
+  instrument).
+- Delivery aligned to the employability focus — pre-employment English,
+  workplace literacy, digital literacy for work.
+- Provider Service Delivery Plan (SDP) is the SEE-equivalent of the AMEP
+  Business Rules and sits alongside the CommunityPlus TAS.
+- Employability Skills tagged explicitly on every macro-skill row in the
+  term plan (the pattern source makes this explicit: every row lists
+  "Employability Skills: …").
 
 ## 4. Course Owner / Curriculum Maintenance Manager (CMM)
 
@@ -109,7 +153,7 @@ interpretation of the CMM's accredited document.
   Delivered session  →  formative evidence  →  summative evidence  →  competency
                │
                ▼
-  AMEP Deed performance reporting  +  RTO audit  +  VRQA course audit
+  AMEP Deed  or  SEE contract  performance reporting  +  RTO audit  +  VRQA course audit
 ```
 
 If any layer above is amended, every layer below must be regenerated. The

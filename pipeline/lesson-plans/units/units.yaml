@@ -97,8 +97,27 @@ units:
     stream: "Cert I in EAL (Access)"
     status: stub
 
+  # ─── Cert III 22640VIC — newly added from Denis's Term 1 2026 plan ───
+  - code: VU23524
+    title_seed: "Engage in straightforward casual conversations and spoken transactions"
+    tga_url: "https://training.gov.au/Training/Details/VU23524"
+    parent_courses: [22640VIC]
+    stream: "Cert III EAL (Access) — reaccredited 2022/23"
+    status: populated
+
+  - code: VU23560
+    title_seed: "Access the internet and email to develop language"
+    tga_url: "https://training.gov.au/Training/Details/VU23560"
+    parent_courses: [22640VIC]
+    stream: "Cert III EAL (Access) — reaccredited 2022/23"
+    status: populated
+
 # status values:
-#   stub      — YAML exists with TBD_FROM_* placeholders; cannot generate
-#               non-draft plan yet
-#   ready     — all TBDs resolved; passes generate.py --check
-#   in-review — coordinator reviewing before delivery use
+#   stub       — YAML exists with TBD_FROM_* placeholders; cannot generate
+#                non-draft plan yet
+#   populated  — Elements / PCs / KS-KE / PE / FS transcribed verbatim from
+#                a CommunityPlus term-plan pattern source (e.g. Denis's
+#                Cert3_Term1 2026 doc). Mapping + Assessor Guide still TBD.
+#   ready      — all TBDs resolved including internal mapping + AG;
+#                passes generate.py --check
+#   in-review  — coordinator reviewing before delivery use

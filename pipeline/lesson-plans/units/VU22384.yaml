@@ -1,39 +1,160 @@
-# VU22384 — unit YAML stub (compact; deep-merges onto templates/mapping.schema.yaml)
+# VU22384 — Develop and document a learning plan and portfolio
 #
-# Seeded parent-course mapping: 22486VIC, 22489VIC, 22491VIC, 22640VIC, 22643VIC
-# (Certificate II–IV in EAL family — verify exact titles + accreditation
-# period against VRQA accredited course register.)
+# Content in this file is transcribed verbatim from:
+#   Denis's Cert3_Term1 2026 lesson planning (CommunityPlus) — appendix.
+# Re-verify against the authoritative training.gov.au unit PDF before
+# the plan is used for audit submission.
+#
+# Parent-course mapping: Cert III EAL family — 22486VIC (current), 22489VIC,
+# 22491VIC (Further Study), 22640VIC (reaccredited 2022/23), 22643VIC.
 
 unit:
   code: "VU22384"
-  # seeded from training.gov.au public register — verify in tga unit PDF
-  title_seed: "Develop and document a learning plan and portfolio"
+  title: "Develop and document a learning plan and portfolio"
   tga_url: "https://training.gov.au/Training/Details/VU22384"
-  title: "TBD_FROM_VRQA_COURSE_DOC"
-  nominal_hours_total: 0
+  nominal_hours_total: 0               # TBD_FROM_VRQA_COURSE_DOC
+  prerequisites: "TBD_FROM_VRQA_COURSE_DOC"
+  assessment_conditions: "TBD_FROM_VRQA_COURSE_DOC"
+  last_validation_date: "YYYY-MM-DD"
+
   parent_courses:
     - code: "22486VIC"
-
       public_register_url: "https://training.gov.au/Training/Details/22486VIC"
-      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      title_verified_from_vrqa: "Certificate III in EAL (Access)"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22489VIC"
-
       public_register_url: "https://training.gov.au/Training/Details/22489VIC"
-      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      title_verified_from_vrqa: "Certificate III in EAL (Employment)"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22491VIC"
-
       public_register_url: "https://training.gov.au/Training/Details/22491VIC"
-      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      title_verified_from_vrqa: "Certificate III in EAL (Further Study)"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22640VIC"
-
       public_register_url: "https://training.gov.au/Training/Details/22640VIC"
-      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      title_verified_from_vrqa: "Certificate III in EAL (Access) — reaccredited 2022/23"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
     - code: "22643VIC"
-
       public_register_url: "https://training.gov.au/Training/Details/22643VIC"
-      title_verified_from_vrqa: "TBD_FROM_VRQA_COURSE_DOC"
+      title_verified_from_vrqa: "Certificate III in EAL (Employment) — reaccredited 2022/23"
       accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+
+  # ── Elements and Performance Criteria (verbatim from CP term plan) ──
+  elements:
+    - id: "1"
+      title: "Identify and clarify own goals"
+      performance_criteria:
+        - id: "1.1"
+          text: "Identify and prioritise goals"
+        - id: "1.2"
+          text: "Review and compare current skills and knowledge with identified goals"
+        - id: "1.3"
+          text: "Identify any additional skills requirements to meet identified goals"
+        - id: "1.4"
+          text: "Identify previous experiences that may impact on achieving identified goals"
+        - id: "1.5"
+          text: "Identify and access support resources to achieve goals"
+    - id: "2"
+      title: "Develop and document an individual learning plan to achieve goals"
+      performance_criteria:
+        - id: "2.1"
+          text: "Clarify the purpose of an individual learning plan"
+        - id: "2.2"
+          text: "Identify the features of an individual learning plan"
+        - id: "2.3"
+          text: "Confirm and apply the processes for developing an individual learning plan"
+        - id: "2.4"
+          text: "Complete the individual learning plan"
+    - id: "3"
+      title: "Prepare portfolio of completed work samples"
+      performance_criteria:
+        - id: "3.1"
+          text: "Review the outcomes of the learning plan with an appropriate support person/s"
+        - id: "3.2"
+          text: "Identify any barriers encountered and discuss alternative options with an appropriate support person/s"
+        - id: "3.3"
+          text: "Document achievements using a simple format agreed with an appropriate support person/s"
+        - id: "3.4"
+          text: "Clarify and confirm format of portfolio"
+        - id: "3.5"
+          text: "Collect examples of evidence for portfolio"
+    - id: "4"
+      title: "Monitor and update the individual learning plan"
+      performance_criteria:
+        - id: "4.1"
+          text: "Identify progress towards identified goals and objectives"
+        - id: "4.2"
+          text: "Determine factors which contributed to success in meeting goals"
+        - id: "4.3"
+          text: "Note barriers to success in meeting goals"
+        - id: "4.4"
+          text: "Identify strategies to address barriers"
+        - id: "4.5"
+          text: "Amend individual learning plan as needed"
+
+  # ── Required Knowledge and Skills (verbatim) ──
+  required_knowledge_skills:
+    - id: "KS1"
+      text: "Different types of goals such as personal and work"
+    - id: "KS2"
+      text: "Difference between long- and short-term goals"
+    - id: "KS3"
+      text: "Source of additional support"
+    - id: "KS4"
+      text: |
+        Oral communication skills to:
+        • take turns to maintain simple discussion about learning goals and
+          potential issues in achieving them
+        • ask and respond to questions about learning goals
+        • discuss implementation of a learning plan
+    - id: "KS5"
+      text: |
+        Literacy skills to:
+        • follow simple instructions to complete a simple written template
+        • use sentences of one or two clauses to document own achievement
+          of learning goals
+        • use key words related to own learning
+    - id: "KS6"
+      text: "Problem solving skills to draw on own experiences to identify current skills and learning goals"
+
+  # Performance Evidence / Foundation Skills not captured in the pattern
+  # source we had — leave as TBD until verified from the unit PDF.
+  performance_evidence: []
+  foundation_skills_block: []
+
+  # ── Foundation Skills (ACSF) targeted when delivered at Cert III level ──
+  foundation_skills:
+    - domain: "Learning"
+      level: 3
+      indicator: "3.01"
+    - domain: "Learning"
+      level: 3
+      indicator: "3.02"
+
+  # mapping + assessor_guide stay TBD until CommunityPlus LWA mapping + AG
+  # are pasted in (internal SharePoint source — see SOURCES.md §4).
+  mapping:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    rows:
+      - id: "MAP-01"
+        assessment_task: "AT-01"
+        performance_criteria: ["1.1"]
+        required_skills_knowledge: ["KS1"]
+        foundation_skills: ["Learning L3 (3.01)"]
+        evidence_type: "TBD_FROM_LWA_MAPPING"
+        description: "TBD_FROM_LWA_MAPPING"
+
+  assessor_guide:
+    version: "0.0"
+    issued: "YYYY-MM-DD"
+    tasks:
+      - id: "AT-01"
+        title: "TBD_FROM_ASSESSOR_GUIDE"
+        mode: "TBD_FROM_ASSESSOR_GUIDE"
+        benchmark_summary: "TBD_FROM_ASSESSOR_GUIDE"
+        reasonable_adjustment: "TBD_FROM_ASSESSOR_GUIDE"
+        reassessment_rule: "TBD_FROM_ASSESSOR_GUIDE"
+
+template:
+  version: "1.0"

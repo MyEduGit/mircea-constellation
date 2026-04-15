@@ -1,0 +1,107 @@
+# ACSF indicator reference — Australian Core Skills Framework (DEWR)
+#
+# The ACSF expresses adult LLN (language, literacy, numeracy) as a matrix of
+# 5 core skills × 5 levels + Pre Level 1 Supplement (1A, 1B). For AMEP / SEE
+# progress reporting, progress is tracked against 8 indicators (2 each for
+# Reading, Writing, Learning, Oral Communication; Numeracy is the 5th core
+# skill, tracked under the Victorian EAL Framework but not AMEP).
+#
+# Indicator numbering convention (as it appears in CommunityPlus term plans):
+#   <level>.<index>
+#   e.g. 3.01 = Level 3, first indicator (Learning — first)
+#        3.07 = Level 3, seventh indicator (Oral Communication — Speaking)
+#
+# At Level 3 (= Certificate III EAL, exit Level 2 → Level 3) the full set is:
+#   3.01 / 3.02   Learning
+#   3.03 / 3.04   Reading
+#   3.05 / 3.06   Writing
+#   3.07          Oral Communication — Speaking
+#   3.08          Oral Communication — Listening
+#   3.09 / 3.10 / 3.11   Numeracy
+#
+# This file is the canonical lookup the term-plan generator uses to expand
+# bare indicator codes (e.g. "3.07") into readable labels.
+
+framework:
+  name: "Australian Core Skills Framework"
+  custodian: "DEWR — Department of Employment and Workplace Relations"
+  source_pdf: "https://www.dewr.gov.au/download/6976/australian-core-skills-framework/10893/document/pdf"
+  pre_level_1_pdf: "https://www.dewr.gov.au/skills-information-training-providers/australian-core-skills-framework/download-acsf"
+
+# Core skill → short-code map (for UI labels in the generator)
+core_skills:
+  L:  "Learning"
+  R:  "Reading"
+  W:  "Writing"
+  OC: "Oral Communication"
+  N:  "Numeracy"
+
+# Level 3 indicators — verbatim-paraphrased from the ACSF PDF;
+# re-verify headings from the authoritative ACSF before using as audit.
+indicators:
+
+  # ── Level 3 — exit Level 2 → Level 3 (maps to Cert III EAL 22640VIC) ──
+  "3.01":
+    core_skill: L
+    level: 3
+    indicator_title: "Plans and monitors own learning"
+    heading: "Plans, organises and monitors own learning to achieve goals"
+  "3.02":
+    core_skill: L
+    level: 3
+    indicator_title: "Uses a range of strategies to acquire information / understanding"
+    heading: "Uses a range of strategies to support own learning, including selecting relevant resources"
+
+  "3.03":
+    core_skill: R
+    level: 3
+    indicator_title: "Identifies and interprets relevant information and ideas"
+    heading: "Identifies and interprets key information from a range of structured straightforward texts"
+  "3.04":
+    core_skill: R
+    level: 3
+    indicator_title: "Evaluates, synthesises and integrates information"
+    heading: "Extracts, interprets and integrates information from more than one source"
+
+  "3.05":
+    core_skill: W
+    level: 3
+    indicator_title: "Plans, drafts and proofreads texts for a limited range of purposes and audiences"
+    heading: "Writes straightforward texts on familiar topics, taking account of audience and purpose"
+  "3.06":
+    core_skill: W
+    level: 3
+    indicator_title: "Uses and links vocabulary, grammar and punctuation relevant to purpose"
+    heading: "Uses a range of vocabulary and grammatical structures appropriate to text type"
+
+  "3.07":
+    core_skill: OC
+    level: 3
+    domain: "Speaking"
+    indicator_title: "Selects and uses language appropriate to situation"
+    heading: "Speaks on everyday topics with some detail, using appropriate register and some fluency"
+  "3.08":
+    core_skill: OC
+    level: 3
+    domain: "Listening"
+    indicator_title: "Listens for key information in familiar spoken texts"
+    heading: "Listens for key information and responds appropriately in straightforward conversations and transactions"
+
+  "3.09":
+    core_skill: N
+    level: 3
+    indicator_title: "Identifies and uses mathematical information in familiar activities"
+    heading: "Identifies and uses familiar mathematical information embedded in routine tasks"
+  "3.10":
+    core_skill: N
+    level: 3
+    indicator_title: "Selects and uses mathematical processes"
+    heading: "Selects and performs relevant mathematical processes in familiar activities"
+  "3.11":
+    core_skill: N
+    level: 3
+    indicator_title: "Represents and communicates mathematical reasoning"
+    heading: "Uses everyday language and symbols to represent and communicate straightforward mathematical results"
+
+# Lower-level indicator sets (Pre L1A / 1B, L1, L2) and L4/L5 can be added
+# as the corresponding Cert I / II / IV term plans come online.
