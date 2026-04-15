@@ -2,6 +2,7 @@
   "fleet":        { "status": "ok",   "bots": "10/11 active" },
   "nanoclaw":     { "status": "ok",   "version": "1.2.17" },
   "fireclaw":     { "status": "new",  "version": "0.1.0", "incidents_24h": 0 },
+  "lucifericlaw": { "status": "new",  "version": "0.1.1", "open_cases": 0, "iniquitous_24h": 0 },
   "ollama":       { "status": "warn", "model": "qwen2.5:32b" },
   "cognee":       { "status": "ok",   "version": "1.0.0" },
   "disk_openclaw": "46% used",

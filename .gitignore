@@ -3,6 +3,8 @@
 
 # Fireclaw venv (created by setup/fireclaw_install.sh)
 .fireclaw-env/
+# LuciferiClaw venv (created by setup/lucifericlaw_install.sh)
+.lucifericlaw-env/
 
 # Python bytecode
 __pycache__/
