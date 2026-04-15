@@ -18,10 +18,10 @@ and its programme rules do:
 | **Skills First** | Vic Dept of Jobs, Skills, Industry and Regions | Skills First Funding Contract | ACSF / EAL Framework |
 | **FFS** | Learner | RTO policy | internal |
 
-CommunityPlus delivers both **AMEP** and **SEE** — Denis's Cert III Term 1
-2026 plan (`terms/22640VIC-cert3-term1-2026.yaml`) is a SEE-stream delivery
-of the same 22640VIC course that other cohorts take under AMEP. The term-plan
-schema captures the stream in `course.stream`.
+CommunityPlus delivers both **AMEP** and **SEE** — e.g. the worked example
+`terms/22640VIC-cert3-term1-2026.yaml` is a SEE-stream delivery of the same
+22640VIC course that other cohorts take under AMEP. The term-plan schema
+captures the stream in `course.stream`.
 
 ## 1. VRQA — Victorian Registration and Qualifications Authority
 

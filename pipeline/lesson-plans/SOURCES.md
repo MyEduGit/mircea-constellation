@@ -38,10 +38,10 @@ its `source_urls` block so auditors can reproduce the lineage.
 
 ### DEWR — Skills for Education and Employment (SEE) Programme
 
-CommunityPlus runs an **SEE** stream alongside AMEP. Denis's Cert III
-Term 1 2026 plan (the pattern source for the term-plan schema) is an
-SEE-stream delivery — its co-branded masthead reads "Learning for
-Employment" (SEE programme colophon) + "CommunityPlus" (RTO).
+CommunityPlus runs an **SEE** stream alongside AMEP. SEE-stream
+deliveries carry a co-branded masthead — "Learning for Employment" (SEE
+programme colophon) paired with "CommunityPlus" (RTO) — and are reported
+against ACSF (Australian Core Skills Framework).
 
 | Document | URL |
 |---|---|
@@ -113,6 +113,20 @@ for triangulation but is not the AMEP progress-reporting instrument.
 | Legacy — ISLPR (International Second Language Proficiency Ratings) | pre-2017 AMEP tool; Queensland University of Technology is the ISLPR custodian |
 | Legacy — CSWE (Certificates in Spoken and Written English) | pre-2017 AMEP curriculum; superseded by the Victorian EAL Framework |
 | VOCEDplus record — ACSF (revised version) | https://www.voced.edu.au/content/ngv:52101 |
+
+### Victorian Government — school term dates and holidays
+
+The calendar block in every term plan is anchored on the gazetted
+Victorian government school term dates (statutory basis: *Education and
+Training Reform Regulations 2017*, Regulation 13). The current 5-year
+block (2026–2030) was Minister-approved on 28 June 2021.
+
+| Document | URL |
+|---|---|
+| School term dates and holidays — Vic.gov.au (landing) | https://www.vic.gov.au/school-term-dates-and-holidays-victoria |
+| Term dates — Department of Education (Vic) | https://www.education.vic.gov.au/about/department/Pages/datesterm.aspx |
+
+Machine-readable form: `pipeline/lesson-plans/templates/vic-school-calendar-2026.yaml`.
 
 ## 2. Parent-course documents — VRQA accredited EAL/CGEA suite
 
@@ -187,18 +201,32 @@ this repo. Any field derived from them must be pasted into the YAML inputs
   plan's banner) — the RTO's single source of truth for cohort-level
   assessment rules for a named class.
 
-### CommunityPlus term-plan pattern source
+### CommunityPlus term-plan pattern source *(visual reference only)*
 
-The authoritative *shape* of the term-plan artefact (macro-skills matrix,
-colour coding, verbatim unit appendices) is anchored on:
+The *shape* of the term-plan artefact (co-branded masthead, per-unit
+appendices) was originally informed by:
 
 - `Denis's Cert3_Term1 2026 lesson planning.docx` — 13-page co-branded
   "Learning for Employment + CommunityPlus" document for 22640VIC Cert III
   EAL (Access), SEE Stream: Basic, Year 2026, Term 1.
 
-Transcribed verbatim (no learner PII) into
-`terms/22640VIC-cert3-term1-2026.yaml`. That file is the canonical
-worked example every other term plan in the pipeline is shaped against.
+**This document is a visual reference only.** The v2 term-plan template is
+strictly compliance-driven — it renders only government-mandated /
+audit-indexed content (VRQA verbatim + CP LWA Mapping rows + DEWR ACSF
+indicator grid + vic.gov.au term dates). Trainer-specific narrative
+(theme wording, macro-skill prose, classroom resource lists) is **not**
+rendered by the pipeline; that content is trainer-local and belongs in
+the trainer's personal lesson copy, not the audit artefact.
+
+The authoritative content sources for the term plan are:
+
+| Content | Source |
+|---|---|
+| Elements / PCs / RK&S / PE / FS (verbatim) | VRQA accredited course doc + training.gov.au unit PDF |
+| Mapping rows (assessment task → PCs / KS / FS / evidence) | CommunityPlus **LWA Mapping** document (internal, per unit) |
+| Assessor Guide tasks | CommunityPlus **Assessor Guide** (internal, per unit) |
+| ACSF indicator grid | `templates/acsf-indicators.yaml` (DEWR verbatim) |
+| Term dates | `templates/vic-school-calendar-2026.yaml` (vic.gov.au authoritative) |
 
 ### aXcelerate (CommunityPlus Student Management System)
 

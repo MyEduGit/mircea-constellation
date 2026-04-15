@@ -1,32 +1,44 @@
 # Term Unit Session Plan — CommunityPlus SEE / AMEP
 #
-# This is the **primary planning artefact** CommunityPlus trainers fill in per
-# term. It threads one *theme* across 7 macro-skill strands (Learning /
-# Speaking / Listening / Reading / Writing / Numeracy / Digital Literacy)
-# anchored to 2–3 units for the term, with verbatim Elements + PCs +
-# KS/KE + PE + FS appended from the unit PDFs.
+# This is the **primary planning artefact** CommunityPlus produces per term.
+# It is strictly a compliance artefact: every rendered block is VRQA / DEWR /
+# Home Affairs verbatim or a direct index into the CommunityPlus Mapping
+# document. Trainer-specific narrative (theme wording, macro-skill prose,
+# classroom resources) is out of scope for this pipeline — the pipeline
+# produces the audit surface, not the trainer's personal lesson copy.
+#
+# Rendered body (in order):
+#   1. Header strip  — course identity, stream, trainer, class, term dates
+#   2. Units threaded through this term (table)
+#   3. ACSF indicator grid for the framework level (verbatim from DEWR)
+#   4. For each unit:
+#        a. Elements + Performance Criteria (verbatim, VRQA)
+#        b. Required Knowledge & Skills / Knowledge Evidence (verbatim)
+#        c. Performance Evidence (verbatim, where present)
+#        d. Foundation Skills (verbatim, where present)
+#        e. Mapping rows — assessment_task × PCs × KS × FS × evidence
+#           (source: CommunityPlus LWA Mapping document)
+#        f. Assessor Guide tasks (source: CommunityPlus Assessor Guide)
+#   5. Term calendar (source: vic.gov.au + CP academic calendar)
+#   6. Compliance frame (VRQA / ASQA / DEWR|Home Affairs)
 #
 # Title on the delivered document:
-#   "<STREAM> Unit Session Plan: Term <N>   Year <YYYY>"
-#   e.g. "SEE Unit Session Plan: Term 1   Year 2026"
-#
-# Pattern source: Denis's Cert3_Term1 2026 lesson planning (22640VIC,
-# SEE Stream: Basic) — the worked example lives in
-# pipeline/lesson-plans/terms/22640VIC-cert3-term1-2026.yaml.
+#   "<STREAM> Unit Session Plan: Term <N> — Year <YYYY>"
+#   e.g. "SEE Unit Session Plan: Term 1 — Year 2026"
 #
 # Copy this file to pipeline/lesson-plans/terms/<COURSE>-<LEVEL>-term<N>-<YYYY>.yaml
 # and fill every TBD_FROM_* from the authoritative source:
 #   TBD_FROM_VRQA_COURSE_DOC → the VRQA accredited course document
 #   TBD_FROM_TGA_UNIT_PDF    → the training.gov.au unit PDF (verbatim)
 #   TBD_FROM_LWA_MAPPING     → the CommunityPlus "LWA mapping" document
-#   TBD_FROM_CLASS_GLOBAL    → the CommunityPlus "class name global" document
+#   TBD_FROM_ASSESSOR_GUIDE  → the CommunityPlus Assessor Guide
 
 # ─────────────────────────────────────────────────────────────────────
 # 1. Header (top-of-page branding and identity — same on every page)
 # ─────────────────────────────────────────────────────────────────────
 header:
-  # Co-branded masthead: "Learning for Employment" (SEE programme colophon)
-  # paired with "CommunityPlus" (RTO).
+  # Co-branded masthead: programme colophon paired with RTO colophon.
+  # For SEE delivery the left colophon is "Learning for Employment".
   left_colophon: "Learning for Employment"
   right_colophon: "CommunityPlus"
   title: "SEE Unit Session Plan"        # or "AMEP Unit Session Plan" etc.
@@ -37,67 +49,43 @@ header:
 # 2. Course and stream identity
 # ─────────────────────────────────────────────────────────────────────
 course:
-  # DEWR programme stream the class is funded under:
+  # DEWR / Home Affairs programme stream the class is funded under:
   #   "SEE"  — Skills for Education and Employment (DEWR contract)
   #   "AMEP" — Adult Migrant English Program (Home Affairs contract)
   #   "SF"   — Skills First Foundation (Vic state funding)
   #   "FFS"  — Fee-for-service
   stream: "SEE"
-  stream_substream: "Basic"             # e.g. "Basic" / "Intermediate" / "Evening"
+  stream_substream: "Basic"             # optional, e.g. "Basic" / "Intermediate"
 
-  # VRQA-accredited parent course (the "ESL Framework Level")
+  # VRQA-accredited parent course
   framework_code: "22640VIC"            # e.g. 22484VIC / 22640VIC
   framework_level_label: "Cert III"     # "Cert I" / "Cert II" / "Cert III" / "Cert IV"
-  framework_title: "TBD_FROM_VRQA_COURSE_DOC"    # Certificate III in EAL (Access)
+  framework_title: "TBD_FROM_VRQA_COURSE_DOC"    # e.g. "Certificate III in EAL (Access)"
   accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
 
+  # ACSF level the cohort sits at for SEE / AMEP progress reporting.
+  # Drives which block of templates/acsf-indicators.yaml is rendered.
+  #   Cert I    → ACSF 1 (+ Pre L1)
+  #   Cert II   → ACSF 2
+  #   Cert III  → ACSF 3
+  #   Cert IV   → ACSF 4
+  acsf_level: 3
+
 # ─────────────────────────────────────────────────────────────────────
-# 3. Trainer / class
+# 3. Trainer / class  (identity only — no pedagogical content)
 # ─────────────────────────────────────────────────────────────────────
 trainer:
-  name: ""                              # from the document header "Trainer/Assessor:"
+  name: ""                              # document header "Trainer/Assessor:"
   credential: "TAE40122"
   vocational_competency: ""
   industry_currency: ""
 
 class:
-  code: "CPxxxExx"                      # aXcelerate class code, e.g. CP123E3
+  code: "CPxxxExx"                      # aXcelerate class code
   campus: ""
 
 # ─────────────────────────────────────────────────────────────────────
-# 4. Theme (runs through every macro-skill strand)
-# ─────────────────────────────────────────────────────────────────────
-theme:
-  title: "TBD"
-  # e.g. "Education and Employment - Everyday English including Personal
-  # information, Education at school, Looking for work, Celebrations"
-  subtopics:
-    - ""
-    - ""
-
-# ─────────────────────────────────────────────────────────────────────
-# 5. Top banner text (verbatim block that reappears every term)
-# ─────────────────────────────────────────────────────────────────────
-banner:
-  what_students_learn: |
-    Students will learn LLN skills required for study, work, and
-    everyday recreational and transactional exchanges.
-  resources_statement: |
-    Students will use a mixture of paper-based, electronic and
-    tactile learning resources in order to improve their English
-    literacy, numeracy and digital literacy skills.
-  assessment_statement: |
-    ACSF assessments will be conducted on a regular basis to ensure
-    that students are continually improving. EAL assessments will
-    be used to claim ACSF indicators where appropriate. The
-    progression report will be submitted at the end of each term.
-  mapping_reference: "Refer to LWA mapping document and class name global document"
-  acknowledgement_note: |
-    Include employability skills, language, numeracy and literacy
-    skills. Indicate acknowledgement activities.
-
-# ─────────────────────────────────────────────────────────────────────
-# 6. Units threaded through this term
+# 4. Units threaded through this term
 # ─────────────────────────────────────────────────────────────────────
 # Distinguish:
 #   ongoing — unit delivered across all terms (e.g. VU22384 portfolio)
@@ -113,124 +101,23 @@ units:
     unit_yaml: "units/VUxxxxx.yaml"
 
 # ─────────────────────────────────────────────────────────────────────
-# 7. Macro-skill matrix — 7 rows, one per strand
+# 5. Term calendar (authoritative source: vic.gov.au + CP academic calendar)
 # ─────────────────────────────────────────────────────────────────────
-# Each row corresponds to a colour-coded block in the CommunityPlus doc:
-#   Learning         — yellow
-#   Speaking         — violet
-#   Listening        — pink
-#   Reading          — cream
-#   Writing          — blue
-#   Numeracy         — green
-#   Digital Literacy — salmon
-macro_skills:
-
-  - strand: "Learning"
-    colour: "yellow"
-    learning_points:
-      - ""                              # "• Identify goals (personal and work related) ..."
-    employability_skills:
-      - "self-awareness"
-      - "critical thinking"
-      - "problem solving"
-      - "initiative"
-      - "learning"
-      - "planning"
-      - "organising"
-      - "reflecting"
-    resources_and_facilities:
-      - ""
-    framework_unit_refs: ["VU22384"]    # must match units[].code above
-    acsf_indicators: ["3.01", "3.02"]   # see templates/acsf-indicators.yaml
-
-  - strand: "Speaking"
-    colour: "violet"
-    learning_points: [""]
-    employability_skills:
-      - "oral communication"
-      - "problem solving"
-      - "taking initiative"
-      - "teamwork"
-    resources_and_facilities: [""]
-    framework_unit_refs: ["VU23524"]
-    acsf_indicators: ["3.07"]
-
-  - strand: "Listening"
-    colour: "pink"
-    learning_points: [""]
-    employability_skills:
-      - "communication"
-      - "teamwork"
-    resources_and_facilities: [""]
-    framework_unit_refs: ["VU23524"]
-    acsf_indicators: ["3.08"]
-
-  - strand: "Reading"
-    colour: "cream"
-    learning_points: [""]
-    employability_skills:
-      - "learning"
-      - "teamwork"
-      - "problem solving"
-      - "technology"
-    resources_and_facilities: [""]
-    framework_unit_refs: ["VU22384"]
-    acsf_indicators: ["3.03", "3.04"]
-
-  - strand: "Writing"
-    colour: "blue"
-    learning_points: [""]
-    employability_skills:
-      - "learning"
-      - "teamwork"
-      - "problem solving"
-      - "technology"
-    resources_and_facilities: [""]
-    framework_unit_refs: ["VU22384"]
-    acsf_indicators: ["3.05", "3.06"]
-
-  - strand: "Numeracy"
-    colour: "green"
-    learning_points: [""]
-    employability_skills:
-      - "problem solving"
-      - "initiative"
-      - "numeracy"
-      - "planning"
-      - "organising"
-    resources_and_facilities: [""]
-    framework_unit_refs: ["VU22384"]
-    acsf_indicators: ["3.09", "3.10", "3.11"]
-
-  - strand: "Digital Literacy"
-    colour: "salmon"
-    learning_points: [""]
-    employability_skills:
-      - "problem solving"
-      - "initiative"
-      - "planning"
-      - "organising"
-      - "learning"
-      - "technology"
-    resources_and_facilities: [""]
-    framework_unit_refs: ["VU23560"]
-    acsf_indicators: []                 # "Yet to confirm" at time of this pattern
-
-# ─────────────────────────────────────────────────────────────────────
-# 8. Term calendar (optional but audit-useful)
-# ─────────────────────────────────────────────────────────────────────
+# For Vic school terms see templates/vic-school-calendar-2026.yaml —
+# statutory basis: Education and Training Reform Regulations 2017, Reg 13.
+# Minister-approved 5-year blocks (2026–2030 approved 28 June 2021).
 calendar:
   term_start: "YYYY-MM-DD"
   term_end:   "YYYY-MM-DD"
   weeks: 10
-  sessions_per_week: 2                  # AMEP Evening convention: 2 × 3-hour sessions
-  public_holidays_impacting:
+  sessions_per_week: 2                  # AMEP / SEE Evening convention
+  public_holidays_impacting:            # holidays that fall INSIDE the term
     - date: "YYYY-MM-DD"
-      name: "Australia Day"
+      name: ""
 
 # ─────────────────────────────────────────────────────────────────────
-# 9. Template contract (generator enforces ≤ VERSION)
+# 6. Template contract (generator enforces ≤ VERSION)
 # ─────────────────────────────────────────────────────────────────────
 template:
   kind: "term-plan"
-  version: "1.0"
+  version: "2.0"                        # v2 = mapping-first, trainer prose removed

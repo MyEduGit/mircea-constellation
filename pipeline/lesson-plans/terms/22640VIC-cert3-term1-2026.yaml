@@ -1,11 +1,21 @@
 # CommunityPlus — SEE Unit Session Plan: Term 1 — Year 2026
 # Certificate III in EAL (Access) — 22640VIC, SEE Stream: Basic
 #
-# Pattern source: Denis's Cert3_Term1 2026 lesson planning (Word doc, 13 pp).
-# Transcribed verbatim from the macro-skills matrix rows. No learner PII.
+# Strictly a compliance shell: identifies WHICH units are threaded through the
+# term and at WHICH ACSF level. All substantive content is rendered from the
+# authoritative artefacts pointed to:
+#   - VRQA accredited course doc       → units/<code>.yaml (Elements / PCs / KS)
+#   - training.gov.au unit PDF         → units/<code>.yaml (PE / FS verbatim)
+#   - CommunityPlus LWA Mapping        → units/<code>.yaml → unit.mapping.rows
+#   - CommunityPlus Assessor Guide     → units/<code>.yaml → unit.assessor_guide
+#   - DEWR Australian Core Skills Framework → templates/acsf-indicators.yaml
+#   - Victorian school calendar (gov)  → templates/vic-school-calendar-2026.yaml
 #
-# This is the canonical worked example demonstrating the term-plan schema.
 # Run:  python3 ../generate.py --mode term 22640VIC-cert3-term1-2026
+#
+# Trainer-specific narrative (theme wording, macro-skill prose, classroom
+# resource lists) is OUT OF SCOPE for this artefact. It is trainer-local and
+# belongs in the trainer's personal lesson copy, not the audit artefact.
 
 header:
   left_colophon: "Learning for Employment"
@@ -19,44 +29,19 @@ course:
   stream_substream: "Basic"
   framework_code: "22640VIC"
   framework_level_label: "Cert III"
-  framework_title: "Certificate III in EAL (Access)"
-  accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"     # reaccredited 2022/23
+  framework_title: "TBD_FROM_VRQA_COURSE_DOC"   # Certificate III in EAL (Access)
+  accreditation_period: "TBD_FROM_VRQA_COURSE_DOC"
+  acsf_level: 3
 
 trainer:
-  name: "Denis"                         # as it appears on the planning doc header
+  name: ""                              # held in coordinator records
   credential: "TAE40122"
   vocational_competency: ""
   industry_currency: ""
 
 class:
-  code: "CPxxxExx"                      # class-level attribution held in coordinator records
+  code: "CPxxxExx"
   campus: ""
-
-theme:
-  title: "Education and Employment — Everyday English"
-  subtopics:
-    - "Personal information"
-    - "Education at school"
-    - "Looking for work"
-    - "Celebrations (Australia Day, Lunar New Year, Valentine's Day, Labour Day, Easter)"
-
-banner:
-  what_students_learn: |
-    Students will learn LLN skills required for study, work, and
-    everyday recreational and transactional exchanges.
-  resources_statement: |
-    Students will use a mixture of paper-based, electronic and
-    tactile learning resources in order to improve their English
-    literacy, numeracy and digital literacy skills.
-  assessment_statement: |
-    ACSF assessments will be conducted on a regular basis to ensure
-    that students are continually improving. EAL assessments will
-    be used to claim ACSF indicators where appropriate. The
-    progression report will be submitted at the end of each term.
-  mapping_reference: "Refer to LWA mapping document and class name global document"
-  acknowledgement_note: |
-    Include employability skills, language, numeracy and literacy
-    skills. Indicate acknowledgement activities.
 
 units:
   - code: "VU22384"
@@ -72,220 +57,17 @@ units:
     role: "term"
     unit_yaml: "units/VU23560.yaml"
 
-macro_skills:
-
-  # ─── Learning ── yellow ────────────────────────────────────────────
-  - strand: "Learning"
-    colour: "yellow"
-    learning_points:
-      - "Identify goals (personal and work related) to develop a learning plan — Develop steps required to achieve goals for speaking, listening, reading, and writing."
-      - "Identify personal strengths and areas for improvement."
-      - "Use variety of learning strategies — using dictionaries / electronic translators, videos, English Language Learning websites on the computer."
-      - "Review learning goals, the strategies that they used, and the progress they have made towards achieving their goals."
-      - "Reflect upon who and what helped them to improve their English skills, as well as possible barriers."
-      - "List future goals related to work / study."
-      - "Pair work: helping each other during class time."
-      - "Group work: sharing ideas, answers and experiences."
-      - "Asking questions, speaking to peers, teachers, admin staff, observing classmates doing role-plays."
-      - "Planning and participating in excursions and class activities."
-    employability_skills:
-      - "self-awareness"
-      - "critical thinking"
-      - "problem solving"
-      - "initiative"
-      - "learning"
-      - "planning"
-      - "organising"
-      - "reflecting"
-    resources_and_facilities:
-      - "Teacher's personal computer"
-      - "Planning / self-reflection activities"
-      - "Surveys and interviews with classmates"
-      - "Class discussions related to study and work aspirations"
-      - "Checklists and Questionnaires"
-      - "Dictionaries — Electronic Translators"
-      - "Posters and Wordlists"
-      - "Teacher Generated Tasks drawn from material on the internet — worksheets"
-      - "White Board"
-      - "Realia"
-      - "Monthly Calendar"
-    framework_unit_refs: ["VU22384"]
-    acsf_indicators: ["3.01", "3.02"]
-
-  # ─── Speaking ── violet ────────────────────────────────────────────
-  - strand: "Speaking"
-    colour: "violet"
-    learning_points:
-      - "Talk about the weekends, public holidays — Australia Day, Celebrations — Lunar (Chinese / Vietnamese) New Year, Valentine's Day, Labour Day, Easter."
-      - "Carry on discussions on comprehension questions of reading text or current affairs; techniques may include giving information in response to questions, giving explanations, opinions, restatement and requests for clarification supported by paralinguistic features to express attitude, such as facial expressions to indicate disapproval."
-      - "Display emerging awareness of formal and informal register demonstrated by paralinguistic features may include but is not limited to appropriate use of please and thank you, showing interest, asking appropriate questions, expressing regret, or ways of expressing disagreement or conflict."
-      - "Provide explanations using words such as \"because\" and \"so\"."
-      - "Use polite expressions using the conditional, such as \"Excuse me, I was wondering if you could…\" or to negotiate transactions, such as \"so who should I talk to about…\""
-    employability_skills:
-      - "oral communication"
-      - "problem solving"
-      - "taking initiative"
-      - "teamwork"
-    resources_and_facilities:
-      - "White board — Desktop computer — YouTube videos, Kahoot! Quizzes, Bingo and Rapid-Fire recall games"
-      - "Topic displays — Using topic words (Education and Employment)"
-      - "Conducting Surveys, Role plays of everyday conversational transactions and Group work"
-      - "Conducting mock interviews: introducing, giving personal details, talking about work-related issues; introducing themselves / giving and asking key information (title, full name, country of birth, nationality, occupation, age, interests)."
-      - "Teacher generated tasks about Education — working in the classroom, Purpose of education, learning strategies, looking for work — introducing themselves, understanding basic conversation, Celebrations (Australia Day, Chinese New Year, Valentine's Day, Labour Day, Local Showcases, Easter)."
-      - "Question cards for conversations"
-      - "Excursion — TBA"
-    framework_unit_refs: ["VU23524"]
-    acsf_indicators: ["3.07"]
-
-  # ─── Listening ── pink ─────────────────────────────────────────────
-  - strand: "Listening"
-    colour: "pink"
-    learning_points:
-      - "Listen to conversations, announcements, descriptions, statements, and questions for details and to identify key information."
-      - "Listen and respond to questions, requests, directions and instructions may include explaining or giving some requested details, such as \"I've got my receipt here\", or dealing with rude or abrupt responses."
-      - "Differentiate sounds — individually, in syllables and in words. Rhyming sounds and words."
-      - "Take turns in conversation in class, paying attention to social cues and gestures / body language."
-      - "Notice silent letters / letter blends in words correctly (such as the letter \"k\" in 'knight')."
-      - "Hear subtle letter blends such as \"th\"."
-      - "Listen to information about Australian culture and celebrations, public transport, housing and employment systems, as well as current affairs."
-      - "Understand basic questions centred around personal information or overall studies to formulate appropriate responses."
-    employability_skills:
-      - "communication"
-      - "teamwork"
-      - "following directions"
-      - "listening and answering basic interview questions"
-    resources_and_facilities:
-      - "White board — Desktop computer — YouTube videos, Kahoot! Quizzes, Bingo and Rapid-Fire recall games"
-      - "Topic displays — Using topic words (Education and Employment)"
-      - "Conducting Surveys, Role plays of everyday conversational transactions and Group work"
-      - "Teacher generated tasks about Education, looking for work, Celebrations."
-      - "Question cards for conversations"
-      - "Excursion — TBA"
-    framework_unit_refs: ["VU23524"]
-    acsf_indicators: ["3.08"]
-
-  # ─── Reading ── cream ──────────────────────────────────────────────
-  - strand: "Reading"
-    colour: "cream"
-    learning_points:
-      - "Read paper-based and / or digital, include some detail in a range of everyday contexts, such as personal, education, work or community and address different purposes such as informing or advising."
-      - "Read straightforward transactional texts, may include but are not limited to: email messages, digital blogs, social media posts which include some details."
-      - "Read forms for different purposes and contexts, such as applications, feedback forms, complaint forms, incident forms or educational forms, such as special consideration application."
-      - "Read letters, requests, explanations, warnings and advice, such as that relating to health and wellbeing."
-      - "Applying pre-reading strategies — making predictions by looking at the title, images and format / layout of the text."
-      - "During reading — underline / highlight unfamiliar words to build vocabulary, using dictionaries."
-      - "After reading — comprehend questions related to imperative instructions: circle / write / tick / underline and or answer Who / What / Where / Why / When / How questions."
-    employability_skills:
-      - "learning"
-      - "teamwork"
-      - "problem solving"
-      - "technology"
-    resources_and_facilities:
-      - "White board — Desktop computer — YouTube videos, Kahoot! Quizzes, Bingo and Rapid-Fire recall games"
-      - "Topic displays — Using topic words (Education and Employment)"
-      - "Teacher generated Authentic texts related to personal needs and interests and social and community participation: family, weather, environment, simple current events (Celebrations — Australia Day, Chinese / Vietnamese New Year, Valentine's Day, Labour Day, Easter), reading job advertisement, and sample resumes."
-    framework_unit_refs: ["VU22384"]
-    acsf_indicators: ["3.03", "3.04"]
-
-  # ─── Writing ── blue ───────────────────────────────────────────────
-  - strand: "Writing"
-    colour: "blue"
-    learning_points:
-      - "Write recounts about weekend, holidays and excursions with use of verb tenses, such as the present perfect continuous and past perfect, present and past simple passive, conditional (for example with, if and unless)."
-      - "Use sentence structures for compound and some complex sentences."
-      - "Use adjectives and adverbs and adverbial phrases to describe information and give explanation."
-      - "Use modal forms, including negative forms, such as could lead to, may assist, should not be."
-      - "Use question forms, for example to request information."
-      - "Use vocabulary and expressions for topics related to straightforward transactional contexts, such as content words and common collocations."
-      - "Use discourse features of texts, such as text pattern and structure, staging techniques, organisational features, chronological sequencing of events or information."
-    employability_skills:
-      - "learning"
-      - "teamwork"
-      - "problem solving"
-      - "technology"
-    resources_and_facilities:
-      - "White board — Desktop computer — YouTube videos, Kahoot! Quizzes, Bingo and Rapid-Fire recall games"
-      - "Topic displays — Using topic words (Education and Employment)"
-      - "Teacher generated Authentic texts related to personal needs and interests and social and community participation: family, weather, environment, simple current events (Celebrations), filling up job application forms, resume and emails."
-    framework_unit_refs: ["VU22384"]
-    acsf_indicators: ["3.05", "3.06"]
-
-  # ─── Numeracy ── green ─────────────────────────────────────────────
-  - strand: "Numeracy"
-    colour: "green"
-    learning_points:
-      - "Recognise and appropriately use common units of metric measurement and their abbreviations in familiar situations."
-      - "Use common words for comparing measurements."
-      - "Estimate measures of common quantities."
-      - "Measure common quantities using appropriate simple measuring instruments graduated in familiar units."
-      - "Read and use both analogue and digital time measuring devices, including for am / pm."
-      - "Read, write, interpret and compare numbers and words related to time in familiar situations including half and quarter hours."
-      - "Read and use familiar dates from both hard copy and electronic calendars."
-      - "Seasons — Summer and Autumn."
-      - "Creating monthly calendar."
-      - "Date — day, month, year."
-      - "Money — calculating costs and change, total expenses."
-    employability_skills:
-      - "problem solving"
-      - "initiative"
-      - "numeracy"
-      - "planning"
-      - "organising"
-    resources_and_facilities:
-      - "White board — Desktop computer — YouTube videos"
-      - "Math Words display"
-      - "Math symbols display"
-      - "Shopping catalogues"
-      - "Number Display"
-      - "Maps"
-      - "Teacher Generated Tasks drawn from material on the internet and previously prepared self-paced learning booklets — worksheets"
-      - "Monthly Calendar"
-      - "Quizzes, Bingo and Rapid-Fire recall games"
-      - "Kahoot! Quizzes"
-    framework_unit_refs: ["VU22384"]
-    acsf_indicators: ["3.09", "3.10", "3.11"]
-
-  # ─── Digital Literacy ── salmon ────────────────────────────────────
-  - strand: "Digital Literacy"
-    colour: "salmon"
-    learning_points:
-      - "Access the internet to develop language including: terminology related to digital devices, functions, programs and internet."
-      - "Use spoken and written language related to accessing the internet and internet programs for language learning."
-      - "Use simple verbal and on screen written instructions, such as open the program, double click on…"
-      - "Use simple prepositions and prepositional phrases related to accessing digital technology, such as move the mouse under / over / on that word / scroll up / down."
-      - "Use simple connectives used in instructions and routine email communications."
-      - "Use simple adjectives or adverbs or adverbial phrases as used in routine instructions and communication."
-      - "Use simple sentence structures for email communication, such as simple compound sentences or simple question forms."
-    employability_skills:
-      - "problem solving"
-      - "initiative"
-      - "planning"
-      - "organising"
-      - "learning"
-      - "technology"
-    resources_and_facilities:
-      - "White board — Desktop computer — YouTube videos"
-      - "Laptops"
-      - "Students' smart phone"
-      - "Teacher Generated Tasks drawn from material on the internet and previously prepared self-paced learning booklets — worksheets"
-    framework_unit_refs: ["VU23560"]
-    acsf_indicators: []                 # "ACSF — yet to confirm" in pattern source
-
+# Vic Term 1 2026: Tue 27 Jan → Thu 2 Apr. Only in-term public holiday is
+# Labour Day (Mon 9 Mar). Source: vic.gov.au school term dates + holidays.
 calendar:
-  term_start: "2026-02-02"               # approx — verify with CP academic calendar
-  term_end:   "2026-04-10"               # approx — verify with CP academic calendar
+  term_start: "2026-01-27"
+  term_end:   "2026-04-02"
   weeks: 10
   sessions_per_week: 2
   public_holidays_impacting:
-    - date: "2026-01-26"
-      name: "Australia Day (prior to term)"
     - date: "2026-03-09"
       name: "Labour Day (Vic)"
-    - date: "2026-04-03"
-      name: "Good Friday"
-    - date: "2026-04-06"
-      name: "Easter Monday"
 
 template:
   kind: "term-plan"
-  version: "1.0"
+  version: "2.0"

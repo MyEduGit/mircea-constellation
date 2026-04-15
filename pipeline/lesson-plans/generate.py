@@ -54,7 +54,8 @@ except ImportError:
     sys.exit(2)
 
 
-TEMPLATE_VERSION = "1.0"   # bump + add CHANGELOG entry when template changes
+TEMPLATE_VERSION = "1.0"           # session-plan template
+TERM_TEMPLATE_VERSION = "2.0"      # term-plan template (v2 = mapping-first)
 
 ROOT = Path(__file__).resolve().parent
 TEMPLATES_DIR = ROOT / "templates"
@@ -235,6 +236,28 @@ def load_term_context(term_slug: str) -> dict:
             data = yaml.safe_load(f) or {}
         unit_index[code] = data.get("unit", {})
     term["unit_index"] = unit_index
+
+    # Load ACSF indicator reference and filter to the course's ACSF level,
+    # so the template can render the level's indicator grid verbatim.
+    acsf_path = TEMPLATES_DIR / "acsf-indicators.yaml"
+    if acsf_path.exists():
+        with acsf_path.open() as f:
+            acsf_all = yaml.safe_load(f) or {}
+        level = int((term.get("course") or {}).get("acsf_level") or 0)
+        level_indicators = []
+        for code, rec in (acsf_all.get("indicators") or {}).items():
+            if int(rec.get("level") or 0) == level:
+                level_indicators.append({"id": code, **rec})
+        level_indicators.sort(key=lambda r: r["id"])
+        term["acsf"] = {
+            "framework": acsf_all.get("framework", {}),
+            "core_skills": acsf_all.get("core_skills", {}),
+            "level": level,
+            "indicators": level_indicators,
+        }
+    else:
+        term["acsf"] = {"framework": {}, "core_skills": {}, "level": 0, "indicators": []}
+
     return term
 
 
@@ -248,7 +271,7 @@ def render_term(ctx: dict) -> str:
     )
     tpl = env.get_template("term-plan.template.md")
     ctx = dict(ctx)
-    ctx.setdefault("template", {})["version"] = TEMPLATE_VERSION
+    ctx.setdefault("template", {})["version"] = TERM_TEMPLATE_VERSION
     ctx["doc"] = {
         "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
         "input_sha256": _hash_context(ctx),

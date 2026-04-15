@@ -78,26 +78,39 @@ audit checklist each generated plan is measured against.
 | VU23560  | populated  | 22640VIC                                                      |
 
 All parent qualifications are Victorian accredited EAL courses (VRQA).
-`populated` units have their Elements / Performance Criteria / KS-KE /
-PE / FS transcribed verbatim from the pattern source Denis's Cert3_Term1
-2026 plan. Mapping + Assessor Guide blocks remain TBD until the
-coordinator pastes the CommunityPlus internal LWA mapping and assessor
-guide documents.
+`populated` units have their Elements / Performance Criteria / RK&S /
+PE / FS transcribed verbatim from the VRQA accredited course doc +
+training.gov.au unit PDFs. Mapping + Assessor Guide blocks remain TBD
+until the coordinator pastes the CommunityPlus internal LWA Mapping and
+Assessor Guide documents.
 
 ## Worked example: 22640VIC Cert III — SEE Term 1 — Year 2026
 
-`terms/22640VIC-cert3-term1-2026.yaml` is the canonical populated term
-plan (transcribed from Denis's 13-page Word doc). It demonstrates:
+`terms/22640VIC-cert3-term1-2026.yaml` is the canonical term-plan shell.
+The file is strictly structural — it selects which units are threaded
+through the term, the ACSF level, trainer/class identity, and term dates.
+All substantive content is rendered from authoritative sources:
+
+- **VRQA verbatim** (Elements / PCs / RK&S / PE / FS) — from `units/*.yaml`
+- **ACSF indicator grid** for the course level — from `templates/acsf-indicators.yaml`
+- **Mapping rows** (assessment task → PCs / KS / FS / evidence) — from
+  `unit.mapping.rows` in each unit YAML (source: CP LWA Mapping)
+- **Assessor Guide tasks** — from `unit.assessor_guide.tasks` in each unit YAML
+- **Term calendar** — from `templates/vic-school-calendar-2026.yaml` (vic.gov.au authoritative)
+
+It demonstrates:
 
 - Stream: **SEE — Basic**
 - Framework: **22640VIC** Certificate III in EAL (Access) — reaccredited 2022/23
-- Theme: "Education and Employment — Everyday English" (personal info,
-  school, looking for work, celebrations)
+- ACSF level: **3** — full L3 indicator grid rendered from DEWR reference
 - Units threaded: **VU22384** (ongoing portfolio unit) + **VU23524** (spoken
   conversations — Term 1) + **VU23560** (internet and email — Term 1)
-- ACSF indicators claimed: 3.01–3.11 across 6 of 7 strands; Digital
-  Literacy ACSF anchor marked "yet to confirm" (as in the source doc)
-- LWA mapping + class-global document referenced (internal, not in repo)
+- Term dates: **Tue 27 Jan – Thu 2 Apr 2026** (Vic gazetted); in-term public
+  holiday: Labour Day Mon 9 Mar 2026
+
+Trainer-specific narrative (theme wording, macro-skill prose, classroom
+resource lists) is **out of scope** for this pipeline — it belongs in the
+trainer's personal lesson copy, not the compliance artefact.
 
 ## How to use
 
