@@ -61,14 +61,14 @@
       "repo": "lobsterbot",
       "priority": "P2",
       "title": "Implement Telegram bot core in index.js",
-      "description": "index.js is empty. Need to build the Telegram bot with Anthropic Claude API integration. Environment vars ready in .env.example (TELEGRAM_BOT_TOKEN, ANTHROPIC_API_KEY).",
+      "description": "DONE: Built full Telegram bot with Claude Opus 4.6, per-user conversation history, prompt caching on system prompt, /start /help /clear commands, and graceful error handling.",
       "deadline": "2026-05-01",
-      "status": "pending",
-      "progress_pct": 0,
+      "status": "completed",
+      "progress_pct": 100,
       "assigned": "Claude + Mircea",
       "tags": ["implementation", "telegram", "bot"],
       "created": "2026-04-13",
-      "updated": "2026-04-13"
+      "updated": "2026-04-15"
     },
     {
       "id": "CON-001",
@@ -174,14 +174,14 @@
       "repo": "lobsterbot",
       "priority": "P3",
       "title": "Add npm dependencies (telegraf, anthropic SDK)",
-      "description": "package.json has zero dependencies. Need to add telegraf (or node-telegram-bot-api) and @anthropic-ai/sdk before implementation.",
+      "description": "DONE: Added node-telegram-bot-api, @anthropic-ai/sdk, and dotenv to package.json.",
       "deadline": "2026-04-20",
-      "status": "pending",
-      "progress_pct": 0,
+      "status": "completed",
+      "progress_pct": 100,
       "assigned": "Claude",
       "tags": ["dependencies", "setup"],
       "created": "2026-04-13",
-      "updated": "2026-04-13"
+      "updated": "2026-04-15"
     },
     {
       "id": "CON-004",
