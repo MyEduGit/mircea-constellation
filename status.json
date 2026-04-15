@@ -3,6 +3,7 @@
   "nanoclaw":     { "status": "ok",   "version": "1.2.17" },
   "ollama":       { "status": "warn", "model": "qwen2.5:32b" },
   "cognee":       { "status": "ok",   "version": "1.0.0" },
+  "nemoclaw":     { "status": "ok",   "mode": "local", "dataset": "nemoclaw_memory" },
   "disk_openclaw": "46% used",
   "disk_urantios": "38% used",
   "obsidian":     { "docs": 477 },
@@ -26,5 +27,5 @@
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
 
-  "updated": "2026-04-13T13:18:00.000Z"
+  "updated": "2026-04-15T00:00:00.000Z"
 }

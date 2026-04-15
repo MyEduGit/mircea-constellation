@@ -265,6 +265,7 @@ const nodes = [
   { id: 'chatgpt',  icon: '🟢', label: 'ChatGPT',          sub: 'Hetzner Vault',        type: 'ai',         x: 0.06, y: 0.46, tier: 'ai' },
   { id: 'ollama',   icon: '🧠', label: 'Ollama',           sub: 'qwen2.5:32b',         type: 'ai',         x: 0.90, y: 0.44, tier: 'ai' },
   { id: 'cognee',   icon: '🧬', label: 'Cognee',           sub: 'Knowledge Graph',      type: 'ai',         x: 0.48, y: 0.50, tier: 'ai' },
+  { id: 'nemoclaw', icon: '🫧', label: 'NemoClaw',         sub: 'iMac-local AI',        type: 'ai',         x: 0.34, y: 0.26, tier: 'ai' },
 
   // ── TIER 4: BOT FLEET ───────────────────────────────────────────
   { id: 'hetzy',    icon: '🎖️', label: 'Hetzy PhD',        sub: 'Fleet Commander',      type: 'bot',        x: 0.16, y: 0.58, tier: 'bot' },
@@ -327,6 +328,12 @@ const connections = [
   ['nanoclaw', 'ncbot',        'active'],
   ['nanoclaw', 'ollama',       'ai-link'],
 
+  // NemoClaw (iMac-local Cognee controller)
+  ['imac', 'nemoclaw',         'active'],
+  ['nemoclaw', 'cognee',       'ai-link'],
+  ['nemoclaw', 'ollama',       'ai-link'],
+  ['nemoclaw', 'claude',       'ai-link'],
+
   // AI connections
   ['claude', 'phd',          'ai-link'],
   ['chatgpt', 'phd',         'ai-link'],
@@ -369,6 +376,7 @@ const nodeDetails = {
   chatgpt:  { 'Model': 'ChatGPT (OpenAI)', 'Role': 'Secondary AI partner', 'Used For': 'Summaries, vault mgmt, verification', 'Workspace': 'Hetzner vault', 'Tier': 'AI' },
   ollama:   { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning (no cloud)', 'Powers': 'Gabriel brain, Cognee LLM', 'Status': 'Check required', 'Tier': 'AI' },
   cognee:   { 'Version': '1.0.0', 'Host': 'iMac M4 (local)', 'API': 'remember / recall / forget / improve', 'Dataset': 'urantia_book (197 papers)', 'Graph DB': 'LanceDB + Kuzu', 'Embedding': 'fastembed (384d)', 'Purpose': 'Semantic memory for all systems', 'Tier': 'AI' },
+  nemoclaw: { 'Role': 'iMac M4 controller node', 'Runtime': 'Cognee 1.0.0 (~/.cognee-env)', 'LLM': 'ollama/qwen2.5:32b', 'Endpoint': 'localhost:11434 → 204.168.143.98:11434 fallback', 'Embedding': 'fastembed / BAAI/bge-small-en-v1.5 (384d)', 'Graph/Vector': 'Kuzu + LanceDB', 'Dataset': 'nemoclaw_memory', 'Config': 'cognee_config.py', 'Status': 'LIVE', 'Tier': 'AI' },
 
   hetzy:    { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30-min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10', 'Tier': 'BOT FLEET' },
   gabriel:  { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on urantipedia.org', 'LLM': 'Ollama qwen2.5:32b', 'Authority': 'Joint with Mircea', 'Tier': 'BOT FLEET' },
@@ -421,7 +429,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = n.id === 'lobster' ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = n.id === 'lobster' ? 'new' : (n.id === 'ollama' ? 'warn' : (n.id === 'nemoclaw' ? 'new' : 'ok'));
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
@@ -479,6 +487,7 @@ async function loadStatus() {
     if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span>NanoClaw: ${data.nanoclaw.version || '?'}</span>`);
     if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
     if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
+    if (data.nemoclaw) items.push(`<span><span class="dot dot-${data.nemoclaw.status === 'ok' ? 'green' : 'yellow'}"></span>NemoClaw: ${data.nemoclaw.mode || 'offline'}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
     if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
