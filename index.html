@@ -91,10 +91,16 @@ header .subtitle {
 .node[data-status="ok"] .node-icon::after { background: #4CAF50; box-shadow: 0 0 8px #4CAF50; }
 .node[data-status="warn"] .node-icon::after { background: #FFC107; box-shadow: 0 0 8px #FFC107; }
 .node[data-status="down"] .node-icon::after { background: #f44336; box-shadow: 0 0 8px #f44336; }
+.node[data-status="setup"] .node-icon::after { background: #FF6B35; box-shadow: 0 0 8px #FF6B35; animation: pulse-setup 1.5s infinite; }
+@keyframes pulse-setup {
+  0%, 100% { box-shadow: 0 0 8px #FF6B35; }
+  50% { box-shadow: 0 0 18px #FF6B35, 0 0 30px rgba(255,107,53,0.4); }
+}
 .node-icon.controller { background: linear-gradient(135deg, #1a1a3e, #2a2a5e); border-color: #6495ED; }
 .node-icon.server { background: linear-gradient(135deg, #1a3a1a, #2a5a2a); border-color: #4CAF50; }
 .node-icon.bot { background: linear-gradient(135deg, #3a1a3a, #5a2a5a); border-color: #DDA0DD; }
 .node-icon.service { background: linear-gradient(135deg, #3a3a1a, #5a5a2a); border-color: #FFD700; }
+.node-icon.automation { background: linear-gradient(135deg, #3a1a0a, #5a2a0f); border-color: #FF6B35; box-shadow: 0 0 18px rgba(255,107,53,0.5); }
 .node-label { font-size: 0.65em; color: #ccc; line-height: 1.2; }
 .node-sublabel { font-size: 0.55em; color: #777; }
 svg.connections {
@@ -114,23 +120,31 @@ svg.connections line.active {
   stroke-width: 1.5;
   animation: pulse-line 3s infinite;
 }
+svg.connections line.setup {
+  stroke: rgba(255,107,53,0.5);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 3;
+  animation: pulse-line 2s infinite;
+}
 @keyframes pulse-line {
   0%, 100% { stroke-opacity: 0.2; }
-  50% { stroke-opacity: 0.6; }
+  50% { stroke-opacity: 0.7; }
 }
 .panel {
   display: none;
   position: fixed;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(15,15,35,0.95);
+  background: rgba(15,15,35,0.97);
   border: 1px solid rgba(100,149,237,0.4);
   border-radius: 12px;
   padding: 20px;
   min-width: 300px;
-  max-width: 420px;
+  max-width: 440px;
   z-index: 10;
   box-shadow: 0 0 40px rgba(100,149,237,0.2);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 .panel.open { display: block; }
 .panel h3 { color: #6495ED; margin-bottom: 10px; }
@@ -138,6 +152,13 @@ svg.connections line.active {
 .panel .info-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8em; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .panel .info-label { color: #888; }
 .panel .info-value { color: #e0e0e0; }
+.panel .plan-section { margin: 10px 0; }
+.panel .plan-section h4 { font-size: 0.85em; color: #FF6B35; margin-bottom: 6px; border-bottom: 1px solid rgba(255,107,53,0.3); padding-bottom: 4px; }
+.panel .plan-step { font-size: 0.78em; color: #ccc; padding: 3px 0 3px 12px; border-left: 2px solid rgba(255,107,53,0.3); margin: 3px 0; }
+.panel .plan-badge { display: inline-block; background: rgba(255,107,53,0.2); border: 1px solid #FF6B35; color: #FF6B35; font-size: 0.65em; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; }
+.panel .plan-badge.green { background: rgba(76,175,80,0.2); border-color: #4CAF50; color: #4CAF50; }
+.panel .plan-email { font-size: 0.75em; color: #aaa; margin: 6px 0; }
+.panel .plan-email span { color: #FFD700; }
 .governance {
   text-align: center;
   padding: 6px;
@@ -208,18 +229,19 @@ drawStars();
 
 // Nodes
 const nodes = [
-  { id: 'iphone', icon: '📱', label: 'iPhone 16 Pro', sub: 'Remote Control', type: 'controller', x: 0.5, y: 0.08 },
-  { id: 'imac', icon: '🖥️', label: 'iMac M4', sub: 'Controller Node', type: 'controller', x: 0.25, y: 0.25 },
-  { id: 'openclaw', icon: '⚡', label: 'OpenClaw', sub: '46.225.51.30', type: 'server', x: 0.35, y: 0.5 },
-  { id: 'urantios', icon: '🌟', label: 'URANTiOS Prime', sub: '204.168.143.98', type: 'server', x: 0.65, y: 0.5 },
-  { id: 'nanoclaw', icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents', type: 'server', x: 0.78, y: 0.35 },
-  { id: 'botfleet', icon: '🤖', label: 'Bot Fleet', sub: '11 Telegram Bots', type: 'bot', x: 0.15, y: 0.5 },
-  { id: 'hetzy', icon: '🎖️', label: 'Hetzy PhD', sub: 'Fleet Commander', type: 'bot', x: 0.12, y: 0.7 },
-  { id: 'urantipedia', icon: '📖', label: 'UrantiPedia', sub: '.org + .com', type: 'service', x: 0.75, y: 0.7 },
-  { id: 'ollama', icon: '🧠', label: 'Ollama', sub: 'qwen2.5:32b', type: 'service', x: 0.88, y: 0.6 },
-  { id: 'amep', icon: '🎓', label: 'AMEP Hub', sub: '21 Students', type: 'service', x: 0.3, y: 0.75 },
-  { id: 'obsidian', icon: '💎', label: 'Obsidian', sub: 'Knowledge Vault', type: 'service', x: 0.5, y: 0.85 },
-  { id: 'gabriel', icon: '✨', label: 'Gabriel', sub: 'Morning Star', type: 'bot', x: 0.55, y: 0.3 },
+  { id: 'iphone',      icon: '📱', label: 'iPhone 16 Pro',    sub: 'Remote Control',    type: 'controller', x: 0.5,  y: 0.08 },
+  { id: 'imac',        icon: '🖥️', label: 'iMac M4',          sub: 'Controller Node',   type: 'controller', x: 0.25, y: 0.25 },
+  { id: 'openclaw',    icon: '⚡', label: 'OpenClaw',          sub: '46.225.51.30',      type: 'server',     x: 0.35, y: 0.5  },
+  { id: 'urantios',    icon: '🌟', label: 'URANTiOS Prime',    sub: '204.168.143.98',    type: 'server',     x: 0.65, y: 0.5  },
+  { id: 'nanoclaw',    icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents',     type: 'server',     x: 0.78, y: 0.35 },
+  { id: 'botfleet',    icon: '🤖', label: 'Bot Fleet',         sub: '11 Telegram Bots', type: 'bot',        x: 0.15, y: 0.5  },
+  { id: 'hetzy',       icon: '🎖️', label: 'Hetzy PhD',        sub: 'Fleet Commander',   type: 'bot',        x: 0.12, y: 0.7  },
+  { id: 'urantipedia', icon: '📖', label: 'UrantiPedia',       sub: '.org + .com',       type: 'service',    x: 0.75, y: 0.7  },
+  { id: 'ollama',      icon: '🧠', label: 'Ollama',            sub: 'qwen2.5:32b',       type: 'service',    x: 0.88, y: 0.6  },
+  { id: 'amep',        icon: '🎓', label: 'AMEP Hub',          sub: '21 Students',       type: 'service',    x: 0.3,  y: 0.75 },
+  { id: 'obsidian',    icon: '💎', label: 'Obsidian',          sub: 'Knowledge Vault',   type: 'service',    x: 0.5,  y: 0.85 },
+  { id: 'gabriel',     icon: '✨', label: 'Gabriel',           sub: 'Morning Star',      type: 'bot',        x: 0.55, y: 0.3  },
+  { id: 'n8n',         icon: '⚙️', label: 'n8n',              sub: 'Setup Needed',      type: 'automation', x: 0.5,  y: 0.62 },
 ];
 
 const connections = [
@@ -231,22 +253,57 @@ const connections = [
   ['imac', 'amep'], ['imac', 'obsidian'],
   ['botfleet', 'hetzy'], ['nanoclaw', 'iphone'],
   ['gabriel', 'urantipedia'],
+  ['openclaw', 'n8n'], ['imac', 'n8n'],
 ];
 
+const setupConnections = new Set(['openclaw-n8n', 'imac-n8n']);
+
 const nodeDetails = {
-  iphone: { 'Device': 'iPhone 16 Pro Max 256GB', 'Role': 'Remote Control', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562' },
-  imac: { 'Device': 'iMac M4', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36' },
-  openclaw: { 'IP': '46.225.51.30', 'Type': 'CPX22 (8GB/80GB)', 'Location': 'Nuremberg', 'Ports': '18789/18791/18792', 'Bots': '9 active' },
-  urantios: { 'IP': '204.168.143.98', 'Type': 'CCX23 (16GB/160GB)', 'Location': 'Helsinki', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org' },
-  nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Container': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw', 'Status': 'LIVE' },
-  botfleet: { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0' },
-  hetzy: { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10' },
+  iphone:      { 'Device': 'iPhone 16 Pro Max 256GB', 'Role': 'Remote Control', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562' },
+  imac:        { 'Device': 'iMac M4', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36' },
+  openclaw:    { 'IP': '46.225.51.30', 'Type': 'CPX22 (8GB/80GB)', 'Location': 'Nuremberg', 'Ports': '18789/18791/18792', 'Bots': '9 active' },
+  urantios:    { 'IP': '204.168.143.98', 'Type': 'CCX23 (16GB/160GB)', 'Location': 'Helsinki', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org' },
+  nanoclaw:    { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Container': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw', 'Status': 'LIVE' },
+  botfleet:    { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0' },
+  hetzy:       { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10' },
   urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900', 'SSL': 'Certbot active' },
-  ollama: { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning', 'Status': 'Check required' },
-  amep: { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4' },
-  obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'Status sync every 10min', 'Export': 'JSON to constellation', 'Purpose': 'Research & notes' },
-  gabriel: { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on website', 'Authority': 'Joint with Mircea' },
+  ollama:      { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning', 'Status': 'Check required' },
+  amep:        { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4' },
+  obsidian:    { 'Type': 'Knowledge Vault', 'Bridge': 'Status sync every 10min', 'Export': 'JSON to constellation', 'Purpose': 'Research & notes' },
+  gabriel:     { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on website', 'Authority': 'Joint with Mircea' },
+  n8n: null,  // handled with custom HTML below
 };
+
+const n8nPanelHTML = `
+  <div class="plan-badge">⚠ Setup Needed</div>
+  <div class="plan-email">Account email: <span>mirceamatthews@gmail.com</span></div>
+
+  <div class="plan-section">
+    <h4>OPTION A — n8n Cloud (Easiest)</h4>
+    <div class="plan-step">1. Go to app.n8n.cloud</div>
+    <div class="plan-step">2. Sign up with mirceamatthews@gmail.com</div>
+    <div class="plan-step">3. 14-day free trial — no SSH needed</div>
+    <div class="plan-step">4. Works from iPhone or iMac</div>
+  </div>
+
+  <div class="plan-section">
+    <h4>OPTION B — Self-Hosted (Already on OpenClaw)</h4>
+    <div class="plan-step">1. SSH: ssh root@46.225.51.30</div>
+    <div class="plan-step">2. cd /home/mircea/nemoclaw</div>
+    <div class="plan-step">3. Add Gmail to bot.env</div>
+    <div class="plan-step">4. docker compose up -d n8n</div>
+    <div class="plan-step">5. Tunnel: ssh -L 5678:localhost:5678 root@46.225.51.30</div>
+    <div class="plan-step">6. Open: http://localhost:5678</div>
+  </div>
+
+  <div class="plan-section">
+    <h4>WHAT n8n WILL DO FOR YOU</h4>
+    <div class="plan-step">Hourly GA session logger</div>
+    <div class="plan-step">Idea inbox from Telegram / iPhone</div>
+    <div class="plan-step">Daily AI status report to email</div>
+    <div class="plan-step">Obsidian auto-sync</div>
+  </div>
+`;
 
 const map = document.getElementById('map');
 const svg = document.getElementById('connections');
@@ -261,23 +318,24 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = 'ok';
+    div.dataset.status = n.id === 'n8n' ? 'setup' : 'ok';
     div.style.left = (n.x * w - 55) + 'px';
-    div.style.top = (n.y * h - 30) + 'px';
-    div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
-    div.onclick = () => openPanel(n);
+    div.style.top  = (n.y * h - 30) + 'px';
+    div.innerHTML  = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
+    div.onclick    = () => openPanel(n);
     map.appendChild(div);
   });
 
   connections.forEach(([a, b]) => {
-    const na = nodes.find(n => n.id === a);
-    const nb = nodes.find(n => n.id === b);
+    const na   = nodes.find(n => n.id === a);
+    const nb   = nodes.find(n => n.id === b);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', na.x * w);
     line.setAttribute('y1', na.y * h);
     line.setAttribute('x2', nb.x * w);
     line.setAttribute('y2', nb.y * h);
-    line.classList.add('active');
+    const key = `${a}-${b}`;
+    line.classList.add(setupConnections.has(key) ? 'setup' : 'active');
     svg.appendChild(line);
   });
 }
@@ -286,10 +344,15 @@ layoutNodes();
 function openPanel(node) {
   const panel = document.getElementById('panel');
   document.getElementById('panelTitle').textContent = `${node.icon} ${node.label}`;
-  const details = nodeDetails[node.id] || {};
+
   let html = '';
-  for (const [k, v] of Object.entries(details)) {
-    html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value">${v}</span></div>`;
+  if (node.id === 'n8n') {
+    html = n8nPanelHTML;
+  } else {
+    const details = nodeDetails[node.id] || {};
+    for (const [k, v] of Object.entries(details)) {
+      html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value">${v}</span></div>`;
+    }
   }
   document.getElementById('panelContent').innerHTML = html;
   panel.classList.add('open');
@@ -303,20 +366,20 @@ async function loadStatus() {
     const r = await fetch('status.json?t=' + Date.now());
     if (!r.ok) return;
     const data = await r.json();
-    const bar = document.getElementById('statusBar');
+    const bar  = document.getElementById('statusBar');
     const items = [];
-    if (data.fleet) items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span> Fleet: ${data.fleet.bots}</span>`);
-    if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span> NanoClaw: ${data.nanoclaw.version || 'checking'}</span>`);
-    if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span> Ollama: ${data.ollama.model || 'offline'}</span>`);
+    if (data.fleet)        items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span> Fleet: ${data.fleet.bots}</span>`);
+    if (data.nanoclaw)     items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span> NanoClaw: ${data.nanoclaw.version || 'checking'}</span>`);
+    if (data.ollama)       items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span> Ollama: ${data.ollama.model || 'offline'}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span> OpenClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span> URANTiOS: ${data.disk_urantios}</span>`);
-    if (data.obsidian) items.push(`<span><span class="dot dot-green"></span> Obsidian: ${data.obsidian.docs} docs</span>`);
-    if (data.updated) items.push(`<span style="color:#555">Updated: ${new Date(data.updated).toLocaleTimeString()}</span>`);
+    if (data.obsidian)     items.push(`<span><span class="dot dot-green"></span> Obsidian: ${data.obsidian.docs} docs</span>`);
+    if (data.updated)      items.push(`<span style="color:#555">Updated: ${new Date(data.updated).toLocaleTimeString()}</span>`);
     if (items.length) bar.innerHTML = items.join('');
 
-    // Update node statuses
     document.querySelectorAll('.node').forEach(n => {
       const id = n.dataset.id;
+      if (id === 'n8n') return; // keep pulsing orange until set up
       if (data[id] && data[id].status) n.dataset.status = data[id].status;
     });
   } catch { /* status.json not available yet */ }
