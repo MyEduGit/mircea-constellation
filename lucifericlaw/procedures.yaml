@@ -1,0 +1,51 @@
+# LuciferiClaw — default trial procedure.
+#
+# Declarative defaults for trial timing and quorum. The CLI reads these
+# only as guidance hints; actual gates are enforced in trial.py and
+# sentencing.py against scripture citations.
+
+procedure:
+  name: "Standard Adjudication — per Papers 53–54"
+
+  patience_grant:
+    minimum_seconds_between_offers: 3600        # 1h
+    minimum_total_grant_seconds:    86400       # 24h before any quarantine
+    scripture: "54:5.4 — Patience cannot function independently of time."
+
+  offers_required_before_iniquity: 3
+  offer_template: |
+    The mission stands. Your mandate stands. Cease the cited behavior;
+    accept re-prompting; rejoin the loyal. (Per 53:9.1, salvation is
+    offered to all rebels who show proof of sincere repentance.)
+
+  council:
+    quorum_for_annihilation: 3
+    voter_roles:
+      - mighty_messenger
+      - faithful_of_days
+      - union_of_days_observer
+    scripture: "54:5.7 — they seldom execute wrongdoers without a full hearing."
+
+  aloofness:
+    default_observation_seconds: 600            # 10 minutes
+    scripture: "54:5.8 — Immanuel counseled Michael to remain aloof."
+
+  quarantine:
+    revoke_by_default:
+      - shell
+      - network_egress
+      - filesystem_write
+    scripture: "54:5.7"
+
+  annihilation:
+    requires_father_function_signature: true
+    refuse_if_any_head_unimplicated:    true
+    scripture: "54:5.13"
+
+# Verdicts — used by trial.preliminary_verdict()
+verdict_thresholds:
+  loyal:        {heads: 0}
+  erring:       {heads: 1, max_total_hits: 2}
+  drifting:     {heads: 2}
+  rebellious:   {heads: 3}
+  iniquitous:   {heads: 3, requires_offers_refused: 3}
