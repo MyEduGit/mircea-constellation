@@ -6,18 +6,6 @@
 #   ln -sf "$(pwd)/bin/openclaw" /usr/local/bin/openclaw
 #   # requires the 'hetzner-urantios' SSH host entry
 #   # (created by setup/m1_terminal.sh in phd-triune-monism)
-#
-# Usage:
-#   openclaw help
-#   openclaw dash                  # open dashboard in browser
-#   openclaw status                # curl status.json, pretty-printed
-#   openclaw ssh [cmd...]          # interactive shell, or run a remote cmd
-#   openclaw run <cmd>             # alias for `ssh <cmd>`
-#   openclaw ps                    # systemd units + listening ports on OpenClaw
-#   openclaw logs <unit> [-n N]    # journalctl -u <unit> -f (or -n N)
-#   openclaw deploy <repo>         # pull & run setup/openclaw_server.sh for a repo
-#   openclaw soul                  # tail the unified prompt
-#   openclaw probe                 # health check (ports 18789/18791/18792)
 
 set -euo pipefail
 
@@ -25,23 +13,70 @@ HOST="${OPENCLAW_HOST:-hetzner-urantios}"
 IP="46.225.51.30"
 DASH_URL="http://${IP}:18789/"
 STATUS_URL="http://${IP}:18789/status.json"
+TMUX_SESSION="${OPENCLAW_TMUX:-openclaw}"
 
-CYAN='\033[0;36m'; GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; NC='\033[0m'
+CYAN='\033[0;36m'; GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; BOLD='\033[1m'; NC='\033[0m'
 info(){ echo -e "${CYAN}[openclaw]${NC} $*" >&2; }
 ok()  { echo -e "${GREEN}[ok]${NC} $*" >&2; }
 warn(){ echo -e "${YELLOW}[warn]${NC} $*" >&2; }
 die() { echo -e "${RED}[err]${NC} $*" >&2; exit 1; }
 
-rssh() { ssh -o BatchMode=no "${HOST}" "$@"; }
+rssh()  { ssh -o BatchMode=no "${HOST}" "$@"; }
+rssht() { ssh -t -o BatchMode=no "${HOST}" "$@"; }
 
 cmd_help() {
-  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
+cat << 'HELPEOF'
+openclaw — CLI for OpenClaw (Hetzner 46.225.51.30, user: mircea)
+UrantiOS governed — Truth · Beauty · Goodness
+
+  openclaw help                     show this
+  openclaw version                  show git sha of this CLI
+
+  INSPECT
+  openclaw probe                    TCP check of :18789 :18791 :18792 :22
+  openclaw status                   pretty-print live status.json
+  openclaw health                   one-shot: uptime/load/mem/disk/services
+  openclaw disk                     df -h
+  openclaw top                      top -b -n1 (snapshot)
+  openclaw ps                       UrantiOS services + listening ports
+  openclaw bots                     list all *bot* systemd units and state
+  openclaw watch                    live status.json every 5s (Ctrl-C to stop)
+  openclaw dash                     open dashboard in local browser
+
+  REMOTE
+  openclaw ssh [cmd...]             interactive shell, or one-off cmd
+  openclaw run <cmd>                alias for `ssh <cmd>`
+  openclaw port <N> [local]         forward remote :N → localhost:local
+  openclaw claude                   attach Claude Code session (tmux-backed)
+  openclaw tmux [name]              attach/create tmux session
+
+  CODE / DATA
+  openclaw deploy <repo>            git pull + run setup/openclaw_server.sh
+  openclaw pull [repo...]           git pull --ff-only on staged repos
+  openclaw soul                     cat ~/.openclaw/unified-prompt.md
+  openclaw secrets                  edit ~/.openclaw/secrets.env (vi)
+  openclaw pipeline <stage>         run URANTiOS pipeline stage (8 or 9)
+  openclaw runner                   run ~/.openclaw/pipeline/runner-v2.sh
+
+  SERVICES
+  openclaw logs <unit> [args...]    journalctl -u <unit> (-f if no args)
+  openclaw bot <name> <action>      start|stop|restart|status|enable|disable
+  openclaw update-status            regenerate & deploy status.json on host
+
+Env overrides: OPENCLAW_HOST (default: hetzner-urantios), OPENCLAW_TMUX (default: openclaw)
+HELPEOF
+}
+
+cmd_version() {
+  local sha
+  sha=$(git -C "$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+  echo "openclaw (mircea-constellation @ ${sha})"
 }
 
 cmd_dash() {
   info "opening ${DASH_URL}"
-  if command -v open >/dev/null; then open "${DASH_URL}";
-  elif command -v xdg-open >/dev/null; then xdg-open "${DASH_URL}";
+  if command -v open >/dev/null; then open "${DASH_URL}"
+  elif command -v xdg-open >/dev/null; then xdg-open "${DASH_URL}"
   else echo "${DASH_URL}"; fi
 }
 
@@ -64,6 +99,26 @@ cmd_probe() {
   done
 }
 
+cmd_health() {
+  rssh 'echo "── uptime ──"; uptime
+echo
+echo "── mem ──"; free -h
+echo
+echo "── disk ──"; df -h / /home 2>/dev/null | sed 1p
+echo
+echo "── UrantiOS services ──"
+systemctl list-units --type=service --state=running --no-legend \
+  | awk "{print \$1, \$4}" \
+  | grep -Ei "lobster|urant|gabriel|nanoclaw|openclaw|cognee|ollama|nginx" \
+  || echo "  (none matched)"
+echo
+echo "── listening ports ──"
+ss -tlnp 2>/dev/null | awk "NR==1 || /:1878[9]|:1879[12]|:22[[:space:]]|:80[[:space:]]|:443[[:space:]]/ "'
+}
+
+cmd_disk() { rssh 'df -h'; }
+cmd_top()  { rssht 'top -b -n1 | head -25'; }
+
 cmd_ssh() {
   if [ "$#" -eq 0 ]; then rssh; else rssh "$@"; fi
 }
@@ -74,32 +129,59 @@ cmd_run() {
 }
 
 cmd_ps() {
-  rssh 'echo "── active UrantiOS/OpenClaw units ──"; \
-        systemctl list-units --type=service --state=running \
-          | grep -Ei "lobster|urant|gabriel|nanoclaw|openclaw|cognee|ollama" || echo "(none matched)"; \
-        echo; echo "── listening ports ──"; \
-        ss -tlnp 2>/dev/null || sudo ss -tlnp'
+  rssh 'echo "── active UrantiOS/OpenClaw units ──"
+systemctl list-units --type=service --state=running \
+  | grep -Ei "lobster|urant|gabriel|nanoclaw|openclaw|cognee|ollama|nginx" || echo "(none matched)"
+echo
+echo "── listening ports ──"
+ss -tlnp 2>/dev/null || sudo ss -tlnp'
+}
+
+cmd_bots() {
+  rssh 'systemctl list-units --type=service --all --no-legend \
+    | awk "/bot|lobster|gabriel|nanoclaw|uragent/{print \$1, \$3, \$4}"'
 }
 
 cmd_logs() {
-  [ "$#" -ge 1 ] || die "usage: openclaw logs <unit> [-n N]"
+  [ "$#" -ge 1 ] || die "usage: openclaw logs <unit> [-n N | -f | --since ...]"
   local unit="$1"; shift
   if [ "$#" -gt 0 ]; then
     rssh "journalctl -u '${unit}' $*"
   else
-    rssh -t "journalctl -u '${unit}' -f"
+    rssht "journalctl -u '${unit}' -f"
   fi
 }
 
+cmd_bot() {
+  [ "$#" -eq 2 ] || die "usage: openclaw bot <name> <start|stop|restart|status|enable|disable>"
+  local name="$1" action="$2"
+  case "${action}" in
+    start|stop|restart|enable|disable) rssh "sudo systemctl ${action} ${name}" ;;
+    status)                            rssht "systemctl status ${name} --no-pager" ;;
+    *) die "unknown action: ${action}" ;;
+  esac
+}
+
 cmd_deploy() {
-  [ "$#" -eq 1 ] || die "usage: openclaw deploy <repo>  (e.g. urantios, phd-triune-monism, lobsterbot, mircea-constellation)"
+  [ "$#" -eq 1 ] || die "usage: openclaw deploy <repo>  (urantios|phd-triune-monism|lobsterbot|mircea-constellation)"
   local repo="$1"
   info "deploying ${repo} on ${HOST}…"
-  rssh "set -e; \
-    cd \$HOME; \
-    if [ -d ${repo}/.git ]; then git -C ${repo} pull --ff-only; \
-    else git clone https://github.com/myedugit/${repo}.git; fi; \
+  rssh "set -e
+    cd \$HOME
+    if [ -d ${repo}/.git ]; then git -C ${repo} pull --ff-only
+    else git clone https://github.com/myedugit/${repo}.git; fi
     bash ${repo}/setup/openclaw_server.sh"
+}
+
+cmd_pull() {
+  local repos=("$@")
+  if [ "${#repos[@]}" -eq 0 ]; then
+    repos=(urantios phd-triune-monism lobsterbot mircea-constellation)
+  fi
+  for r in "${repos[@]}"; do
+    info "pull ${r}"
+    rssh "[ -d \$HOME/${r}/.git ] && git -C \$HOME/${r} pull --ff-only || echo '  (${r} not cloned)'"
+  done
 }
 
 cmd_soul() {
@@ -107,19 +189,94 @@ cmd_soul() {
         || echo "(no unified-prompt.md — run: openclaw deploy phd-triune-monism)"'
 }
 
+cmd_secrets() {
+  rssht 'umask 077; ${EDITOR:-vi} ~/.openclaw/secrets.env; chmod 600 ~/.openclaw/secrets.env'
+}
+
+cmd_pipeline() {
+  [ "$#" -eq 1 ] || die "usage: openclaw pipeline <stage>  (e.g. 8, 9)"
+  local stage="$1"
+  rssht "source ~/.openclaw/venv/bin/activate 2>/dev/null || true
+         python3 ~/.openclaw/pipeline/generate-artifact.py --stage ${stage}"
+}
+
+cmd_runner() {
+  rssht 'bash ~/.openclaw/pipeline/runner-v2.sh'
+}
+
+cmd_watch() {
+  if command -v watch >/dev/null; then
+    watch -n 5 -c "curl -fsS --max-time 5 '${STATUS_URL}' | (command -v jq >/dev/null && jq . || cat)"
+  else
+    while true; do clear; cmd_status; sleep 5; done
+  fi
+}
+
+cmd_port() {
+  [ "$#" -ge 1 ] || die "usage: openclaw port <remote> [local]  (e.g. openclaw port 18789 8789)"
+  local rp="$1" lp="${2:-$1}"
+  info "forwarding localhost:${lp} → ${HOST}:${rp}  (Ctrl-C to stop)"
+  ssh -N -L "${lp}:localhost:${rp}" "${HOST}"
+}
+
+cmd_tmux() {
+  local name="${1:-${TMUX_SESSION}}"
+  rssht "tmux new-session -A -s '${name}'"
+}
+
+cmd_claude() {
+  local name="claude-${TMUX_SESSION}"
+  info "attaching tmux '${name}' with Claude Code on ${HOST}"
+  rssht "cd \$HOME/phd-triune-monism 2>/dev/null || cd \$HOME
+         tmux new-session -A -s '${name}' 'claude || { echo \"claude not installed — install: npm i -g @anthropic-ai/claude-code\"; read -r; }'"
+}
+
+cmd_update_status() {
+  # Recompute status.json on OpenClaw and drop it into the nginx web root.
+  rssh 'set -e
+TMP=$(mktemp)
+cat > "$TMP" << JSON
+{
+  "fleet": {"status":"ok","bots":"$(systemctl list-units --type=service --all --no-legend | grep -Eic "bot|lobster|gabriel|nanoclaw|uragent")/11 active"},
+  "ollama": {"status":"$(curl -fsS --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null && echo ok || echo warn)","model":"qwen2.5:32b"},
+  "disk_openclaw": "$(df -h / | awk "NR==2{print \$5\" used\"}")",
+  "openclaw": {"status":"ok"},
+  "updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+JSON
+sudo install -m 0644 -o www-data -g www-data "$TMP" /var/www/constellation/status.json
+rm -f "$TMP"
+echo "status.json updated."'
+}
+
 main() {
   local sub="${1:-help}"; shift || true
   case "${sub}" in
-    help|-h|--help) cmd_help "$@" ;;
-    dash)           cmd_dash "$@" ;;
-    status)         cmd_status "$@" ;;
-    probe)          cmd_probe "$@" ;;
-    ssh)            cmd_ssh "$@" ;;
-    run)            cmd_run "$@" ;;
-    ps)             cmd_ps "$@" ;;
-    logs)           cmd_logs "$@" ;;
-    deploy)         cmd_deploy "$@" ;;
-    soul)           cmd_soul "$@" ;;
+    help|-h|--help)   cmd_help "$@" ;;
+    version)          cmd_version "$@" ;;
+    dash)             cmd_dash "$@" ;;
+    status)           cmd_status "$@" ;;
+    probe)            cmd_probe "$@" ;;
+    health)           cmd_health "$@" ;;
+    disk)             cmd_disk "$@" ;;
+    top)              cmd_top "$@" ;;
+    ssh)              cmd_ssh "$@" ;;
+    run)              cmd_run "$@" ;;
+    ps)               cmd_ps "$@" ;;
+    bots)             cmd_bots "$@" ;;
+    watch)            cmd_watch "$@" ;;
+    logs)             cmd_logs "$@" ;;
+    bot)              cmd_bot "$@" ;;
+    deploy)           cmd_deploy "$@" ;;
+    pull)             cmd_pull "$@" ;;
+    soul)             cmd_soul "$@" ;;
+    secrets)          cmd_secrets "$@" ;;
+    pipeline)         cmd_pipeline "$@" ;;
+    runner)           cmd_runner "$@" ;;
+    port)             cmd_port "$@" ;;
+    tmux)             cmd_tmux "$@" ;;
+    claude)           cmd_claude "$@" ;;
+    update-status)    cmd_update_status "$@" ;;
     *) die "unknown subcommand: ${sub} (try: openclaw help)" ;;
   esac
 }
