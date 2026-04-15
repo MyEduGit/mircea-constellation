@@ -1,0 +1,34 @@
+# Keep docker build context small.
+# The openclaw_ingest build context is the repo root (so cognee_config.py
+# is reachable), but we only need openclaw_ingest/ + cognee_config.py.
+.git
+.gitignore
+.claude
+.github
+docs
+fireclaw
+lucifericlaw
+setup
+urantia-book
+soul
+pipeline
+00_Index
+01_Planning
+02_Foreword_Sections
+03_Comparisons
+06_Draft_Papers
+08_ChatGPT_Imports
+10_Ontology
+TOE_DIARY.md
+UrantiOS.md
+README.md
+*.md
+.markdownlint.json
+.htmlvalidate.json
+.fireclaw-env
+.lucifericlaw-env
+.openclaw-ingest-env
+__pycache__
+*.pyc
+!openclaw_ingest/README.md
+!cognee_config.py
