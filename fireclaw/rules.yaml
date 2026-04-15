@@ -1,0 +1,79 @@
+# Fireclaw rules — declarative remediation policy.
+#
+# Single source of truth for what Fireclaw is allowed to do.
+# Add a rule = explicitly authorize a remediation path.
+# Remove a rule = revoke that authority.
+#
+# Schema:
+#   id:           short stable identifier (used in logs and counters)
+#   description:  human-readable purpose (Truth: must be honest)
+#   signal:
+#     kind:       http | tcp | file | nemoclaw
+#     (kind-specific fields — see fireclaw/signals.py)
+#   condition:
+#     consecutive_failures: int   how many cycles of bad signal before action
+#     cooldown_seconds:     int   minimum seconds between action firings
+#   action:
+#     kind:       restart_systemd | restart_docker | disable_n8n_workflow
+#                 | quarantine | alert_telegram | alert_only
+#     (kind-specific fields — see fireclaw/actions.py)
+#   escalate:
+#     on_action_failure:    bool  alert if the action itself fails
+#     on_repeated_trigger:  int   alert if the rule fires N times in 24h
+
+rules:
+
+  # ── Constellation dashboard health (mircea-constellation status.json) ──
+  - id: status-json-stale
+    description: "Status file missing or unreadable — observer pipeline is down."
+    signal:
+      kind: file
+      path: ./status.json
+      field: fleet.status
+      expect: ok
+    condition:
+      consecutive_failures: 3
+      cooldown_seconds: 1800
+    action:
+      kind: alert_only
+      message: "status.json fleet.status not 'ok' for 3 cycles."
+    escalate:
+      on_action_failure: false
+      on_repeated_trigger: 5
+
+  # ── OpenClaw n8n reachability (Hetzner) ────────────────────────────────
+  # Disabled-by-default example: uncomment after confirming the URL.
+  # - id: openclaw-n8n-down
+  #   description: "Restart n8n on OpenClaw if it stops responding."
+  #   signal:
+  #     kind: http
+  #     url: http://46.225.51.30:18789/healthz
+  #     expect_status: 200
+  #   condition:
+  #     consecutive_failures: 3
+  #     cooldown_seconds: 600
+  #   action:
+  #     kind: restart_systemd
+  #     target: n8n.service
+  #     host: openclaw
+  #   escalate:
+  #     on_action_failure: true
+  #     on_repeated_trigger: 3
+
+  # ── LobsterBot heartbeat ───────────────────────────────────────────────
+  # Disabled-by-default example. Enable once lobsterbot exposes a probe.
+  # - id: lobsterbot-down
+  #   description: "Restart lobsterbot if its process exits."
+  #   signal:
+  #     kind: tcp
+  #     host: localhost
+  #     port: 8081
+  #   condition:
+  #     consecutive_failures: 2
+  #     cooldown_seconds: 300
+  #   action:
+  #     kind: restart_systemd
+  #     target: lobsterbot.service
+  #   escalate:
+  #     on_action_failure: true
+  #     on_repeated_trigger: 5

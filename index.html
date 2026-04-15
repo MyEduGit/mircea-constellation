@@ -197,7 +197,7 @@ svg.connections line.bot-link {
 <div class="container">
   <header>
     <h1>MIRCEA'S CONSTELLATION</h1>
-    <div class="subtitle">Full System Map — OpenClaw + NanoClaw + AI + Bot Fleet + Services</div>
+    <div class="subtitle">Full System Map — OpenClaw + NanoClaw + Fireclaw + AI + Bot Fleet + Services</div>
   </header>
   <div class="status-bar" id="statusBar">
     <span><span class="dot dot-green"></span> Loading...</span>
@@ -259,6 +259,7 @@ const nodes = [
   { id: 'openclaw', icon: '⚡', label: 'OpenClaw',         sub: '46.225.51.30',         type: 'server',     x: 0.28, y: 0.36, tier: 'infra' },
   { id: 'urantios', icon: '🌟', label: 'URANTiOS Prime',   sub: '204.168.143.98',       type: 'server',     x: 0.72, y: 0.33, tier: 'infra' },
   { id: 'nanoclaw', icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents',        type: 'claw',       x: 0.86, y: 0.22, tier: 'infra' },
+  { id: 'fireclaw', icon: '🔥', label: 'Fireclaw v0.1.0',  sub: 'Remediation Layer',    type: 'claw',       x: 0.50, y: 0.42, tier: 'infra' },
 
   // ── TIER 3: AI MODELS ───────────────────────────────────────────
   { id: 'claude',   icon: '🟣', label: 'Claude',           sub: 'Opus 4.6',            type: 'ai',         x: 0.10, y: 0.28, tier: 'ai' },
@@ -315,6 +316,12 @@ const connections = [
   ['openclaw', 'chatgpt',    'ai-link'],
   ['openclaw', 'uragent',    'bot-link'],
 
+  // Fireclaw — remediation layer reads NemoClaw signals & acts on infra
+  ['fireclaw', 'openclaw',     'active'],
+  ['fireclaw', 'urantios',     'active'],
+  ['fireclaw', 'botfleet',     'bot-link'],
+  ['imac',     'fireclaw',     'active'],
+
   // URANTiOS connections
   ['urantios', 'nanoclaw',     'active'],
   ['urantios', 'urantipedia',  'active'],
@@ -364,6 +371,7 @@ const nodeDetails = {
   openclaw: { 'IP': '46.225.51.30', 'Hardware': 'CPX22 (8GB / 80GB)', 'Location': 'Nuremberg, DE', 'Ports': '18789 / 18791 / 18792', 'Bots Hosted': '9 active', 'Disk': '46% used', 'Tier': 'INFRASTRUCTURE' },
   urantios: { 'IP': '204.168.143.98', 'Hardware': 'CCX23 (16GB / 160GB)', 'Location': 'Helsinki, FI', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org', 'Disk': '38% used', 'Tier': 'INFRASTRUCTURE' },
   nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Runtime': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw in Telegram', 'Status': 'LIVE', 'Tier': 'INFRASTRUCTURE' },
+  fireclaw: { 'Version': '0.1.0', 'Role': 'Remediation / incident response', 'Owns': 'Restart · disable · quarantine · failover · escalate', 'Inputs': 'NemoClaw view + status.json + HTTP/TCP probes', 'Rules': 'fireclaw/rules.yaml (declarative; no improvisation)', 'Lucifer Test': 'Transparent · Honest · Within mandate · Serves mission', 'Logs': '~/.fireclaw/incidents.jsonl (append-only)', 'Repo': 'myedugit/mircea-constellation · fireclaw/', 'Tier': 'INFRASTRUCTURE' },
 
   claude:   { 'Model': 'Claude Opus 4.6 (1M ctx)', 'Provider': 'Anthropic', 'Role': 'Primary AI partner', 'Used For': 'PhD analysis, code, deep reasoning', 'Workspace': 'iMac Obsidian vault', 'Tier': 'AI' },
   chatgpt:  { 'Model': 'ChatGPT (OpenAI)', 'Role': 'Secondary AI partner', 'Used For': 'Summaries, vault mgmt, verification', 'Workspace': 'Hetzner vault', 'Tier': 'AI' },
@@ -421,7 +429,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = n.id === 'lobster' ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = n.id === 'lobster' ? 'new' : (n.id === 'fireclaw' ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok'));
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
@@ -477,6 +485,7 @@ async function loadStatus() {
     const items = [];
     if (data.fleet) items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span>Fleet: ${data.fleet.bots}</span>`);
     if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span>NanoClaw: ${data.nanoclaw.version || '?'}</span>`);
+    if (data.fireclaw) items.push(`<span><span class="dot dot-${data.fireclaw.status === 'ok' ? 'green' : (data.fireclaw.status === 'warn' ? 'yellow' : (data.fireclaw.status === 'new' ? 'blue' : 'red'))}"></span>Fireclaw: ${data.fireclaw.version || data.fireclaw.status || '?'}</span>`);
     if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
     if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);

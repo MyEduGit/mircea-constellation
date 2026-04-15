@@ -1,2 +1,9 @@
 # status.json is generated at runtime by the monitoring cron job.
 # The committed copy is a template/fallback only.
+
+# Fireclaw venv (created by setup/fireclaw_install.sh)
+.fireclaw-env/
+
+# Python bytecode
+__pycache__/
+*.pyc
