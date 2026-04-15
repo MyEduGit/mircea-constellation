@@ -1,0 +1,6 @@
+# _private/ is local-only. Never push anything inside this folder.
+# It holds coordinator quick-links and scratch notes that reference
+# aXcelerate IDs / learner identifiers which must stay off the remote.
+*
+!.gitignore
+!README.md
