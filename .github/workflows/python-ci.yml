@@ -1,0 +1,66 @@
+name: Python CI
+
+on:
+  pull_request:
+    paths:
+      - 'scribeclaw/**'
+      - '.github/workflows/python-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scribeclaw/**'
+      - '.github/workflows/python-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # ruff is the minimum we need — fast, pinned version, catches real
+      # problems (undefined names, unused imports, bad f-strings).
+      - name: Install ruff
+        run: pip install ruff==0.7.2
+
+      # Scope: scribeclaw only for now. Other modules (fireclaw /
+      # lucifericlaw / openclaw_ingest) predate this CI and will be
+      # added as their owners clean up pre-existing violations.
+      - name: ruff check
+        run: ruff check scribeclaw
+
+      - name: Python syntax check (compileall)
+        run: python -m compileall -q scribeclaw
+
+      - name: Install scribeclaw minimal deps for invariant check
+        run: pip install "fastapi==0.115.0" "uvicorn==0.32.0"
+
+      - name: ScribeClaw allowlist invariant
+        env:
+          DATA_ROOT: /tmp/scribeclaw-ci
+        run: |
+          mkdir -p /tmp/scribeclaw-ci
+          python - <<'PY'
+          from scribeclaw import main
+          assert set(main._HANDLERS) == set(main.ALLOWED_HANDLERS), (
+              f"dispatch/allowlist divergence: "
+              f"handlers={sorted(main._HANDLERS)} "
+              f"allowed={sorted(main.ALLOWED_HANDLERS)}"
+          )
+          print(f"OK · {len(main.ALLOWED_HANDLERS)} handlers")
+          PY
+
+      - name: Run project unit tests (if any)
+        run: |
+          if [ -d tests ] || compgen -G "scribeclaw/tests/*" > /dev/null; then
+            pip install pytest
+            pytest -q
+          else
+            echo "no tests directory — skipping pytest"
+          fi

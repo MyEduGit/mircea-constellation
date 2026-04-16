@@ -26,12 +26,12 @@ _STOP_RO = {
     "nu", "da", "cu", "de", "la", "în", "pe", "pentru", "din", "pân",
     "până", "cum", "ce", "cine", "care", "acest", "aceasta", "acesta",
     "aceea", "acolo", "aici", "mai", "prea", "foarte", "tot", "toate",
-    "un", "o", "unei", "unui", "al", "ale", "ai", "am", "ai", "are",
+    "un", "o", "unei", "unui", "al", "ale", "ai", "am", "are",
     "a", "s", "m", "se", "mi", "ți", "i", "îi", "le", "li", "îl",
     "eu", "tu", "el", "ea", "noi", "voi", "ei", "ele",
     "mea", "tău", "său", "mă", "te", "ne", "vă",
     "așa", "atunci", "acum", "după", "înainte", "doar", "numai",
-    "the", "and", "to", "of", "a", "in", "is", "it", "that",
+    "the", "and", "to", "of", "in", "is", "it", "that",
 }
 
 _WORD = re.compile(r"[A-Za-zĂÂÎȘȚăâîșț]{3,}")
