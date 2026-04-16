@@ -29,6 +29,7 @@ import uvicorn
 from fastapi import Body, FastAPI
 
 from . import __version__
+from .assemblyai import import_assemblyai_transcript, transcribe_assemblyai
 from .edit import audio_extract, media_edit
 from .postprocess import postprocess_transcript
 from .transcribe import transcribe_ro
@@ -60,6 +61,8 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "media_edit",
     "audio_extract",
     "transcribe_ro",
+    "transcribe_assemblyai",
+    "import_assemblyai_transcript",
     "postprocess_transcript",
     "youtube_metadata",
     "youtube_upload",
@@ -88,31 +91,46 @@ def write_evidence(handler: str, payload: dict, result: dict) -> str:
     return str(path)
 
 
-async def _handle_smoke_test(payload: dict) -> dict:
+def _probe_runtime() -> dict:
     import shutil
     faster_whisper_installed = True
     try:
         import faster_whisper  # noqa: F401
     except ImportError:
         faster_whisper_installed = False
+    httpx_installed = True
+    try:
+        import httpx  # noqa: F401
+    except ImportError:
+        httpx_installed = False
+    return {
+        "ffmpeg_on_path": shutil.which("ffmpeg") is not None,
+        "faster_whisper_installed": faster_whisper_installed,
+        "httpx_installed": httpx_installed,
+        "assemblyai_key_set": bool(os.getenv("ASSEMBLYAI_API_KEY", "").strip()),
+    }
+
+
+async def _handle_smoke_test(payload: dict) -> dict:
     return {
         "status": "success",
         "handler": "smoke_test",
         "message": f"{CLAW_NAME} scaffold smoke test passed",
         "version": __version__,
-        "ffmpeg_on_path": shutil.which("ffmpeg") is not None,
-        "faster_whisper_installed": faster_whisper_installed,
+        **_probe_runtime(),
     }
 
 
 _HANDLERS: dict[str, Any] = {
-    "smoke_test":             lambda p: _handle_smoke_test(p),
-    "media_edit":             lambda p: media_edit(p, DATA_ROOT),
-    "audio_extract":          lambda p: audio_extract(p, DATA_ROOT),
-    "transcribe_ro":          lambda p: transcribe_ro(p, DATA_ROOT),
-    "postprocess_transcript": lambda p: postprocess_transcript(p, DATA_ROOT),
-    "youtube_metadata":       lambda p: youtube_metadata(p, DATA_ROOT),
-    "youtube_upload":         lambda p: youtube_upload(p, DATA_ROOT),
+    "smoke_test":                   lambda p: _handle_smoke_test(p),
+    "media_edit":                   lambda p: media_edit(p, DATA_ROOT),
+    "audio_extract":                lambda p: audio_extract(p, DATA_ROOT),
+    "transcribe_ro":                lambda p: transcribe_ro(p, DATA_ROOT),
+    "transcribe_assemblyai":        lambda p: transcribe_assemblyai(p, DATA_ROOT),
+    "import_assemblyai_transcript": lambda p: import_assemblyai_transcript(p, DATA_ROOT),
+    "postprocess_transcript":       lambda p: postprocess_transcript(p, DATA_ROOT),
+    "youtube_metadata":             lambda p: youtube_metadata(p, DATA_ROOT),
+    "youtube_upload":               lambda p: youtube_upload(p, DATA_ROOT),
 }
 assert set(_HANDLERS) == set(ALLOWED_HANDLERS), \
     "dispatch table must match ALLOWED_HANDLERS exactly"
@@ -139,21 +157,14 @@ app = FastAPI(title=CLAW_NAME, version=__version__)
 
 @app.get("/health")
 def health() -> dict:
-    import shutil
-    faster_whisper_installed = True
-    try:
-        import faster_whisper  # noqa: F401
-    except ImportError:
-        faster_whisper_installed = False
     return {
         "status": "healthy",
         "claw": CLAW_NAME,
         "version": __version__,
         "governed_by": "URANTiOS",
-        "ffmpeg_on_path": shutil.which("ffmpeg") is not None,
-        "faster_whisper_installed": faster_whisper_installed,
         "data_root": str(DATA_ROOT),
         "allowed_handlers": sorted(ALLOWED_HANDLERS),
+        **_probe_runtime(),
     }
 
 

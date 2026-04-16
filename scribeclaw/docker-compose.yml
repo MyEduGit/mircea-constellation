@@ -21,6 +21,8 @@ services:
       - WHISPER_DEVICE=${WHISPER_DEVICE:-cpu}
       - WHISPER_COMPUTE=${WHISPER_COMPUTE:-int8}
       - WHISPER_CACHE_DIR=/data/models
+      # AssemblyAI key is read from .env; leave blank to disable those handlers.
+      - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY:-}
     volumes:
       - /opt/scribeclaw-data:/data
     ports:
