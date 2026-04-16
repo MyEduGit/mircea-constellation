@@ -154,3 +154,73 @@ pipelines:
           source:    "${workdir}/03-loud.mp4"
           metadata:  "${outbox}/metadata.json"
           thumbnail: "${outbox}/thumb.jpg"
+
+  # ── cousins-romania: family vlog — cousins reunion, countryside truck ride ──
+  # Drop the source clip at ~/cinemaclaw/inbox/cousins-romania.mp4 (or override
+  # `source` below). Lightweight cut: probe → gentle head trim → loudness
+  # normalise → candid thumbnail → family-appropriate metadata. Privacy is
+  # unlisted by default; flip to public once you've reviewed the final cut.
+  cousins-romania:
+    description: "Family vlog — cousins reunion, Romanian countryside truck ride."
+    vars:
+      source:      "~/cinemaclaw/inbox/cousins-romania.mp4"
+      workdir:     "~/cinemaclaw/work/cousins-romania"
+      outbox:      "~/cinemaclaw/outbox/cousins-romania"
+      # Trim off the first 2s (typically hand-on-camera / framing wobble).
+      # Set head to "00:00:00" if the opening frame is already usable.
+      head:        "00:00:02"
+      # Capture the thumbnail a few seconds in, once everyone's settled on
+      # the truck bed. Adjust if the best candid moment is elsewhere.
+      thumb_at:    "00:00:06"
+    stages:
+      - kind: probe
+        with: { source: "${source}" }
+      - kind: trim
+        with:
+          source: "${source}"
+          start:  "${head}"
+          out:    "${workdir}/01-body.mp4"
+      - kind: normalize_audio
+        with:
+          source: "${last_output}"
+          out:    "${workdir}/02-loud.mp4"
+          target_lufs: -14.0
+      - kind: render_thumbnail
+        with:
+          source: "${last_output}"
+          out:    "${outbox}/thumb.jpg"
+          at:     "${thumb_at}"
+          width:  1280
+      - kind: write_metadata
+        with:
+          source:      "${workdir}/02-loud.mp4"
+          out:         "${outbox}/metadata.json"
+          title:       "Cousins in the Romanian Countryside — a long-weekend reunion"
+          description: |
+            A fun day out in the Romanian countryside — cousins from
+            different regions meeting up over a long weekend and riding
+            together on the back of a truck.
+
+            Filmed on the road. Raw, unpolished, family-first.
+
+            Auto-prepared by CinemaClaw (mircea-constellation).
+          tags:
+            - romania
+            - countryside
+            - cousins
+            - family
+            - reunion
+            - road trip
+            - truck ride
+            - long weekend
+            - vlog
+          # YouTube category 22 = People & Blogs (correct bucket for a
+          # family vlog; use 19 = Travel & Events if you'd rather emphasise
+          # the road-trip framing).
+          category_id: 22
+          privacy:     "unlisted"
+      - kind: publish_youtube
+        with:
+          source:    "${workdir}/02-loud.mp4"
+          metadata:  "${outbox}/metadata.json"
+          thumbnail: "${outbox}/thumb.jpg"
