@@ -52,6 +52,16 @@
 | 3 | Shopping ESL Role-Plays & Worksheets | Cert II | [Teach-This](https://www.teach-this.com/functional-language/shopping) |
 | 4 | 200 FREE Health Activities & Worksheets | Cert I | [BusyTeacher](https://busyteacher.org/classroom_activities-vocabulary/medicine_and_health-worksheets/) |
 
+### End of Day Teacher Notes - Monday 2 March
+
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Transaction role-play engagement | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
 ---
 
 ## Wednesday, 4 March 2026
@@ -90,11 +100,30 @@
 | 2 | AMEP Intermediate Resources | Cert III | [Home Affairs](https://immi.homeaffairs.gov.au/settling-in-australia/amep/resources/intermediate) |
 | 3 | Complaints Worksheets (58 options) | Cert II/III | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/search/complaints) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 4 March
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Thi Mai Hoa Nguyen terminated 3 March - finalise evidence handover |
-| Admin actions | Hand in Hoa's evidence for VU22358 and VU23519; Record "W" (Withdrawn) |
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Bills/money topic engagement | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | Finalise evidence handover for any withdrawn Cert II learner (VU22358 + VU23519) |
+
+---
+
+## End of Week Teacher Summary - Week 6
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Main challenges and how addressed | |
+| Patterns across the cohort | |
+| Cert I specific observations | Money/bills literacy progress |
+| Cert II specific observations | Shopping transaction vocabulary acquisition |
+| Cert III specific observations | Bill/service request language |
+| Digital skills progress | Email composition, online bill interaction |
+| Withdrawals/terminations processed | Record interim "W" outcomes for any departing learners |
+| aXcelerate / admin reconciliation | |
+| Goals for Week 7 | Complaints & appointments practice |
+| Equipment/resources needed for Week 7 | Complaint role-play cards, phone dialogue scripts |

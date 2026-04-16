@@ -51,6 +51,16 @@
 | 2 | Free Printable ESL Worksheets | All | [JIMMYESL](https://jimmyesl.com/english-worksheets/) |
 | 3 | ESL Conversation Worksheets (printable) | Cert II/III | [Excellent ESL 4U](https://www.excellentesl4u.com/esl-conversation-worksheets.html) |
 
+### End of Day Teacher Notes - Monday 9 February
+
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Cohort engagement observations | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
 ---
 
 ## Wednesday, 11 February 2026
@@ -89,11 +99,29 @@
 | 2 | NM TAFE - New Life in Australia (Intermediate booklet) | Cert III | [PDF](https://www.northmetrotafe.wa.edu.au/sites/default/files/2020-08/AMEP%209.%20%C2%A0Intermediate%20-%20New%20life%20-%20Australia.pdf) |
 | 3 | 200 FREE Health Activities & Worksheets | Cert I | [BusyTeacher](https://busyteacher.org/classroom_activities-vocabulary/medicine_and_health-worksheets/) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 11 February
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | |
-| Admin actions | |
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Cohort engagement observations | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
+---
+
+## End of Week Teacher Summary - Week 3
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Main challenges and how addressed | |
+| Patterns across the cohort | |
+| Cert I specific observations | |
+| Cert II specific observations | Small talk/conversation openers - confidence level |
+| Cert III specific observations | Local community topic engagement |
+| Digital skills progress | Google Maps, local service searches |
+| aXcelerate / admin reconciliation | |
+| Goals for Week 4 | Phrasal verbs (Cert II), discourse markers (Cert III), role-play rehearsal |
+| Equipment/resources needed for Week 4 | Phrasal verb flashcards, role-play cue cards |

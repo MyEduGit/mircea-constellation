@@ -51,6 +51,17 @@
 | 2 | At the Doctor's - Role-plays & Activities | Cert I | [Teach-This](https://www.teach-this.com/functional-language/doctors) |
 | 3 | ESL Health Units (Project SHINE) | Cert I | [LINCS](https://lincs.ed.gov/professional-development/resource-collections/profile-330) |
 
+### End of Day Teacher Notes - Monday 23 February (Assessment Day)
+
+| Prompt | Notes |
+|--------|-------|
+| Assessment task completion rate | |
+| Students assessed Satisfactory | |
+| Students needing "More Evidence Required" | |
+| Assessment logistics - what ran smoothly? | |
+| What to adjust for Wednesday catch-up? | |
+| Admin for next session | Complete KE checklists; file all recordings |
+
 ---
 
 ## Wednesday, 25 February 2026
@@ -89,11 +100,32 @@
 | 2 | Shopping Worksheets (392 options) | Cert II | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/general-topic/shopping) |
 | 3 | AMEP Beginner Settlement Topic Packs | Cert I | [Home Affairs](https://immi.homeaffairs.gov.au/settling-in-australia/amep/resources/beginner) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 25 February
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Record assessment results - mark S or "More evidence required" |
-| Admin actions | Complete KE checklist observations from assessment role-plays |
+| Prompt | Notes |
+|--------|-------|
+| Assessment catch-up completion | |
+| What worked well today? | |
+| What to adjust next session? | |
+| Transaction language introduction - how did it land? | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | Complete any remaining KE checklist observations |
+
+---
+
+## End of Week Teacher Summary - Week 5 (Assessment Task A/1)
+
+| Prompt | Notes |
+|--------|-------|
+| Total Cert II learners assessed for Task A | |
+| Total Cert II Satisfactory | |
+| Total Cert III learners assessed for Task 1 | |
+| Total Cert III Satisfactory | |
+| Common strengths observed | |
+| Common gaps - what to re-teach | |
+| Cert I settlement progress (VU23558) | |
+| KE checklist completion rate | |
+| Digital skills progress this week | |
+| aXcelerate / admin reconciliation | Record all Task A/1 outcomes; Update unit progress % |
+| Goals for Week 6 | Element 2 introduction - transactions, shopping, bills |
+| Equipment/resources needed for Week 6 | Realia (receipts, bills), role-play station cards |

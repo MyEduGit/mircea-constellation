@@ -69,11 +69,29 @@ Note: Term 1 commenced on Wednesday, 28 January 2026.
 | 4 | Learning Languages - Lesson Plan & Worksheet | All | [Linguahouse](https://www.linguahouse.com/esl-lesson-plans/general-english/learning-languages) |
 | 5 | Free ESL Lesson Plans for Beginners (Introductions) | Cert I/II | [English Language Studies](https://englishlanguagestudies.com/free-esl-lesson-plans-for-beginners/) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 28 January
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Azeez Y. Zahrah scheduled to commence today. Several aXcelerate records need status update to "CA" |
-| Admin actions | Resolve red date validation errors for 28/01/2026 start date; Update N.R. to CA for attending students |
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Cohort engagement observations | |
+| Individual learner observations (no names - use initials or ID) | |
+| Admin for tomorrow/next session | Resolve red date validation errors for 28/01/2026 start date; Update N.R. to CA for attending students |
+
+---
+
+## End of Week Teacher Summary - Week 1
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Main challenges and how addressed | |
+| Patterns across the cohort (attendance, engagement, comprehension) | |
+| Cert I specific observations | |
+| Cert II specific observations | |
+| Cert III specific observations | |
+| Digital skills progress | |
+| aXcelerate / admin reconciliation | Cert III new commencement recorded; Update all N.R. → CA for attending students |
+| Goals for Week 2 | Complete Task B (My Learning Plan) for all ongoing units; Begin communication unit intros |
+| Equipment/resources needed for Week 2 | |

@@ -51,6 +51,17 @@
 | 2 | ESL Worksheets for Adults (37,650 options) | All | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/search/adults) |
 | 3 | Melbourne Polytechnic Tutor Worksheets | All | [LibGuide](https://libguides.melbournepolytechnic.edu.au/c.php?g=691480&p=5048809) |
 
+### End of Day Teacher Notes - Monday 30 March
+
+| Prompt | Notes |
+|--------|-------|
+| Task C / Exchange 3 completion rate | |
+| Portfolio finalisation status | |
+| What worked well today? | |
+| What to adjust for final session? | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | Prepare term wrap-up materials; Final aXcelerate reconciliation |
+
 ---
 
 ## Wednesday, 1 April 2026
@@ -89,14 +100,46 @@
 | 2 | Clare Harris - Free Australian EAL Resources | All | [Blog](https://clareharris.com/australian-eal-resources-whats-free-an-update/) |
 | 3 | AMEP Resources Hub | All | [Home Affairs](https://immi.homeaffairs.gov.au/settling-in-australia/amep/resources) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 1 April (FINAL DAY)
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Collect all outstanding assessment evidence; Ensure all cover sheets signed |
-| Admin actions | Update aXcelerate: mark all completed units; Record withdrawals for non-attending students; Resolve all remaining N.R. / date validation errors; Update Masood's trainer field to Mircea Matthews |
+| Prompt | Notes |
+|--------|-------|
+| Term celebration - what stood out? | |
+| Learners' own reflections/highlights | |
+| What worked well today? | |
+| Individual learner observations (use initials/IDs) | |
+| Admin completed this session | Final backup, aXcelerate updates, trainer field corrections |
+
+---
+
+## End of Week Teacher Summary - Week 10 (FINAL WEEK)
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Task C/Exchange 3 completion stats | |
+| Portfolios collected/signed | |
+| Term highlights | |
+| aXcelerate / admin reconciliation | All statuses finalised; all N.R. resolved; all withdrawals recorded |
+| Next term preview given to learners? | |
+| Goals for Term 2 carryover | |
+
+---
+
+## End of Term 1 Teacher Reflection
+
+| Prompt | Notes |
+|--------|-------|
+| What went well overall this term? | |
+| What would I change for next term? | |
+| Which activities/resources were most effective? | |
+| Which activities need replacing? | |
+| Cohort progress summary (Cert I) | |
+| Cohort progress summary (Cert II) | |
+| Cohort progress summary (Cert III) | |
+| Digital skills integration - what worked? | |
+| Assessment task feedback (Task A/B, Task 1/2, Task C) | |
+| PD needs identified for me | |
 
 ---
 
@@ -105,11 +148,12 @@
 - [ ] All Task A/1 results recorded (S or More Evidence Required)
 - [ ] All Task B/2 results recorded
 - [ ] All Task C / Exchange 3 results recorded
-- [ ] KE Checklists completed with verbatim evidence for each student
+- [ ] KE Checklists completed with verbatim evidence for each learner
 - [ ] Ongoing unit portfolios/learning plans collected
-- [ ] Assessment cover sheets signed by student and assessor
+- [ ] Assessment cover sheets signed by learner and assessor
 - [ ] aXcelerate statuses updated (CA, CT, W as appropriate)
 - [ ] Date validation errors resolved
-- [ ] Withdrawn students finalised (Hoa, Mahmood, Sui Ni Par)
+- [ ] Withdrawn learners finalised (interim "W" outcomes recorded)
 - [ ] All digital files backed up
-- [ ] Student reflections collected for portfolio evidence
+- [ ] Learner reflections collected for portfolio evidence
+- [ ] Trainer field updated where missing

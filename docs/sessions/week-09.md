@@ -51,6 +51,18 @@
 | 2 | Role Plays Worksheets Collection | All | [ESL Printables](https://www.eslprintables.com/speaking_worksheets/role_plays/) |
 | 3 | AMEP Intermediate Resources | Cert III | [Home Affairs](https://immi.homeaffairs.gov.au/settling-in-australia/amep/resources/intermediate) |
 
+### End of Day Teacher Notes - Monday 23 March (Assessment Day)
+
+| Prompt | Notes |
+|--------|-------|
+| Assessment task completion rate | |
+| Learners assessed Satisfactory (Cert II Task B) | |
+| Learners assessed Satisfactory (Cert III Task 2) | |
+| Learners needing "More Evidence Required" | |
+| Assessment logistics - what ran smoothly? | |
+| What to adjust for Wednesday catch-up? | |
+| Admin for next session | Complete KE checklists; file recordings |
+
 ---
 
 ## Wednesday, 25 March 2026
@@ -89,11 +101,31 @@
 | 2 | Free Adult ESL Health Worksheets | Cert I | [Teachers Pay Teachers](https://www.teacherspayteachers.com/browse/free?search=adult+esl+health) |
 | 3 | English Express - Free Resources | All | [Website](https://www.englishexpress.com.au/copy-of-free-resources) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 25 March
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Record all assessment results; Complete KE checklists |
-| Admin actions | Mark S or "More evidence required"; Plan catch-up for Week 10 if needed |
+| Prompt | Notes |
+|--------|-------|
+| Assessment catch-up completion | |
+| KE evidence gathering during free conversation | |
+| Individual learner observations (use initials/IDs) | |
+| What to adjust next session? | |
+| Admin for next session | Mark S or "More evidence required"; Plan Task C/Exchange 3 catch-up for Week 10 |
+
+---
+
+## End of Week Teacher Summary - Week 9 (Assessment Task B/2)
+
+| Prompt | Notes |
+|--------|-------|
+| Total Cert II learners assessed for Task B | |
+| Total Cert II Satisfactory | |
+| Total Cert III learners assessed for Task 2 | |
+| Total Cert III Satisfactory | |
+| Common strengths observed | |
+| Common gaps - learners needing more evidence | |
+| Cert I settlement progress (VU23558) | |
+| KE checklist completion rate | |
+| Digital skills progress this week | Portfolio backup, file organisation |
+| aXcelerate / admin reconciliation | Record all Task B/2 outcomes; Flag any remaining N.R. issues |
+| Goals for Week 10 | Task C/Exchange 3, portfolio finalisation, term wrap-up |
+| Equipment/resources needed for Week 10 | Task C booklets, portfolio final templates, USB/cloud backup |

@@ -52,6 +52,16 @@
 | 3 | Phrasal Verbs Activities & Worksheets | Cert II/III | [Teach-This](https://www.teach-this.com/parts-of-speech/phrasal-verbs) |
 | 4 | 182 FREE Phrasal Verb Worksheets | All | [BusyTeacher](https://busyteacher.org/classroom_activities-vocabulary/phrasal_verbs-worksheets/) |
 
+### End of Day Teacher Notes - Monday 16 February
+
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Cohort engagement observations | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
 ---
 
 ## Wednesday, 18 February 2026
@@ -90,11 +100,30 @@
 | 2 | ESL Goal Setting Worksheets | All | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/search/goals) |
 | 3 | Role Plays Worksheets Collection | All | [ESL Printables](https://www.eslprintables.com/speaking_worksheets/role_plays/) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 18 February
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Check all students are ready for Assessment Task 1 next week |
-| Admin actions | Prepare assessment cue cards and KE checklists for Week 5 |
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Cohort engagement observations | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | Prepare assessment cue cards and KE checklists for Week 5 |
+
+---
+
+## End of Week Teacher Summary - Week 4
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Main challenges and how addressed | |
+| Patterns across the cohort | |
+| Cert I specific observations | Phrasal verb comprehension with support |
+| Cert II specific observations | Phrasal verb usage in rehearsal role-plays |
+| Cert III specific observations | Discourse marker natural usage |
+| Digital skills progress | Typing confidence, formatting awareness |
+| Assessment readiness check | Identify any learners needing extra support before Week 5 |
+| aXcelerate / admin reconciliation | |
+| Goals for Week 5 | Conduct Assessment Task A (Cert II) / Task 1 (Cert III); Cert I settlement focus |
+| Equipment/resources needed for Week 5 | Assessment booklets printed, PC checklists, audio recorder, KE checklists |

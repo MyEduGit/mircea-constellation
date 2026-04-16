@@ -52,6 +52,16 @@
 | 3 | Role Play for Complaints | Cert II/III | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/role-play-for-complaints/33681) |
 | 4 | Telephone Complaint Role Play | Cert III | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/speaking-practice/role-play-miming-drama-activity-or-improv-game/phoning/telephone-complaint/78138) |
 
+### End of Day Teacher Notes - Monday 9 March
+
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Complaint language - confidence level | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
 ---
 
 ## Wednesday, 11 March 2026
@@ -90,11 +100,29 @@
 | 2 | At the Doctor's - ESL Role-plays | Cert I/II | [Teach-This](https://www.teach-this.com/functional-language/doctors) |
 | 3 | AMEP Teaching Resources Guide | All | [PDF](https://ameponline.homeaffairs.gov.au/pluginfile.php/1/local_teacherresources/resources/0/AMEP-Teaching-Resources.pdf) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 11 March
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | |
-| Admin actions | Prepare Task B/2 assessment materials for Week 9 |
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Appointment booking role-play engagement | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
+---
+
+## End of Week Teacher Summary - Week 7
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Main challenges and how addressed | |
+| Patterns across the cohort | |
+| Cert I specific observations | |
+| Cert II specific observations | Complaint language with phrasal verbs |
+| Cert III specific observations | Telephone complaints, formal register |
+| Digital skills progress | Online calendar use, booking systems |
+| aXcelerate / admin reconciliation | Prepare Task B/2 assessment materials for Week 9 |
+| Goals for Week 8 | Transaction fluency with complex structures, conditionals |
+| Equipment/resources needed for Week 8 | Conditional frames, negotiation phrase banks |

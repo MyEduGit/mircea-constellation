@@ -52,6 +52,16 @@
 | 3 | Adult Conversation Worksheets (1,659 options) | Cert II/III | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/search/adult+conversation) |
 | 4 | Free ESL Worksheets for Adults (48 resources) | All | [TPR Teaching](https://www.tprteaching.com/esl-worksheets-for-adults/) |
 
+### End of Day Teacher Notes - Monday 2 February
+
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Cohort engagement observations | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
 ---
 
 ## Wednesday, 4 February 2026
@@ -91,11 +101,29 @@
 | 3 | AMEP Post-Beginner Resources | Cert II | [Home Affairs](https://immi.homeaffairs.gov.au/settling-in-australia/amep/resources/post-beginner) |
 | 4 | Health & Doctor Worksheets (724 options) | All | [iSL Collective](https://en.islcollective.com/english-esl-worksheets/general-topic/health-and-going-doctor) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 4 February
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Naeemah, Nyee Wu, Ibrahim Jimi H officially commence this week |
-| Admin actions | Record withdrawals for Mahmood and Sui Ni Par; Ensure Neemah completes Task B |
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Cohort engagement observations | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
+---
+
+## End of Week Teacher Summary - Week 2
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Main challenges and how addressed | |
+| Patterns across the cohort | |
+| Cert I specific observations | |
+| Cert II specific observations | Several new Cert II commencements this week - monitor intake completion |
+| Cert III specific observations | New Cert III commencement recorded |
+| Digital skills progress | Initial email/browser orientation completed |
+| aXcelerate / admin reconciliation | Record any withdrawals identified this week; Ensure Task B completion logged |
+| Goals for Week 3 | Begin Element 1 - Casual Conversations focus for Cert II & III |
+| Equipment/resources needed for Week 3 | Audio clips, conversation starter cards |

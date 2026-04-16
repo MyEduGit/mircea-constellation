@@ -52,6 +52,16 @@
 | 3 | 6 Fun Shopping Role Play Activities | Cert II | [FluentU](https://www.fluentu.com/blog/educator-english/esl-shopping-role-play/) |
 | 4 | Shopping Role-play Worksheets | Cert II | [ESL Printables](https://www.eslprintables.com/speaking_worksheets/role_plays/shopping_role_play/) |
 
+### End of Day Teacher Notes - Monday 16 March
+
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Conditional/complex structure usage | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | |
+
 ---
 
 ## Wednesday, 18 March 2026
@@ -90,11 +100,30 @@
 | 2 | Clare Harris - Free Australian EAL Resources | All | [Blog](https://clareharris.com/australian-eal-resources-whats-free-an-update/) |
 | 3 | AMEP Classroom Resources | All | [NM TAFE LibGuide](https://guides.dtwd.wa.gov.au/nmtafe-english-amep-eal/clasroom-resources) |
 
-### Reflections and Notes
+### End of Day Teacher Notes - Wednesday 18 March
 
-| Item | Notes |
-|------|-------|
-| What worked | |
-| What to improve | |
-| Student notes | Ensure all students are ready for Assessment Task 2 next week |
-| Admin actions | Print Task B/2 cue cards and KE checklists |
+| Prompt | Notes |
+|--------|-------|
+| What worked well today? | |
+| What to adjust next session? | |
+| Acknowledgement of Country / Indigenous culture engagement | |
+| Individual learner observations (use initials/IDs) | |
+| Admin for next session | Print Task B/2 cue cards and KE checklists |
+
+---
+
+## End of Week Teacher Summary - Week 8
+
+| Prompt | Notes |
+|--------|-------|
+| Top 3 achievements this week | 1. <br>2. <br>3. |
+| Main challenges and how addressed | |
+| Patterns across the cohort | |
+| Cert I specific observations | Indigenous culture introduction engagement |
+| Cert II specific observations | Fluency rehearsal readiness for Task B |
+| Cert III specific observations | Conditional usage, complex structures |
+| Digital skills progress | File organisation, formatting reply |
+| Assessment readiness check | Flag any learner needing extra support |
+| aXcelerate / admin reconciliation | |
+| Goals for Week 9 | Conduct Assessment Task B (Cert II) / Task 2 (Cert III) |
+| Equipment/resources needed for Week 9 | Task B/2 booklets, PC checklists, audio recorder |
