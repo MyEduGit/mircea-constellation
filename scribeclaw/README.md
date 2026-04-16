@@ -1,7 +1,8 @@
 # ScribeClaw
 
 **Truthful label:** deployable scaffold. Real handlers: `media_edit`,
-`audio_extract`, `transcribe_ro`, `postprocess_transcript`,
+`audio_extract`, `transcribe_ro`, `transcribe_assemblyai`,
+`import_assemblyai_transcript`, `postprocess_transcript`,
 `youtube_metadata`. Stub: `youtube_upload` (refuses — operator must
 supply OAuth credentials in a follow-up PR).
 
@@ -61,12 +62,14 @@ Every step emits an evidence record under `/data/evidence/`.
 ```python
 ALLOWED_HANDLERS = {
     "smoke_test",
-    "media_edit",              # REAL — ffmpeg required on PATH
-    "audio_extract",           # REAL — ffmpeg required on PATH
-    "transcribe_ro",           # REAL — faster-whisper; model downloaded on first use
-    "postprocess_transcript",  # REAL — deterministic, no LLM
-    "youtube_metadata",        # REAL — deterministic packaging
-    "youtube_upload",          # STUB — refuses without OAuth creds
+    "media_edit",                    # REAL — ffmpeg required on PATH
+    "audio_extract",                 # REAL — ffmpeg required on PATH
+    "transcribe_ro",                 # REAL — faster-whisper, offline
+    "transcribe_assemblyai",         # REAL — AssemblyAI, needs API key
+    "import_assemblyai_transcript",  # REAL — reuse dashboard transcripts
+    "postprocess_transcript",        # REAL — deterministic, no LLM
+    "youtube_metadata",              # REAL — deterministic packaging
+    "youtube_upload",                # STUB — refuses without OAuth creds
 }
 ```
 
@@ -142,6 +145,30 @@ Or run the whole chain in one shot from the CLI (not the HTTP surface):
 docker exec -it scribeclaw python -m scribeclaw.main --mode pipeline --input interviu.mp4
 ```
 
+### AssemblyAI alternative — reuse the dashboard instead of re-transcribing
+
+If you already use AssemblyAI (e.g. transcripts sitting in
+`/dashboard/transcription-history`), you can either submit new jobs
+through ScribeClaw or import a completed transcript by id. Set
+`ASSEMBLYAI_API_KEY` in `scribeclaw/.env` first.
+
+```bash
+# New job — upload local audio, AssemblyAI transcribes (language=ro by default)
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"transcribe_assemblyai","payload":{"input":"interviu.edited.wav","speaker_labels":true}}'
+
+# Reuse an already-completed transcript from your dashboard
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"import_assemblyai_transcript","payload":{"transcript_id":"<id-from-dashboard>","stem":"interviu"}}'
+```
+
+Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
+`transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
+unchanged afterwards. The raw AssemblyAI response is preserved at
+`/data/transcripts/<stem>/assemblyai.raw.json` for provenance.
+
 ---
 
 ## Configuration surface
@@ -156,6 +183,7 @@ docker exec -it scribeclaw python -m scribeclaw.main --mode pipeline --input int
 | `WHISPER_DEVICE`   | `cpu`          | `cpu` or `cuda` (explicit opt-in)        |
 | `WHISPER_COMPUTE`  | `int8`         | int8 on CPU, float16 on CUDA recommended |
 | `WHISPER_CACHE_DIR`| `/data/models` | Model download location                  |
+| `ASSEMBLYAI_API_KEY`| *(unset)*     | Enables AssemblyAI handlers when present |
 
 ---
 
