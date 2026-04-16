@@ -29,7 +29,11 @@ import uvicorn
 from fastapi import Body, FastAPI
 
 from . import __version__
-from .assemblyai import import_assemblyai_transcript, transcribe_assemblyai
+from .assemblyai import (
+    bulk_import_assemblyai_romanian,
+    import_assemblyai_transcript,
+    transcribe_assemblyai,
+)
 from .edit import audio_extract, media_edit
 from .postprocess import postprocess_transcript
 from .transcribe import transcribe_ro
@@ -63,6 +67,7 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "transcribe_ro",
     "transcribe_assemblyai",
     "import_assemblyai_transcript",
+    "bulk_import_assemblyai_romanian",
     "postprocess_transcript",
     "youtube_metadata",
     "youtube_upload",
@@ -128,6 +133,7 @@ _HANDLERS: dict[str, Any] = {
     "transcribe_ro":                lambda p: transcribe_ro(p, DATA_ROOT),
     "transcribe_assemblyai":        lambda p: transcribe_assemblyai(p, DATA_ROOT),
     "import_assemblyai_transcript": lambda p: import_assemblyai_transcript(p, DATA_ROOT),
+    "bulk_import_assemblyai_romanian": lambda p: bulk_import_assemblyai_romanian(p, DATA_ROOT),
     "postprocess_transcript":       lambda p: postprocess_transcript(p, DATA_ROOT),
     "youtube_metadata":             lambda p: youtube_metadata(p, DATA_ROOT),
     "youtube_upload":               lambda p: youtube_upload(p, DATA_ROOT),

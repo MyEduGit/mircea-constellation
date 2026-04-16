@@ -65,8 +65,9 @@ ALLOWED_HANDLERS = {
     "media_edit",                    # REAL — ffmpeg required on PATH
     "audio_extract",                 # REAL — ffmpeg required on PATH
     "transcribe_ro",                 # REAL — faster-whisper, offline
-    "transcribe_assemblyai",         # REAL — AssemblyAI, needs API key
-    "import_assemblyai_transcript",  # REAL — reuse dashboard transcripts
+    "transcribe_assemblyai",            # REAL — AssemblyAI, needs API key
+    "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
+    "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
     "youtube_metadata",              # REAL — deterministic packaging
     "youtube_upload",                # STUB — refuses without OAuth creds
@@ -162,7 +163,19 @@ curl -sX POST http://127.0.0.1:8081/tasks \
 curl -sX POST http://127.0.0.1:8081/tasks \
   -H 'Content-Type: application/json' \
   -d '{"handler":"import_assemblyai_transcript","payload":{"transcript_id":"<id-from-dashboard>","stem":"interviu"}}'
+
+# Clone ONLY the Romanian transcripts from the dashboard in bulk
+# (idempotent — already-downloaded ids are skipped)
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"bulk_import_assemblyai_romanian","payload":{"max_transcripts":50}}'
 ```
+
+The bulk handler pages through completed transcripts, fetches each detail
+to check `language_code == "ro"`, writes the matches to
+`/data/transcripts/<id>/`, and returns a `resume_before_id` that you can
+pass back as `start_before_id` to continue where the previous run stopped
+(useful for dashboards with hundreds of items).
 
 Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
