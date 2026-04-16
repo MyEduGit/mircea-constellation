@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScribeClaw — Command Centre</title>
+<link rel="stylesheet" href="./app.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>ScribeClaw</h1>
+    <span class="tag">UrantiOS · Command Centre</span>
+  </div>
+  <div id="health-strip" class="health-strip">
+    <span class="pill" data-probe="status">—</span>
+    <span class="pill" data-probe="ffmpeg_on_path">ffmpeg —</span>
+    <span class="pill" data-probe="faster_whisper_installed">whisper —</span>
+    <span class="pill" data-probe="httpx_installed">httpx —</span>
+    <span class="pill" data-probe="google_libs_installed">youtube libs —</span>
+    <span class="pill" data-probe="assemblyai_key_set">AAI key —</span>
+    <span class="pill" data-probe="youtube_token_present">YT token —</span>
+  </div>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <div class="section-title">
+      <h2>Transcripts</h2>
+      <button id="refresh-transcripts" class="btn-small" title="Refresh">↻</button>
+    </div>
+    <ul id="transcript-list" class="list"></ul>
+  </aside>
+
+  <section class="detail" id="detail">
+    <div class="empty">Select a transcript, or run a handler below.</div>
+  </section>
+
+  <aside class="actions">
+    <div class="section-title"><h2>Run a handler</h2></div>
+    <label>Handler
+      <select id="handler-select"></select>
+    </label>
+    <label>Payload JSON
+      <textarea id="handler-payload" rows="8" spellcheck="false">{}</textarea>
+    </label>
+    <button id="run-handler" class="btn-primary">POST /tasks</button>
+    <pre id="handler-result" class="result"></pre>
+
+    <div class="section-title"><h2>Recent evidence</h2></div>
+    <ul id="evidence-list" class="list mini"></ul>
+  </aside>
+</main>
+
+<script src="./app.js"></script>
+</body>
+</html>

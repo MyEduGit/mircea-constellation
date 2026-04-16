@@ -26,7 +26,9 @@ from threading import Thread
 from typing import Any
 
 import uvicorn
-from fastapi import Body, FastAPI
+from fastapi import Body, FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .assemblyai import (
@@ -180,6 +182,149 @@ async def run_task(
     payload: dict = Body(default_factory=dict, embed=True),
 ) -> dict:
     return await safe_execute(handler, payload)
+
+
+# ── Dashboard API (read-only; mutation flows stay on POST /tasks) ──────
+def _safe_resolve_under(root: Path, rel: str) -> Path:
+    """Resolve `rel` under `root`, raising HTTPException on escape.
+
+    Prevents '../../etc/passwd'-style traversal in the static file proxy."""
+    candidate = (root / rel).resolve()
+    root_resolved = root.resolve()
+    try:
+        candidate.relative_to(root_resolved)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="path_escape")
+    return candidate
+
+
+@app.get("/api/transcripts")
+def api_list_transcripts() -> dict:
+    td = DATA_ROOT / "transcripts"
+    if not td.is_dir():
+        return {"transcripts": []}
+    out: list[dict] = []
+    for entry in sorted(td.iterdir()):
+        if not entry.is_dir():
+            continue
+        seg_clean = entry / "segments.clean.json"
+        seg_raw = entry / "segments.json"
+        seg = seg_clean if seg_clean.exists() else seg_raw
+        meta = {"stem": entry.name, "segments": 0, "language": None,
+                "duration_sec": None, "has_cues": (entry / "cues.json").exists(),
+                "has_bundle": (DATA_ROOT / "youtube" / entry.name / "bundle.json").exists(),
+                "has_thumbnail": (DATA_ROOT / "youtube" / entry.name / "thumbnail.jpg").exists(),
+                "has_upload": (DATA_ROOT / "youtube" / entry.name / "upload.result.json").exists()}
+        if seg.exists():
+            try:
+                data = json.loads(seg.read_text(encoding="utf-8"))
+                meta["segments"] = len(data.get("segments", []))
+                meta["language"] = data.get("language")
+                meta["duration_sec"] = data.get("duration")
+            except Exception:
+                pass
+        out.append(meta)
+    return {"transcripts": out, "count": len(out)}
+
+
+@app.get("/api/transcripts/{stem}")
+def api_transcript_detail(stem: str) -> dict:
+    stem = Path(stem).name  # strip any accidental slashes
+    tdir = DATA_ROOT / "transcripts" / stem
+    if not tdir.is_dir():
+        raise HTTPException(status_code=404, detail="stem_not_found")
+    seg_clean = tdir / "segments.clean.json"
+    seg_raw = tdir / "segments.json"
+    source = seg_clean if seg_clean.exists() else seg_raw
+    data = {}
+    preview: list[dict] = []
+    if source.exists():
+        try:
+            data = json.loads(source.read_text(encoding="utf-8"))
+            for s in data.get("segments", [])[:8]:
+                preview.append({"start": s.get("start", 0),
+                                "end": s.get("end", 0),
+                                "text": s.get("text", "")})
+        except Exception:
+            pass
+    ydir = DATA_ROOT / "youtube" / stem
+    bundle = None
+    if (ydir / "bundle.json").exists():
+        try: bundle = json.loads((ydir / "bundle.json").read_text(encoding="utf-8"))
+        except Exception: bundle = None
+    upload = None
+    if (ydir / "upload.result.json").exists():
+        try: upload = json.loads((ydir / "upload.result.json").read_text(encoding="utf-8"))
+        except Exception: upload = None
+    # Guess a default video filename for the dashboard's thumbnail button.
+    video_hint = None
+    ed = DATA_ROOT / "media" / "edited"
+    if ed.is_dir():
+        for p in sorted(ed.iterdir()):
+            if p.suffix.lower() in (".mp4", ".mov", ".mkv", ".webm") and p.stem.startswith(stem):
+                video_hint = p.name
+                break
+    return {
+        "stem": stem,
+        "source_file": str(source) if source.exists() else None,
+        "segments": len(data.get("segments", [])),
+        "language": data.get("language"),
+        "duration_sec": data.get("duration"),
+        "segments_preview": preview,
+        "has_bundle": bundle is not None,
+        "has_thumbnail": (ydir / "thumbnail.jpg").exists(),
+        "has_cues": (tdir / "cues.json").exists(),
+        "has_upload": upload is not None,
+        "bundle": bundle,
+        "upload": upload,
+        "video_hint": video_hint,
+    }
+
+
+@app.get("/api/evidence")
+def api_evidence(limit: int = Query(30, ge=1, le=200)) -> dict:
+    ed = DATA_ROOT / "evidence"
+    if not ed.is_dir():
+        return {"evidence": []}
+    files = sorted(ed.glob("evidence_*.json"),
+                   key=lambda p: p.stat().st_mtime, reverse=True)[:limit]
+    items: list[dict] = []
+    for f in files:
+        try:
+            items.append(json.loads(f.read_text(encoding="utf-8")))
+        except Exception:
+            continue
+    return {"evidence": items}
+
+
+_FILE_WHITELIST_PREFIXES = ("youtube/", "transcripts/", "media/edited/", "media/audio/")
+
+
+@app.get("/api/file")
+def api_file(path: str = Query(..., min_length=1, max_length=500)) -> FileResponse:
+    """Proxy small static assets (thumbnails, subtitles) from under
+    DATA_ROOT. Restricted to an explicit prefix allowlist and guarded
+    against traversal — this is the only path the dashboard needs to
+    read files the handlers produced."""
+    if not any(path.startswith(p) for p in _FILE_WHITELIST_PREFIXES):
+        raise HTTPException(status_code=403, detail="path_not_whitelisted")
+    target = _safe_resolve_under(DATA_ROOT, path)
+    if not target.is_file():
+        raise HTTPException(status_code=404, detail="not_found")
+    return FileResponse(str(target))
+
+
+# ── Static UI ─────────────────────────────────────────────────────────
+# The web/ directory ships with the module; see scribeclaw/web/.
+_WEB_DIR = Path(__file__).parent / "web"
+if _WEB_DIR.is_dir():
+    app.mount("/ui", StaticFiles(directory=str(_WEB_DIR), html=True), name="ui")
+
+
+@app.get("/")
+def root_redirect() -> RedirectResponse:
+    """Land operators on the command-centre UI by default."""
+    return RedirectResponse(url="/ui/")
 
 
 def _run_http_server() -> None:
