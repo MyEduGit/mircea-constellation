@@ -36,6 +36,7 @@ from .assemblyai import (
 )
 from .edit import audio_extract, media_edit
 from .postprocess import postprocess_transcript
+from .thumbnail import thumbnail_generate
 from .transcribe import transcribe_ro
 from .youtube import youtube_metadata, youtube_upload
 
@@ -69,6 +70,7 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "import_assemblyai_transcript",
     "bulk_import_assemblyai_romanian",
     "postprocess_transcript",
+    "thumbnail_generate",
     "youtube_metadata",
     "youtube_upload",
 })
@@ -108,10 +110,16 @@ def _probe_runtime() -> dict:
         import httpx  # noqa: F401
     except ImportError:
         httpx_installed = False
+    pillow_installed = True
+    try:
+        import PIL  # noqa: F401
+    except ImportError:
+        pillow_installed = False
     return {
         "ffmpeg_on_path": shutil.which("ffmpeg") is not None,
         "faster_whisper_installed": faster_whisper_installed,
         "httpx_installed": httpx_installed,
+        "pillow_installed": pillow_installed,
         "assemblyai_key_set": bool(os.getenv("ASSEMBLYAI_API_KEY", "").strip()),
     }
 
@@ -135,6 +143,7 @@ _HANDLERS: dict[str, Any] = {
     "import_assemblyai_transcript": lambda p: import_assemblyai_transcript(p, DATA_ROOT),
     "bulk_import_assemblyai_romanian": lambda p: bulk_import_assemblyai_romanian(p, DATA_ROOT),
     "postprocess_transcript":       lambda p: postprocess_transcript(p, DATA_ROOT),
+    "thumbnail_generate":           lambda p: thumbnail_generate(p, DATA_ROOT),
     "youtube_metadata":             lambda p: youtube_metadata(p, DATA_ROOT),
     "youtube_upload":               lambda p: youtube_upload(p, DATA_ROOT),
 }
