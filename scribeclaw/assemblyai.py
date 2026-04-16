@@ -1,9 +1,11 @@
 """AssemblyAI-backed transcription handlers.
 
-Two handlers:
-  - transcribe_assemblyai       uploads a local audio file and starts a new job
-  - import_assemblyai_transcript pulls an ALREADY-COMPLETED transcript by id
-                                 (reuse work that's already in the dashboard)
+Three handlers:
+  - transcribe_assemblyai             uploads a local audio file and starts a new job
+  - import_assemblyai_transcript      pulls an ALREADY-COMPLETED transcript by id
+                                      (reuse work that's already in the dashboard)
+  - bulk_import_assemblyai_romanian   list the dashboard, keep only completed
+                                      Romanian transcripts, write each to disk
 
 Both write the same output shape as transcribe_ro so the rest of the
 pipeline (postprocess_transcript → youtube_metadata) is drop-in compatible:
@@ -311,4 +313,158 @@ async def import_assemblyai_transcript(payload: dict[str, Any], data_root: Path)
         "language": raw.get("language_code", "ro"),
         "duration_sec": float(raw.get("audio_duration") or 0.0),
         "segments": len(segments),
+    }
+
+
+async def _list_page(client, api_key: str, before_id: str | None,
+                     limit: int) -> dict:
+    """GET /v2/transcript — paginated list. Returns {transcripts:[...],
+    page_details:{prev_url, next_url, ...}}. `before_id` drives the cursor
+    (AssemblyAI list is reverse-chronological)."""
+    headers = {"authorization": api_key}
+    params: dict[str, Any] = {"limit": limit, "status": "completed"}
+    if before_id:
+        params["before_id"] = before_id
+    r = await client.get(f"{_API_BASE}/transcript", headers=headers, params=params)
+    r.raise_for_status()
+    return r.json()
+
+
+async def bulk_import_assemblyai_romanian(
+    payload: dict[str, Any], data_root: Path
+) -> dict:
+    """Clone every completed Romanian transcript from the dashboard.
+
+    AssemblyAI's list endpoint does NOT filter by language_code, so we page
+    through completed transcripts and fetch each detail to check
+    language_code == 'ro' (or whatever the caller specified). Idempotent:
+    skips transcripts whose output dir already exists unless overwrite=True.
+
+    Payload:
+      language        (str,  optional): default "ro"
+      max_transcripts (int,  optional): soft cap; default 50
+      page_size       (int,  optional): list page size; default 50, max 200
+      overwrite       (bool, optional): default False
+      stem_prefix     (str,  optional): prepended to each id for the stem
+      start_before_id (str,  optional): start cursor (advanced; resumes a run)
+    """
+    miss = _require_httpx()
+    if miss is not None:
+        return {"handler": "bulk_import_assemblyai_romanian", **miss}
+    api_key, err = _require_api_key()
+    if err is not None:
+        return {"handler": "bulk_import_assemblyai_romanian", **err}
+
+    import httpx
+
+    language = str(payload.get("language", "ro")).strip().lower()
+    max_transcripts = int(payload.get("max_transcripts", 50))
+    page_size = max(1, min(int(payload.get("page_size", 50)), 200))
+    overwrite = bool(payload.get("overwrite", False))
+    stem_prefix = str(payload.get("stem_prefix", "")).strip()
+    before_id: str | None = payload.get("start_before_id") or None
+
+    imported: list[dict] = []
+    skipped_existing: list[str] = []
+    skipped_language: list[dict] = []
+    errors: list[dict] = []
+    pages_seen = 0
+    last_cursor: str | None = before_id
+
+    timeout = httpx.Timeout(connect=30.0, read=120.0, write=30.0, pool=30.0)
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        try:
+            while len(imported) < max_transcripts:
+                page = await _list_page(client, api_key, before_id, page_size)
+                pages_seen += 1
+                entries = page.get("transcripts", []) or []
+                if not entries:
+                    break
+                for entry in entries:
+                    if len(imported) >= max_transcripts:
+                        break
+                    tid = entry.get("id")
+                    if not tid:
+                        continue
+                    last_cursor = tid
+                    # /transcript list entries don't carry language_code, so
+                    # we have to fetch detail to filter. This is the whole
+                    # reason this handler exists as a dedicated endpoint
+                    # rather than a one-liner.
+                    try:
+                        rdet = await client.get(
+                            f"{_API_BASE}/transcript/{tid}",
+                            headers={"authorization": api_key},
+                        )
+                        rdet.raise_for_status()
+                        raw = rdet.json()
+                    except httpx.HTTPStatusError as exc:
+                        errors.append({"id": tid, "stage": "detail",
+                                       "code": exc.response.status_code,
+                                       "detail": exc.response.text[-500:]})
+                        continue
+
+                    lang = (raw.get("language_code") or "").lower()
+                    if lang != language:
+                        skipped_language.append({"id": tid, "language": lang or None})
+                        continue
+
+                    stem = f"{stem_prefix}{tid}" if stem_prefix else tid
+                    out_dir = data_root / "transcripts" / stem
+                    if out_dir.exists() and not overwrite:
+                        skipped_existing.append(tid)
+                        continue
+
+                    try:
+                        sentences = await _fetch_sentences(client, api_key, tid)
+                    except httpx.HTTPStatusError as exc:
+                        errors.append({"id": tid, "stage": "sentences",
+                                       "code": exc.response.status_code,
+                                       "detail": exc.response.text[-500:]})
+                        continue
+
+                    segments = _normalize_segments(sentences, raw.get("text") or "")
+                    _write_outputs(out_dir, raw, segments)
+                    imported.append({
+                        "id": tid,
+                        "stem": stem,
+                        "output_dir": str(out_dir),
+                        "duration_sec": float(raw.get("audio_duration") or 0.0),
+                        "segments": len(segments),
+                    })
+
+                # Advance cursor — AssemblyAI uses the last id on the current
+                # page as the `before_id` for the next page.
+                before_id = entries[-1].get("id")
+                if not before_id:
+                    break
+        except httpx.HTTPStatusError as exc:
+            errors.append({"stage": "list", "code": exc.response.status_code,
+                           "detail": exc.response.text[-500:]})
+        except Exception as exc:  # network, timeout, etc. — surface honestly
+            errors.append({"stage": "list",
+                           "error": exc.__class__.__name__,
+                           "detail": str(exc)})
+
+    status = "success"
+    if errors and not imported:
+        status = "error"
+    elif errors:
+        status = "partial"
+
+    return {
+        "status": status,
+        "handler": "bulk_import_assemblyai_romanian",
+        "language": language,
+        "pages_seen": pages_seen,
+        "imported_count": len(imported),
+        "imported": imported,
+        "skipped_existing": skipped_existing,
+        "skipped_language_count": len(skipped_language),
+        "errors": errors,
+        "resume_before_id": last_cursor,
+        "hint": (
+            "pass resume_before_id as start_before_id to continue from here "
+            "on the next run"
+        ),
     }
