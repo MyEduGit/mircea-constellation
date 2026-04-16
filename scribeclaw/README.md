@@ -69,8 +69,9 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
-    "youtube_metadata",              # REAL — deterministic packaging
-    "youtube_upload",                # STUB — refuses without OAuth creds
+    "youtube_metadata",                 # REAL — deterministic packaging
+    "youtube_upload",                   # STUB — refuses without OAuth creds
+    "export_obsidian",                  # REAL — writes transcript into vault
 }
 ```
 
@@ -177,6 +178,27 @@ to check `language_code == "ro"`, writes the matches to
 pass back as `start_before_id` to continue where the previous run stopped
 (useful for dashboards with hundreds of items).
 
+### Export into an Obsidian vault
+
+Once a transcript exists under `/data/transcripts/<stem>/` (and,
+optionally, a YouTube bundle under `/data/youtube/<stem>/`), render it
+as a single markdown note inside your vault:
+
+```bash
+# Set OBSIDIAN_VAULT_HOST in scribeclaw/.env before starting the container
+# so the host vault is bind-mounted into /vault inside the container.
+
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"export_obsidian","payload":{"stem":"interviu","subdir":"Transcripts"}}'
+```
+
+The note carries YAML front-matter (`title`, `language`, `duration_sec`,
+`assemblyai_id`, `tags`) plus title-candidate bullets, a chapters
+section, and the full transcript with per-segment timestamps. If no
+vault is configured the handler refuses with `vault_path_missing` —
+it will not silently write somewhere unexpected.
+
 Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
 unchanged afterwards. The raw AssemblyAI response is preserved at
@@ -197,6 +219,7 @@ unchanged afterwards. The raw AssemblyAI response is preserved at
 | `WHISPER_COMPUTE`  | `int8`         | int8 on CPU, float16 on CUDA recommended |
 | `WHISPER_CACHE_DIR`| `/data/models` | Model download location                  |
 | `ASSEMBLYAI_API_KEY`| *(unset)*     | Enables AssemblyAI handlers when present |
+| `OBSIDIAN_VAULT`   | *(unset)*      | Container-side vault path for `export_obsidian` |
 
 ---
 

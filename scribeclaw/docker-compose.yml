@@ -23,8 +23,16 @@ services:
       - WHISPER_CACHE_DIR=/data/models
       # AssemblyAI key is read from .env; leave blank to disable those handlers.
       - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY:-}
+      # Obsidian vault path INSIDE the container (see volumes). Leave blank
+      # to disable export_obsidian; the handler refuses cleanly when unset.
+      - OBSIDIAN_VAULT=${OBSIDIAN_VAULT_CONTAINER_PATH:-/vault}
     volumes:
       - /opt/scribeclaw-data:/data
+      # Optional: bind-mount the host vault into /vault (container path).
+      # If OBSIDIAN_VAULT_HOST is unset, the mount resolves to an empty
+      # named path and export_obsidian will fail with vault_path_not_a_directory
+      # — which is the correct, honest behaviour when no vault is configured.
+      - ${OBSIDIAN_VAULT_HOST:-/opt/scribeclaw-data/vault-unset}:${OBSIDIAN_VAULT_CONTAINER_PATH:-/vault}
     ports:
       - "127.0.0.1:8081:8081"
     networks:

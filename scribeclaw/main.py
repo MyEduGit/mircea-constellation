@@ -35,6 +35,7 @@ from .assemblyai import (
     transcribe_assemblyai,
 )
 from .edit import audio_extract, media_edit
+from .obsidian import export_obsidian
 from .postprocess import postprocess_transcript
 from .transcribe import transcribe_ro
 from .youtube import youtube_metadata, youtube_upload
@@ -71,6 +72,7 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "postprocess_transcript",
     "youtube_metadata",
     "youtube_upload",
+    "export_obsidian",
 })
 
 
@@ -136,7 +138,8 @@ _HANDLERS: dict[str, Any] = {
     "bulk_import_assemblyai_romanian": lambda p: bulk_import_assemblyai_romanian(p, DATA_ROOT),
     "postprocess_transcript":       lambda p: postprocess_transcript(p, DATA_ROOT),
     "youtube_metadata":             lambda p: youtube_metadata(p, DATA_ROOT),
-    "youtube_upload":               lambda p: youtube_upload(p, DATA_ROOT),
+    "youtube_upload":                lambda p: youtube_upload(p, DATA_ROOT),
+    "export_obsidian":               lambda p: export_obsidian(p, DATA_ROOT),
 }
 assert set(_HANDLERS) == set(ALLOWED_HANDLERS), \
     "dispatch table must match ALLOWED_HANDLERS exactly"
