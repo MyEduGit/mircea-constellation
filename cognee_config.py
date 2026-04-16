@@ -19,6 +19,7 @@ After init(), use Cognee normally:
     await cognee.recall("query")
 """
 import os
+
 import cognee
 
 # ── Defaults ────────────────────────────────────────────────────────────────

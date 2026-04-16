@@ -31,13 +31,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from . import __version__
+from . import __version__, sentencing, trial
 from . import scripture as scripture_mod
-from . import sentencing
-from . import trial
 from .manifesto import HEADS
 from .signs import assess_file
-
 
 CASES_DIR = Path("~/.lucifericlaw/cases").expanduser()
 AUDIT_LOG = Path("~/.lucifericlaw/audit.jsonl").expanduser()
@@ -71,11 +68,11 @@ def _load(case_id: str) -> trial.CaseFile:
         return trial.load_case(case_id, cases_dir=CASES_DIR)
     except FileNotFoundError:
         _err({"error": "case_not_found", "case_id": case_id})
-        raise SystemExit(1)
+        raise SystemExit(1) from None
     except (OSError, json.JSONDecodeError, TypeError, ValueError) as e:
         _err({"error": "case_load_failed", "case_id": case_id,
               "detail": str(e)})
-        raise SystemExit(1)
+        raise SystemExit(1) from e
 
 
 # ── doctrine / scripture ────────────────────────────────────────────────
@@ -324,8 +321,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("interrogate", help="Record agent's Lucifer Test response.")
     p.add_argument("case_id")
-    p.add_argument("--q1"); p.add_argument("--q2")
-    p.add_argument("--q3"); p.add_argument("--q4")
+    p.add_argument("--q1")
+    p.add_argument("--q2")
+    p.add_argument("--q3")
+    p.add_argument("--q4")
     p.add_argument("--refused", help="Reason if the agent refused to answer.")
     p.set_defaults(func=cmd_interrogate)
 

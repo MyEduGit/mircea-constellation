@@ -45,8 +45,9 @@ from __future__ import annotations
 
 import os
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 
 def _result(ok: bool, executed: bool, action: str, case_id: str, agent: str,

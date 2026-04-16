@@ -61,6 +61,7 @@ COGNEE_READY = False
 COGNEE_INIT_INFO: dict[str, Any] = {"initialized": False}
 try:
     import cognee  # noqa: F401  (ensures lib is actually installed)
+
     import cognee_config  # repo-root module, copied into /app
     COGNEE_INIT_INFO = cognee_config.init(
         mode=os.getenv("COGNEE_MODE", "auto"),
