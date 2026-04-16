@@ -383,7 +383,7 @@ const nodeDetails = {
   imac:     { 'Device': 'iMac M4 (Apple Silicon)', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36', 'Local AI': 'Cognee 1.0.0', 'Tier': 'COMMAND' },
 
   tailscale:{ 'Type': 'VPN Mesh Network', 'iMac IP': '100.75.177.36', 'Purpose': 'Secure tunnel between iMac, OpenClaw, URANTiOS', 'Tier': 'INFRASTRUCTURE' },
-  openclaw: { 'IP': '46.225.51.30', 'Hardware': 'CPX22 (8GB / 80GB)', 'Location': 'Nuremberg, DE', 'Ports': '18789 / 18791 / 18792', 'Bots Hosted': '9 active', 'Disk': '46% used', 'Tier': 'INFRASTRUCTURE' },
+  openclaw: { 'IP': '46.225.51.30', 'Hardware': 'CPX22 (8GB / 80GB)', 'Location': 'Nuremberg, DE', 'Ports': '18789 / 18791 / 18792', 'Bots Hosted': '9 active', 'Disk': '46% used', 'OpenClaw Release': 'v2026.4.14 (2026-04-14)', 'Upstream': 'openclaw/openclaw', 'Auto-Update': 'daily via GH Actions', 'Tier': 'INFRASTRUCTURE' },
   urantios: { 'IP': '204.168.143.98', 'Hardware': 'CCX23 (16GB / 160GB)', 'Location': 'Helsinki, FI', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org', 'Disk': '38% used', 'Tier': 'INFRASTRUCTURE' },
   nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Runtime': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw in Telegram', 'Status': 'LIVE', 'Tier': 'INFRASTRUCTURE' },
   fireclaw: { 'Version': '0.1.0', 'Role': 'Remediation / incident response', 'Owns': 'Restart · disable · quarantine · failover · escalate', 'Inputs': 'NemoClaw view + status.json + HTTP/TCP probes', 'Rules': 'fireclaw/rules.yaml (declarative; no improvisation)', 'Lucifer Test': 'Transparent · Honest · Within mandate · Serves mission', 'Logs': '~/.fireclaw/incidents.jsonl (append-only)', 'Repo': 'myedugit/mircea-constellation · fireclaw/', 'Tier': 'INFRASTRUCTURE' },
@@ -507,6 +507,7 @@ async function loadStatus() {
     if (data.openclaw_ingest) items.push(`<span><span class="dot dot-${data.openclaw_ingest.status === 'ok' ? 'green' : (data.openclaw_ingest.status === 'warn' ? 'yellow' : (data.openclaw_ingest.status === 'new' ? 'blue' : 'red'))}"></span>OC-ingest: ${data.openclaw_ingest.version || data.openclaw_ingest.status || '?'}</span>`);
     if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
     if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
+    if (data.openclaw && data.openclaw.version) items.push(`<span><span class="dot dot-${data.openclaw.status === 'ok' ? 'green' : (data.openclaw.status === 'warn' ? 'yellow' : 'red')}"></span>OpenClaw: v${data.openclaw.version}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
     if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
