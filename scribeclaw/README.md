@@ -1,0 +1,175 @@
+# ScribeClaw
+
+**Truthful label:** deployable scaffold. Real handlers: `media_edit`,
+`audio_extract`, `transcribe_ro`, `postprocess_transcript`,
+`youtube_metadata`. Stub: `youtube_upload` (refuses — operator must
+supply OAuth credentials in a follow-up PR).
+
+Singular primary role: **controlled execution** (media-pipeline sub-role).
+Does not observe, remediate, adjudicate, explain, or bundle evidence —
+those belong to NemoClaw / Fireclaw / LuciferiClaw / VisualUrantiClaw /
+Paperclip respectively. This module emits evidence records on every
+handler call; Paperclip owns the bundling contract once it ships.
+
+UrantiOS governed — Truth, Beauty, Goodness.
+
+---
+
+## Canonical sentence
+
+> NemoClaw sees. VisualUrantiClaw explains. Fireclaw reacts to technical
+> faults. LuciferiClaw adjudicates intent and mandate violation.
+> **OpenClaw instances execute.** Paperclip preserves the evidence.
+
+ScribeClaw is another OpenClaw-class instance. Same role (controlled
+execution), different sub-scope: media editing, Romanian transcription,
+YouTube packaging.
+
+---
+
+## Pipeline
+
+```
+  /data/media/in/<video>               # operator drops source here
+          │
+          ▼    media_edit              # ffmpeg: trim / loudnorm / silence
+  /data/media/edited/<video>.edited.<ext>
+          │
+          ▼    audio_extract           # ffmpeg: 16 kHz mono WAV
+  /data/media/audio/<stem>.wav
+          │
+          ▼    transcribe_ro           # faster-whisper, language="ro"
+  /data/transcripts/<stem>/
+      segments.json, transcript.srt, .vtt, .txt
+          │
+          ▼    postprocess_transcript  # cedilla→comma-below, punctuation
+      segments.clean.json, transcript.clean.txt
+          │
+          ▼    youtube_metadata        # title candidates + chapters + tags
+  /data/youtube/<stem>/
+      bundle.json, description.txt, tags.txt, thumbnail.spec.txt
+          │
+          ▼    youtube_upload          # stub (requires OAuth)
+```
+
+Every step emits an evidence record under `/data/evidence/`.
+
+---
+
+## Allowlist — the canonical boundary
+
+```python
+ALLOWED_HANDLERS = {
+    "smoke_test",
+    "media_edit",              # REAL — ffmpeg required on PATH
+    "audio_extract",           # REAL — ffmpeg required on PATH
+    "transcribe_ro",           # REAL — faster-whisper; model downloaded on first use
+    "postprocess_transcript",  # REAL — deterministic, no LLM
+    "youtube_metadata",        # REAL — deterministic packaging
+    "youtube_upload",          # STUB — refuses without OAuth creds
+}
+```
+
+Anything outside this set is **rejected** with an evidence record
+stamped `status: rejected`. No free-form shell. No `--command` escape.
+
+---
+
+## Install + run
+
+```bash
+cd ~/mircea-constellation
+bash setup/scribeclaw_install.sh
+```
+
+The installer:
+1. Discovers UID/GID via `id -u` / `id -g` (no hardcoding).
+2. Creates `/opt/scribeclaw-data/` with correct ownership.
+3. Writes `scribeclaw/.env` with `HOST_UID`, `HOST_GID`, Whisper defaults.
+4. Runs `docker compose up --build -d` from `scribeclaw/`.
+5. Waits for `/health` to respond.
+
+### Verify
+
+```bash
+docker logs scribeclaw --tail 30
+curl -s http://127.0.0.1:8081/health | python3 -m json.tool
+```
+
+`/health` returns `ffmpeg_on_path` and `faster_whisper_installed`
+honestly. If either is `false`, the related handlers will refuse with a
+clear error, not silently fail.
+
+---
+
+## Invoke a handler
+
+The only way to run handlers is `POST /tasks` (bound to `127.0.0.1:8081`):
+
+```bash
+# 1. Drop a Romanian video
+cp /path/to/interviu.mp4 /opt/scribeclaw-data/media/in/
+
+# 2. Edit
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"media_edit","payload":{"input":"interviu.mp4","loudnorm":true,"remove_silence":true}}'
+
+# 3. Extract audio
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"audio_extract","payload":{"input":"interviu.edited.mp4"}}'
+
+# 4. Transcribe (Romanian)
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"transcribe_ro","payload":{"input":"interviu.edited.wav","model":"large-v3"}}'
+
+# 5. Post-process diacritics + punctuation
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"postprocess_transcript","payload":{"stem":"interviu.edited"}}'
+
+# 6. YouTube bundle
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"youtube_metadata","payload":{"stem":"interviu.edited","channel_footer":"Canal Mircea — https://..."}}'
+```
+
+Or run the whole chain in one shot from the CLI (not the HTTP surface):
+
+```bash
+docker exec -it scribeclaw python -m scribeclaw.main --mode pipeline --input interviu.mp4
+```
+
+---
+
+## Configuration surface
+
+| Env var            | Default        | Purpose                                  |
+|--------------------|----------------|------------------------------------------|
+| `CLAW_NAME`        | `ScribeClaw`   | Logged on every record                   |
+| `DATA_ROOT`        | `/data`        | Bind-mounted host path                   |
+| `LOG_LEVEL`        | `INFO`         |                                          |
+| `HTTP_PORT`        | `8081`         |                                          |
+| `WHISPER_MODEL`    | `large-v3`     | faster-whisper model id                  |
+| `WHISPER_DEVICE`   | `cpu`          | `cpu` or `cuda` (explicit opt-in)        |
+| `WHISPER_COMPUTE`  | `int8`         | int8 on CPU, float16 on CUDA recommended |
+| `WHISPER_CACHE_DIR`| `/data/models` | Model download location                  |
+
+---
+
+## What this is **not** yet
+
+- Not a live uploader. `youtube_upload` refuses until an operator
+  provides `client_secret.json` under `/data/youtube/credentials/`
+  and a follow-up PR wires `google-api-python-client`.
+- Not an LLM-assisted re-punctuator. `postprocess_transcript` is
+  deterministic (cedilla normalization, punctuation spacing). A
+  language-model pass belongs in a separate handler.
+- Not a speaker-diarizer. Whisper `word_timestamps` are stored; a
+  diarization handler can be added without touching the pipeline.
+- Not a GPU auto-detector. `WHISPER_DEVICE=cuda` is explicit opt-in
+  to avoid silent fallback.
+- Not Paperclip-integrated. Emits evidence records; bundling will come
+  from Paperclip under its own contract.
