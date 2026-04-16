@@ -188,20 +188,6 @@ async def youtube_metadata(payload: dict[str, Any], data_root: Path) -> dict:
     }
 
 
-async def youtube_upload(payload: dict[str, Any], data_root: Path) -> dict:
-    """Stub. Upload requires operator-supplied OAuth credentials.
-
-    Refuses rather than silently failing, so the operator knows exactly
-    what is missing before attempting a live upload.
-    """
-    return {
-        "status": "not_implemented",
-        "handler": "youtube_upload",
-        "reason": "requires operator-supplied OAuth2 client_secret.json "
-                  "and an authorized refresh token; live upload intentionally "
-                  "withheld in this scaffold.",
-        "next_step": (
-            "provide client_secret.json under /data/youtube/credentials/ "
-            "and wire google-api-python-client in a follow-up PR."
-        ),
-    }
+# youtube_upload lives in .youtube_upload now (real OAuth-backed uploader).
+# Re-export for backwards compatibility with existing main.py imports.
+from .youtube_upload import youtube_upload  # noqa: F401,E402

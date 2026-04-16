@@ -2,9 +2,9 @@
 
 **Truthful label:** deployable scaffold. Real handlers: `media_edit`,
 `audio_extract`, `transcribe_ro`, `transcribe_assemblyai`,
-`import_assemblyai_transcript`, `postprocess_transcript`,
-`youtube_metadata`. Stub: `youtube_upload` (refuses — operator must
-supply OAuth credentials in a follow-up PR).
+`import_assemblyai_transcript`, `bulk_import_assemblyai_romanian`,
+`postprocess_transcript`, `youtube_metadata`, `youtube_upload`
+(OAuth-backed, operator supplies `client_secret.json` + `token.json`).
 
 Singular primary role: **controlled execution** (media-pipeline sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence —
@@ -69,8 +69,8 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
-    "youtube_metadata",              # REAL — deterministic packaging
-    "youtube_upload",                # STUB — refuses without OAuth creds
+    "youtube_metadata",               # REAL — deterministic packaging
+    "youtube_upload",                 # REAL — OAuth2; refuses without creds
 }
 ```
 
@@ -181,6 +181,54 @@ Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
 unchanged afterwards. The raw AssemblyAI response is preserved at
 `/data/transcripts/<stem>/assemblyai.raw.json` for provenance.
+
+### Live upload to YouTube
+
+`youtube_upload` is OAuth2-backed (YouTube Data API v3). Bootstrap once
+on a machine with a browser, then copy the generated token into the
+ScribeClaw credentials directory.
+
+```bash
+# 1. Create an OAuth2 client (Desktop app type) at
+#    https://console.cloud.google.com → APIs & Services → Credentials
+# 2. Download client_secret.json and copy to:
+#       /opt/scribeclaw-data/youtube/credentials/client_secret.json
+
+# 3. Bootstrap a token on YOUR LAPTOP (browser opens):
+python -m scribeclaw.youtube_oauth bootstrap \
+  --client-secret /path/to/client_secret.json \
+  --token /tmp/token.json
+
+# 4. Copy the token to the ScribeClaw host (mode 600):
+scp /tmp/token.json host:/opt/scribeclaw-data/youtube/credentials/token.json
+
+# 5. Verify:
+curl -s http://127.0.0.1:8081/health | python3 -m json.tool
+# → youtube_client_secret_present: true, youtube_token_present: true
+```
+
+Upload:
+
+```bash
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"youtube_upload","payload":{
+        "stem":"interviu.edited",
+        "privacy_status":"private"
+      }}'
+```
+
+The handler reads title / description / tags from
+`/data/youtube/<stem>/bundle.json`, resolves the video under
+`media/edited/` or `media/in/`, uploads with chunked resumable upload,
+then (best-effort) attaches `thumbnail.jpg` and the first available
+`transcript.cues.srt` / `transcript.srt` as a Romanian caption track.
+The full response is preserved at `/data/youtube/<stem>/upload.result.json`.
+
+Defaults are deliberately conservative: `privacy_status=private`,
+`made_for_kids=false`, operator must opt in to `public`/`unlisted`.
+If the token is expired without a refresh token, the handler refuses
+cleanly — it never prompts, never retries silently.
 
 ---
 

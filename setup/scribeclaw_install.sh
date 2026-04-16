@@ -39,8 +39,9 @@ info "[2/5] Using UID/GID: $HOST_UID:$HOST_GID (user=$(id -un))"
 
 # ── 3. Host directories ────────────────────────────────────────────────
 info "[3/5] Creating host directories..."
-sudo mkdir -p "$DATA_DIR"/{media/in,media/edited,media/audio,transcripts,youtube,models,logs,evidence}
+sudo mkdir -p "$DATA_DIR"/{media/in,media/edited,media/audio,transcripts,youtube,youtube/credentials,models,logs,evidence}
 sudo chown -R "$HOST_UID:$HOST_GID" "$DATA_DIR"
+sudo chmod 700 "$DATA_DIR/youtube/credentials"
 ok "data at $DATA_DIR"
 
 # ── 4. .env ────────────────────────────────────────────────────────────

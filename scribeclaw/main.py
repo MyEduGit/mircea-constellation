@@ -108,11 +108,21 @@ def _probe_runtime() -> dict:
         import httpx  # noqa: F401
     except ImportError:
         httpx_installed = False
+    google_libs_installed = True
+    try:
+        import googleapiclient  # noqa: F401
+        import google.auth  # noqa: F401
+    except ImportError:
+        google_libs_installed = False
+    creds_dir = DATA_ROOT / "youtube" / "credentials"
     return {
         "ffmpeg_on_path": shutil.which("ffmpeg") is not None,
         "faster_whisper_installed": faster_whisper_installed,
         "httpx_installed": httpx_installed,
+        "google_libs_installed": google_libs_installed,
         "assemblyai_key_set": bool(os.getenv("ASSEMBLYAI_API_KEY", "").strip()),
+        "youtube_client_secret_present": (creds_dir / "client_secret.json").exists(),
+        "youtube_token_present": (creds_dir / "token.json").exists(),
     }
 
 
