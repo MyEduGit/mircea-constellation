@@ -6,11 +6,11 @@
 |-------|-------|
 | **Unit Code** | VU22384 |
 | **Unit Title** | Develop and document a learning plan and portfolio |
-| **Nominal Hours** | [PENDING - source from training.gov.au] |
-| **Qualification** | 22638VIC Certificate I in EAL (Access) / EAL Training Package |
-| **CertOngoing Group** | III |
-| **Term** | Semester 1, Term 1 |
-| **ACSF Alignment** | [PENDING - source from training.gov.au] |
+| **Nominal Hours** | [Confirm against training.gov.au] |
+| **Qualification** | 22640VIC Certificate III in EAL (Access) |
+| **CertOngoing Group** | III - Ongoing Unit |
+| **Term** | Semester 1, Term 1 (ongoing across term) |
+| **ACSF Alignment** | [Confirm against training.gov.au] |
 | **Status** | Current |
 
 ## Application / Description
@@ -24,22 +24,26 @@ This unit is part of the EAL (English as an Additional Language) Training Packag
 ### Element 1: Identify goals and current skills
 | PC | Performance Criteria |
 |----|---------------------|
-| 1.1 | [PENDING - source from training.gov.au] |
-| 1.2 | [PENDING - source from training.gov.au] |
+| 1.1-1.x | [Confirm against training.gov.au - https://training.gov.au/Training/Details/VU22384] |
 
 ### Element 2: Develop a learning plan
 | PC | Performance Criteria |
 |----|---------------------|
-| 2.1 | [PENDING - source from training.gov.au] |
-| 2.2 | [PENDING - source from training.gov.au] |
+| 2.1-2.x | [Confirm against training.gov.au] |
 
 ### Element 3: Develop and maintain a portfolio
 | PC | Performance Criteria |
 |----|---------------------|
-| 3.1 | [PENDING - source from training.gov.au] |
-| 3.2 | [PENDING - source from training.gov.au] |
+| 3.1-3.x | [Confirm against training.gov.au] |
 
-> **Note:** Element titles are indicative based on web search results. Confirm element titles and all performance criteria against the official training.gov.au entry: https://training.gov.au/Training/Details/VU22384
+## Assessment Task Bank (Term 1, 2026)
+
+### Portfolio Requirements
+- **High-level goal setting:** Long-term and short-term goals documented
+- **Skills audit:** Review of current skills against desired outcomes
+- **Learning plan:** Structured plan with timelines and resources
+- **Portfolio of work:** Maintained collection of evidence across the term
+- Students document evidence of progress toward goals throughout the term
 
 ## Required Skills
 
@@ -49,15 +53,16 @@ The candidate must demonstrate the ability to:
 
 ## Required Knowledge
 
-[PENDING - source from training.gov.au]
+[Confirm against training.gov.au - https://training.gov.au/Training/Details/VU22384]
 
 ## Assessment Requirements
 
 ### Assessment Conditions
-[PENDING - source from training.gov.au]
+[Confirm against training.gov.au]
 
 ### Evidence Requirements
-[PENDING - source from training.gov.au]
+- Completed learning plan
+- Maintained portfolio with evidence of progress
 
 ## Related Units (Predecessors)
 

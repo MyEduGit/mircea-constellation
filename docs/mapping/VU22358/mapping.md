@@ -6,11 +6,11 @@
 |-------|-------|
 | **Unit Code** | VU22358 |
 | **Unit Title** | Develop learning goals |
-| **Nominal Hours** | [PENDING - source from training.gov.au] |
-| **Qualification** | 22638VIC Certificate I in EAL (Access) / CGEA |
-| **CertOngoing Group** | II |
-| **Term** | Semester 1, Term 1 |
-| **ACSF Alignment** | [PENDING - source from training.gov.au] |
+| **Nominal Hours** | [Confirm against training.gov.au] |
+| **Qualification** | 22639VIC Certificate II in EAL (Access) / CGEA |
+| **CertOngoing Group** | II - Ongoing Unit |
+| **Term** | Semester 1, Term 1 (ongoing across term) |
+| **ACSF Alignment** | [Confirm against training.gov.au] |
 | **Status** | Current |
 
 ## Application / Description
@@ -24,22 +24,36 @@ This unit is part of both the EAL (English as an Additional Language) Training P
 ### Element 1: Identify current skills and interests
 | PC | Performance Criteria |
 |----|---------------------|
-| 1.1 | [PENDING - source from training.gov.au] |
-| 1.2 | [PENDING - source from training.gov.au] |
+| 1.1-1.x | [Confirm against training.gov.au - https://training.gov.au/Training/Details/VU22358] |
 
 ### Element 2: Develop learning goals
 | PC | Performance Criteria |
 |----|---------------------|
-| 2.1 | [PENDING - source from training.gov.au] |
-| 2.2 | [PENDING - source from training.gov.au] |
+| 2.1-2.x | [Confirm against training.gov.au] |
 
 ### Element 3: Monitor progress toward goals
 | PC | Performance Criteria |
 |----|---------------------|
-| 3.1 | [PENDING - source from training.gov.au] |
-| 3.2 | [PENDING - source from training.gov.au] |
+| 3.1-3.x | [Confirm against training.gov.au] |
 
-> **Note:** Element titles are indicative based on web search results. Confirm element titles and all performance criteria against the official training.gov.au entry: https://training.gov.au/Training/Details/VU22358
+## Assessment Task Bank (Term 1, 2026)
+
+### Task A: My Learning
+- **Description:** Intake survey where students self-identify current speaking, listening, reading and writing skills
+- **Focus areas:**
+  - Identify specific needs (e.g., "talking to teachers," "understanding Australian accents")
+  - Identify current abilities (e.g., "I can use a computer," "I can search the internet")
+  - Identify barriers (e.g., health issues, no computer at home)
+  - Set goals (e.g., further study, citizenship test, employment)
+- **Evidence type:** Checklists and short-response fields
+
+### Task B: My Learning Plan
+- **Description:** Follow-up worksheet documenting:
+  - 3 things students understand about learning plans
+  - Resources they intend to use (libraries, internet, etc.)
+  - Commitment to class attendance
+  - Record of work tracking
+- **Completion required:** Both Task A AND Task B must be completed for "Satisfactory" result
 
 ## Required Skills
 
@@ -49,7 +63,7 @@ The candidate must demonstrate the ability to:
 
 ## Required Knowledge
 
-[PENDING - source from training.gov.au]
+[Confirm against training.gov.au - https://training.gov.au/Training/Details/VU22358]
 
 ## Assessment Requirements
 
@@ -57,7 +71,9 @@ The candidate must demonstrate the ability to:
 Assessment tasks will be designed to reinforce and extend knowledge and skill competence within set and controlled parameters in accordance with each unit's learning outcomes and performance criteria requirements.
 
 ### Evidence Requirements
-[PENDING - source from training.gov.au]
+- Completed Task A (My Learning) survey
+- Completed Task B (My Learning Plan) template
+- Both tasks required for Satisfactory outcome
 
 ## Sources
 
