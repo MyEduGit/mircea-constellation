@@ -118,6 +118,27 @@ async def _upload_file(client, api_key: str, path: Path) -> str:
     return r.json()["upload_url"]
 
 
+# AssemblyAI deprecated the singular `speech_model` field in favour of
+# the plural `speech_models` array. Submitting the singular form returns
+# 400 "speech_models must be a non-empty list". We accept either spelling
+# in the payload for operator ergonomics but always send the plural array
+# on the wire. Keep this list pinned to known-good IDs; AssemblyAI has
+# dropped unlisted models without notice before.
+_DEFAULT_SPEECH_MODELS: tuple[str, ...] = ("universal-2",)
+
+
+def _normalise_speech_models(payload: dict) -> list[str]:
+    # New API: `speech_models` (array). Accept as-is.
+    val = payload.get("speech_models")
+    if isinstance(val, list) and val:
+        return [str(m) for m in val]
+    # Legacy operator habit: `speech_model` (singular string). Upgrade.
+    legacy = payload.get("speech_model")
+    if isinstance(legacy, str) and legacy.strip():
+        return [legacy.strip()]
+    return list(_DEFAULT_SPEECH_MODELS)
+
+
 async def _start_job(client, api_key: str, audio_url: str, payload: dict) -> str:
     headers = {"authorization": api_key, "content-type": "application/json"}
     body: dict[str, Any] = {
@@ -126,10 +147,8 @@ async def _start_job(client, api_key: str, audio_url: str, payload: dict) -> str
         "punctuate": bool(payload.get("punctuate", True)),
         "format_text": bool(payload.get("format_text", True)),
         "speaker_labels": bool(payload.get("speaker_labels", False)),
+        "speech_models": _normalise_speech_models(payload),
     }
-    model = payload.get("speech_model")
-    if model:
-        body["speech_model"] = model
     r = await client.post(f"{_API_BASE}/transcript", headers=headers, json=body)
     r.raise_for_status()
     return r.json()["id"]
@@ -189,13 +208,18 @@ async def transcribe_assemblyai(payload: dict[str, Any], data_root: Path) -> dic
     """Upload a local audio file and start a new AssemblyAI job.
 
     Payload:
-      input          (str, required): audio filename under /data/media/audio/
-                                      (or a video under media/edited, media/in —
-                                      AssemblyAI accepts common formats directly)
-      language       (str, optional): default "ro"
-      speaker_labels (bool, optional): default False
-      speech_model   (str, optional): AssemblyAI model id
-      poll_sec       (int, optional): default 5
+      input           (str, required): audio filename under /data/media/audio/
+                                       (or a video under media/edited, media/in —
+                                       AssemblyAI accepts common formats directly)
+      language        (str, optional): default "ro"
+      speaker_labels  (bool, optional): default False
+      speech_models   (list[str], optional): AssemblyAI model ids; default
+                                             ["universal-2"]. The legacy
+                                             singular `speech_model` field is
+                                             accepted and auto-upgraded to the
+                                             plural array now required by the
+                                             API.
+      poll_sec        (int, optional): default 5
       poll_timeout_sec (int, optional): default 1800 (30 min)
     """
     miss = _require_httpx()
