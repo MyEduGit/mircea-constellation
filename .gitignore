@@ -5,6 +5,8 @@
 .fireclaw-env/
 # LuciferiClaw venv (created by setup/lucifericlaw_install.sh)
 .lucifericlaw-env/
+# CinemaClaw venv (created by setup/cinemaclaw_install.sh)
+.cinemaclaw-env/
 
 # Python bytecode
 __pycache__/

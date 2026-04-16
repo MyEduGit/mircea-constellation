@@ -3,6 +3,7 @@
   "nanoclaw":     { "status": "ok",   "version": "1.2.17" },
   "fireclaw":     { "status": "new",  "version": "0.1.0", "incidents_24h": 0 },
   "lucifericlaw": { "status": "new",  "version": "0.1.1", "open_cases": 0, "iniquitous_24h": 0 },
+  "cinemaclaw":   { "status": "new",  "version": "0.1.0", "pipelines": 3, "renders_24h": 0, "publish_gate": "dry-only" },
   "ollama":       { "status": "warn", "model": "qwen2.5:32b" },
   "cognee":       { "status": "ok",   "version": "1.0.0" },
   "disk_openclaw": "46% used",

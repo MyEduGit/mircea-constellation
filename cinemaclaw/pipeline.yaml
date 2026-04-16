@@ -1,0 +1,156 @@
+# CinemaClaw pipelines — declarative recipes.
+#
+# Each pipeline is an ordered list of stages. Every stage has:
+#   kind:   one of cinemaclaw.handlers.HANDLERS (otherwise refused)
+#   with:   handler-specific arguments
+#
+# Substitutions available inside `with` values:
+#   ${pipeline_id}  — the pipeline's id (also usable for file naming)
+#   ${ts}           — UTC timestamp at pipeline start (YYYYMMDDTHHMMSSZ)
+#   ${last_output}  — primary output of the most recent successful stage
+#   ${<key>}        — any key declared under `vars:` on the pipeline
+#
+# CinemaClaw never invents stages. Adding a new capability requires:
+#   1. A new handler in cinemaclaw/handlers.py (registered in HANDLERS)
+#   2. An explicit stage in a pipeline here.
+#
+# UrantiOS governed — Truth, Beauty, Goodness.
+
+pipelines:
+
+  # ── demo: a minimal end-to-end rehearsal (dry-run friendly) ──────────
+  demo:
+    description: "Dry-run rehearsal — shows the full shape of a YouTube cut."
+    vars:
+      source:   "~/cinemaclaw/inbox/sample.mp4"
+      workdir:  "~/cinemaclaw/work/demo"
+      outbox:   "~/cinemaclaw/outbox/demo"
+      title:    "CinemaClaw demo — ${ts}"
+    stages:
+      - kind: probe
+        with:
+          source: "${source}"
+      - kind: trim
+        with:
+          source:   "${source}"
+          start:    "00:00:00"
+          duration: "00:00:30"
+          out:      "${workdir}/01-trimmed.mp4"
+      - kind: normalize_audio
+        with:
+          source: "${last_output}"
+          out:    "${workdir}/02-loud.mp4"
+          target_lufs: -14.0
+      - kind: render_thumbnail
+        with:
+          source: "${last_output}"
+          out:    "${outbox}/thumb.jpg"
+          at:     "00:00:03"
+          width:  1280
+      - kind: write_metadata
+        with:
+          source:      "${workdir}/02-loud.mp4"
+          out:         "${outbox}/metadata.json"
+          title:       "${title}"
+          description: "Rehearsal cut produced by CinemaClaw demo pipeline."
+          tags: ["cinemaclaw", "mircea-constellation", "urantios"]
+          category_id: 27
+          privacy:     "private"
+      - kind: publish_youtube
+        with:
+          source:    "${workdir}/02-loud.mp4"
+          metadata:  "${outbox}/metadata.json"
+          thumbnail: "${outbox}/thumb.jpg"
+
+  # ── lecture: long-form educational cut for the AMEP / PhD channel ────
+  lecture:
+    description: "Long-form educational cut — trim head/tail, loudness, thumbnail, metadata."
+    vars:
+      source:  "~/cinemaclaw/inbox/lecture.mp4"
+      workdir: "~/cinemaclaw/work/lecture"
+      outbox:  "~/cinemaclaw/outbox/lecture"
+      head:    "00:00:04"   # skip intro countdown
+      tail:    "00:58:00"   # stop before outro slate
+    stages:
+      - kind: probe
+        with: { source: "${source}" }
+      - kind: trim
+        with:
+          source: "${source}"
+          start:  "${head}"
+          end:    "${tail}"
+          out:    "${workdir}/01-body.mp4"
+      - kind: normalize_audio
+        with:
+          source: "${last_output}"
+          out:    "${workdir}/02-loud.mp4"
+          target_lufs: -14.0
+      - kind: render_thumbnail
+        with:
+          source: "${last_output}"
+          out:    "${outbox}/thumb.jpg"
+          at:     "00:02:00"
+          width:  1280
+      - kind: write_metadata
+        with:
+          source:      "${workdir}/02-loud.mp4"
+          out:         "${outbox}/metadata.json"
+          title:       "Lecture — ${ts}"
+          description: |
+            Educational cut — auto-prepared by CinemaClaw.
+            Replace this description before publication.
+          tags: ["education", "amep", "urantipedia"]
+          category_id: 27
+          privacy:     "unlisted"
+      - kind: publish_youtube
+        with:
+          source:    "${workdir}/02-loud.mp4"
+          metadata:  "${outbox}/metadata.json"
+          thumbnail: "${outbox}/thumb.jpg"
+
+  # ── short: 60-second vertical clip for YouTube Shorts ────────────────
+  short:
+    description: "60-second highlight clip with burned captions for Shorts."
+    vars:
+      source:    "~/cinemaclaw/inbox/highlight.mp4"
+      subtitles: "~/cinemaclaw/inbox/highlight.srt"
+      workdir:   "~/cinemaclaw/work/short"
+      outbox:    "~/cinemaclaw/outbox/short"
+      start:     "00:00:00"
+      duration:  "00:01:00"
+    stages:
+      - kind: trim
+        with:
+          source:   "${source}"
+          start:    "${start}"
+          duration: "${duration}"
+          out:      "${workdir}/01-cut.mp4"
+      - kind: burn_captions
+        with:
+          source:    "${last_output}"
+          subtitles: "${subtitles}"
+          out:       "${workdir}/02-captioned.mp4"
+      - kind: normalize_audio
+        with:
+          source: "${last_output}"
+          out:    "${workdir}/03-loud.mp4"
+      - kind: render_thumbnail
+        with:
+          source: "${last_output}"
+          out:    "${outbox}/thumb.jpg"
+          at:     "00:00:02"
+          width:  1080
+      - kind: write_metadata
+        with:
+          source:      "${workdir}/03-loud.mp4"
+          out:         "${outbox}/metadata.json"
+          title:       "Short — ${ts}"
+          description: "#Shorts clip auto-prepared by CinemaClaw."
+          tags: ["shorts", "cinemaclaw"]
+          category_id: 27
+          privacy:     "private"
+      - kind: publish_youtube
+        with:
+          source:    "${workdir}/03-loud.mp4"
+          metadata:  "${outbox}/metadata.json"
+          thumbnail: "${outbox}/thumb.jpg"

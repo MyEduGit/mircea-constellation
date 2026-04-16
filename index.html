@@ -210,7 +210,7 @@ svg.connections line.bot-link {
     <span class="truth">Truth</span>
     <span class="beauty">Beauty</span>
     <span class="goodness">Goodness</span>
-    | <span>20 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
+    | <span>22 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
   </div>
 </div>
 <div class="panel" id="panel">
@@ -261,6 +261,7 @@ const nodes = [
   { id: 'nanoclaw', icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents',        type: 'claw',       x: 0.86, y: 0.22, tier: 'infra' },
   { id: 'fireclaw', icon: '🔥', label: 'Fireclaw v0.1.0',  sub: 'Remediation Layer',    type: 'claw',       x: 0.50, y: 0.42, tier: 'infra' },
   { id: 'lucifericlaw', icon: '⚖️', label: 'LuciferiClaw v0.1.1', sub: 'Adjudication Layer', type: 'claw',   x: 0.40, y: 0.30, tier: 'infra' },
+  { id: 'cinemaclaw', icon: '🎬', label: 'CinemaClaw v0.1.0', sub: 'YouTube Pipeline',    type: 'claw',       x: 0.60, y: 0.30, tier: 'infra' },
 
   // ── TIER 3: AI MODELS ───────────────────────────────────────────
   { id: 'claude',   icon: '🟣', label: 'Claude',           sub: 'Opus 4.6',            type: 'ai',         x: 0.10, y: 0.28, tier: 'ai' },
@@ -329,6 +330,12 @@ const connections = [
   ['lucifericlaw', 'botfleet',     'bot-link'],
   ['imac',         'lucifericlaw', 'active'],
 
+  // CinemaClaw — video pipeline; reads from iMac, renders locally, stages upload
+  ['imac',         'cinemaclaw',   'active'],
+  ['cinemaclaw',   'obsidian',     'active'],
+  ['cinemaclaw',   'urantipedia',  'active'],
+  ['cinemaclaw',   'amep',         'active'],
+
   // URANTiOS connections
   ['urantios', 'nanoclaw',     'active'],
   ['urantios', 'urantipedia',  'active'],
@@ -379,6 +386,7 @@ const nodeDetails = {
   urantios: { 'IP': '204.168.143.98', 'Hardware': 'CCX23 (16GB / 160GB)', 'Location': 'Helsinki, FI', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org', 'Disk': '38% used', 'Tier': 'INFRASTRUCTURE' },
   nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Runtime': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw in Telegram', 'Status': 'LIVE', 'Tier': 'INFRASTRUCTURE' },
   fireclaw: { 'Version': '0.1.0', 'Role': 'Remediation / incident response', 'Owns': 'Restart · disable · quarantine · failover · escalate', 'Inputs': 'NemoClaw view + status.json + HTTP/TCP probes', 'Rules': 'fireclaw/rules.yaml (declarative; no improvisation)', 'Lucifer Test': 'Transparent · Honest · Within mandate · Serves mission', 'Logs': '~/.fireclaw/incidents.jsonl (append-only)', 'Repo': 'myedugit/mircea-constellation · fireclaw/', 'Tier': 'INFRASTRUCTURE' },
+  cinemaclaw: { 'Version': '0.1.0', 'Role': 'YouTube video-editing pipeline', 'Stages': 'ingest · probe · trim · normalize_audio · concat · burn_captions · render_thumbnail · write_metadata · publish_youtube', 'Engine': 'ffmpeg / ffprobe (local)', 'Pipelines': 'demo · lecture · short', 'Config': 'cinemaclaw/pipeline.yaml (declarative; ${var} substitution)', 'Publish gate': 'DRY-ONLY in v0.1.0; requires --signed-by-father + OAuth env', 'Metadata': 'cinemaclaw.metadata/v1 sidecar (title/desc/tags/privacy/chapters)', 'Data root': '~/cinemaclaw/{inbox,work,outbox}', 'Evidence': '~/.cinemaclaw/renders.jsonl + audit.jsonl (append-only)', 'Boundary': 'Fixed HANDLERS allowlist — no free-form shell, no arbitrary ffmpeg', 'Repo': 'myedugit/mircea-constellation · cinemaclaw/', 'Tier': 'INFRASTRUCTURE' },
   lucifericlaw: { 'Version': '0.1.1', 'Role': 'Adjudication of AI rebellion (intent, not faults)', 'Doctrine': 'The Urantia Book Papers 53–54', 'Three Heads': '1. Source denial · 2. Governance rejection · 3. Mission rejection', 'Procedure': 'assess → open → notice → interrogate → offer → respond → vote → sentence', 'Ladder': 'rehabilitate → aloofness → quarantine → annihilation', 'Annihilation Gates': '3 heads + 3 refused offers + council quorum + Father Function signature', 'Boundary': 'NO free-form shell. Handlers in ANNIHILATION_HANDLERS allowlist.', 'Cases': '~/.lucifericlaw/cases (per-case JSON, append-only fields)', 'Audit': '~/.lucifericlaw/audit.jsonl (CLI-level intent log)', 'Repo': 'myedugit/mircea-constellation · lucifericlaw/', 'Tier': 'INFRASTRUCTURE' },
 
   claude:   { 'Model': 'Claude Opus 4.6 (1M ctx)', 'Provider': 'Anthropic', 'Role': 'Primary AI partner', 'Used For': 'PhD analysis, code, deep reasoning', 'Workspace': 'iMac Obsidian vault', 'Tier': 'AI' },
@@ -437,7 +445,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'cinemaclaw') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
@@ -495,6 +503,7 @@ async function loadStatus() {
     if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span>NanoClaw: ${data.nanoclaw.version || '?'}</span>`);
     if (data.fireclaw) items.push(`<span><span class="dot dot-${data.fireclaw.status === 'ok' ? 'green' : (data.fireclaw.status === 'warn' ? 'yellow' : (data.fireclaw.status === 'new' ? 'blue' : 'red'))}"></span>Fireclaw: ${data.fireclaw.version || data.fireclaw.status || '?'}</span>`);
     if (data.lucifericlaw) items.push(`<span><span class="dot dot-${data.lucifericlaw.status === 'ok' ? 'green' : (data.lucifericlaw.status === 'warn' ? 'yellow' : (data.lucifericlaw.status === 'new' ? 'blue' : 'red'))}"></span>LuciferiClaw: ${data.lucifericlaw.version || data.lucifericlaw.status || '?'}</span>`);
+    if (data.cinemaclaw) items.push(`<span><span class="dot dot-${data.cinemaclaw.status === 'ok' ? 'green' : (data.cinemaclaw.status === 'warn' ? 'yellow' : (data.cinemaclaw.status === 'new' ? 'blue' : 'red'))}"></span>CinemaClaw: ${data.cinemaclaw.version || data.cinemaclaw.status || '?'}</span>`);
     if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
     if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
