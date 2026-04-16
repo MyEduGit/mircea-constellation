@@ -2,9 +2,10 @@
 
 **Truthful label:** deployable scaffold. Real handlers: `media_edit`,
 `audio_extract`, `transcribe_ro`, `transcribe_assemblyai`,
-`import_assemblyai_transcript`, `postprocess_transcript`,
-`youtube_metadata`. Stub: `youtube_upload` (refuses — operator must
-supply OAuth credentials in a follow-up PR).
+`import_assemblyai_transcript`, `bulk_import_assemblyai_romanian`,
+`postprocess_transcript`, `thumbnail_generate`, `youtube_metadata`.
+Stub: `youtube_upload` (refuses — operator must supply OAuth
+credentials in a follow-up PR).
 
 Singular primary role: **controlled execution** (media-pipeline sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence —
@@ -69,6 +70,7 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
+    "thumbnail_generate",            # REAL — ffmpeg frame + Pillow overlay
     "youtube_metadata",              # REAL — deterministic packaging
     "youtube_upload",                # STUB — refuses without OAuth creds
 }
@@ -181,6 +183,33 @@ Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
 unchanged afterwards. The raw AssemblyAI response is preserved at
 `/data/transcripts/<stem>/assemblyai.raw.json` for provenance.
+
+### Generate a YouTube thumbnail
+
+Pulls a single frame at the operator-chosen timestamp, scales/pads it
+to 1280x720 (with black bars if the source isn't 16:9), and optionally
+overlays the title in a translucent bottom strip:
+
+```bash
+# Auto-overlay from the YouTube bundle's first title candidate
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"thumbnail_generate","payload":{"input":"interviu.edited.mp4","stem":"interviu.edited","timestamp":"00:00:05"}}'
+
+# Explicit title, no bundle required
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"thumbnail_generate","payload":{"input":"interviu.edited.mp4","title":"Interviu cu Mircea"}}'
+
+# Skip the overlay entirely
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"thumbnail_generate","payload":{"input":"interviu.edited.mp4","no_overlay":true}}'
+```
+
+Output: `/data/youtube/<stem>/thumbnail.jpg` (overwrites existing).
+If Pillow is missing the handler still returns the raw ffmpeg frame —
+`overlay_applied: false` surfaces the reason honestly.
 
 ---
 

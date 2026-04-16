@@ -10,9 +10,11 @@ FROM python:3.12-slim
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-# ffmpeg is the load-bearing system dependency; curl is for the healthcheck.
+# ffmpeg is the load-bearing system dependency; curl is for the healthcheck;
+# fonts-dejavu supplies the TTF used by the thumbnail overlay (Pillow falls
+# back to its built-in bitmap font otherwise, which rasterises tiny).
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg curl \
+    && apt-get install -y --no-install-recommends ffmpeg curl fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g ${GROUP_ID} scribeclaw \
