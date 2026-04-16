@@ -69,6 +69,7 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
+    "correct_ro_theological",        # REAL — RO ASR corrector w/ confidence flags
     "youtube_metadata",              # REAL — deterministic packaging
     "youtube_upload",                # STUB — refuses without OAuth creds
 }
@@ -176,6 +177,53 @@ to check `language_code == "ro"`, writes the matches to
 `/data/transcripts/<id>/`, and returns a `resume_before_id` that you can
 pass back as `start_before_id` to continue where the previous run stopped
 (useful for dashboards with hundreds of items).
+
+### Correct Romanian theological transcripts (ASR error fixer)
+
+`correct_ro_theological` is a deterministic pattern corrector tuned for
+Romanian religious/liturgical speech (Cornilescu 1924 register + Ellen
+White vocabulary). It refuses to guess — rules below the auto-fix
+confidence threshold are surfaced as flags rather than silently applied.
+
+```bash
+# Run on a stem — prefers transcript.cues.srt, falls back to transcript.srt
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"correct_ro_theological","payload":{"stem":"C0069"}}'
+
+# Run on a specific SRT file under DATA_ROOT
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"correct_ro_theological","payload":{"srt_path":"transcripts/C0069/transcript.srt"}}'
+```
+
+Outputs (next to the source SRT):
+- `<name>.clean.srt` — corrected SRT (UTF-8 with BOM so YouTube Studio
+  detects encoding correctly), identical cue timings to the millisecond
+- `<name>.corrections.log` — human-readable audit
+- `<name>.corrections.json` — machine-readable audit
+
+Built-in rule categories: spelling bleeds (`humană`→`umană`), proper
+nouns (`postul Pavel`→`Apostolul Pavel`), biblical vocabulary
+(`neprivenirea`→`neprihănirea`, `s-a ominit`→`s-a smerit`, `scală`→
+`scara` in the Jacob's-ladder context), ASR artefacts, grammar
+(gender/case agreement), and context-conditional flags (e.g.
+`Solaoide` → `Ellen White` when the cue or nearby cues mention
+Christology). Every rule has a documented rationale and confidence.
+
+Operators extend the rule set by pointing at a JSON overlay file:
+
+```bash
+curl -sX POST http://127.0.0.1:8081/tasks -H 'Content-Type: application/json' -d '{
+  "handler":"correct_ro_theological",
+  "payload":{"stem":"C0069","library_path":"/data/corpora/ro_overlay.json",
+             "min_confidence_auto_fix":0.80}
+}'
+```
+
+Each overlay entry: `{id, category, pattern, replacement, confidence,
+rationale, context_before?, context_after?, flags?:"i"}`. Overlay rules
+compose with the built-in set; they never replace it.
 
 Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
