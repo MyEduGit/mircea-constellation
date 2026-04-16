@@ -1,5 +1,9 @@
 # AMEP Daily Session Plan - Term 1, Week 6
 
+> **Standing Resources** (use every week): [standing-resources.md](standing-resources.md)
+> **Master hotlinks list:** [resources-term1-2026.md](../mapping/resources-term1-2026.md)
+> **Sessions index:** [README.md](README.md)
+
 ## 2-4 March 2026
 
 | Field | Detail |
