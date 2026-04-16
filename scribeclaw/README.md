@@ -69,6 +69,7 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
+    "validate_srt",                  # REAL — structural + encoding SRT check
     "youtube_metadata",              # REAL — deterministic packaging
     "youtube_upload",                # STUB — refuses without OAuth creds
 }
@@ -176,6 +177,28 @@ to check `language_code == "ro"`, writes the matches to
 `/data/transcripts/<id>/`, and returns a `resume_before_id` that you can
 pass back as `start_before_id` to continue where the previous run stopped
 (useful for dashboards with hundreds of items).
+
+### Validate an SRT before uploading
+
+`validate_srt` checks structural + encoding invariants that YouTube's
+captions uploader silently rejects:
+
+- File is valid UTF-8 (UTF-16 BOM → hard error; UTF-8 BOM is OK + reported)
+- Cues are in chronological order (out-of-order → hard error)
+- `end >= start` within each cue (→ hard error)
+- Overlapping cues → warning
+- Empty cue bodies → warning
+- Lines > 42 chars → warning (configurable via `max_line_chars`)
+- Mis-numbered indices → warning
+
+```bash
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"validate_srt","payload":{"stem":"C0069"}}'
+```
+
+Returns `{errors: [...], warnings: [...], cues, total_duration_ms}`.
+Operator runs this last-mile check before every upload.
 
 Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
