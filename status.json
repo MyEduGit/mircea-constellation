@@ -16,6 +16,7 @@
   "openclaw":     { "status": "ok" },
   "urantios":     { "status": "ok" },
   "nanoclaw_node":{ "status": "ok" },
+  "fireclaw":     { "status": "new", "version": "0.1.0", "bind": "127.0.0.1:8797" },
   "claude":       { "status": "ok" },
   "chatgpt":      { "status": "ok" },
   "hetzy":        { "status": "ok" },
@@ -29,5 +30,5 @@
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
 
-  "updated": "2026-04-13T13:18:00.000Z"
+  "updated": "2026-04-13T23:10:00.000Z"
 }
