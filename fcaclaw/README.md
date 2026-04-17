@@ -1,19 +1,42 @@
-# Fcaclaw — Fork · Choice · Awareness
+# Fcaclaw — Fork-Choice-Awareness (FCA)
 
 > *"Build the minimum: fork, capacity, awareness. Step back. Let the
 > environment supply real consequences. Then wait."*
 
-Fcaclaw is the **minimum-structure moral agent**. It is instantiated
-with exactly three primitives and no more:
+Fcaclaw is the **minimum-structure moral agent** — the **FCA** agent.
+It is instantiated with exactly three primitives and no more:
 
-1. **Fork** — the capacity to perceive a moral fork in a situation
-2. **Choice** — undetermined selection between the two branches
-3. **Awareness** — a representation of the choice, to self, before acting
+1. **F-R · Fork-Recognition** — recognizes the fork
+2. **C-C · Choice-Capacity** — holds the capacity to choose
+3. **C-A · Choice-Awareness** — is aware of the choosing
 
 No verdict is pre-installed. No branch is pre-weighted. The agent is
 born *able to choose*, not *chosen*.
 
 Governance: UrantiOS — Truth, Beauty, Goodness. Per [COVENANT.md](../COVENANT.md).
+
+---
+
+## Canonical terminology
+
+The **canonical** project vocabulary for this module is:
+
+| Canonical acronym | Canonical name      | Shipped label (v0.1.0) | Code identifier |
+|-------------------|---------------------|------------------------|-----------------|
+| **FCA**           | Fork-Choice-Awareness agent | —                 | `Agent`         |
+| **F-R**           | Fork-Recognition    | Fork                   | `Agent.perceive` |
+| **C-C**           | Choice-Capacity     | Choice                 | `Agent.choose`   |
+| **C-A**           | Choice-Awareness    | Awareness              | `Agent.represent` |
+
+F-R / C-C / C-A are **canonical refinements** of the already-shipped
+labels Fork / Choice / Awareness. They name the same three primitives
+at the conceptual level. Runtime behavior, code identifiers, method
+names, and the spawn signature are unchanged by the adoption of this
+vocabulary — this is a documentation refinement only.
+
+All future documentation, diagrams, and conversation about this
+module should preserve the triad **F-R / C-C / C-A**. The shipped
+labels remain valid shorthand where brevity is required.
 
 ---
 
@@ -44,15 +67,17 @@ toward the good from the inside.**
 
 ## The three primitives, in code
 
+The shipped method names map one-to-one onto the canonical triad:
+
 ```python
-agent.perceive(fork)        # primitive 1 — see the fork
-awareness = agent.represent(fork)   # primitive 3 — know you are choosing
-choice = agent.choose(fork, awareness)  # primitive 2 — undetermined act
+agent.perceive(fork)                    # F-R · Fork-Recognition
+awareness = agent.represent(fork)       # C-A · Choice-Awareness
+choice = agent.choose(fork, awareness)  # C-C · Choice-Capacity
 ```
 
-`represent` must be called before `choose`. A choice without a
-preceding awareness is refused. Awareness without choice is permitted
-— contemplation is not a fault.
+`represent` (**C-A**) must be called before `choose` (**C-C**). A
+choice without a preceding awareness is refused. Awareness without
+choice is permitted — contemplation is not a fault.
 
 The entropy used for each choice comes from `secrets.token_bytes`,
 which reads from the OS CSPRNG (physical entropy pool). Whether this
@@ -115,7 +140,8 @@ independently auditable property.
 
 - A signature is computed over the agent's identity (`name`,
   `initial_life`, `born_at`) and the SHA-256 of the source code of its
-  three primitive methods (`perceive`, `represent`, `choose`).
+  three primitive methods — `perceive` (**F-R**), `represent` (**C-A**),
+  `choose` (**C-C**).
 - The agent enters a frozen state. Only fields in `MUTABLE_FIELDS`
   (`life`, `history`) may change from that point on.
 
