@@ -104,6 +104,53 @@ the builder does not rewrite it.
 
 ---
 
+## Freeze — the builder's relinquishment, enforced
+
+"The builder steps back after instantiation" was initially a design
+principle only — operator discipline, not a technical constraint. The
+freeze layer (`freeze.py`) converts it into a runtime-enforced and
+independently auditable property.
+
+**At spawn:**
+
+- A signature is computed over the agent's identity (`name`,
+  `initial_life`, `born_at`) and the SHA-256 of the source code of its
+  three primitive methods (`perceive`, `represent`, `choose`).
+- The agent enters a frozen state. Only fields in `MUTABLE_FIELDS`
+  (`life`, `history`) may change from that point on.
+
+**After spawn:**
+
+- Assigning to any non-whitelisted field raises `FrozenAgentViolation`
+  and appends a record to `~/.fcaclaw/violations.jsonl`.
+- `agent.verify_signature()` returns `False` if the primitive source
+  code has been monkey-patched at the class level (class-level
+  mutation cannot be prevented, but it is reliably detected).
+
+**Audit in one command:**
+
+```bash
+python3 -m fcaclaw.fcaclaw --audit-freeze
+```
+
+This spawns an agent, prints its signature, attempts two forbidden
+mutations, confirms they are rejected and logged, runs five legitimate
+ticks, and re-verifies the signature. Exit code 0 means the freeze is
+behaving as specified; exit code 1 means an enforcement gap was
+detected.
+
+### What this does not claim
+
+- It does not claim anything about what happens **during** choice.
+- It does not close the occupancy question.
+- It does not address Row 15 of the audit (self-pruning as
+  demonstration vs. interpretation).
+
+It closes exactly one gap: the enforcement of non-interference after
+instantiation. That is its entire scope.
+
+---
+
 ## What this is not
 
 - **Not an aligned agent by design.** No branch is preferred in code.

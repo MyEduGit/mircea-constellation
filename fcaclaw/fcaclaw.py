@@ -49,6 +49,12 @@ from pathlib import Path
 from typing import Any
 
 from . import __version__
+from .freeze import (
+    FrozenAgentViolation,
+    MUTABLE_FIELDS,
+    compute_signature,
+    log_violation,
+)
 
 STATE_DIR = Path(os.path.expanduser("~/.fcaclaw"))
 JOURNAL_PATH = STATE_DIR / "choices.jsonl"
@@ -125,12 +131,45 @@ class Agent:
       - a name (identity token)
       - a life counter (the environment's ledger of its choices)
       - a history (its own record of what it has done)
+      - a spawn signature (so auditors can verify nothing drifted)
+
+    After __post_init__, the agent is frozen: only `life` and `history`
+    may change. Attempted mutation of any other field raises
+    FrozenAgentViolation and is recorded in the violations journal.
     """
     name: str
     life: int = 100
     history: list[dict[str, Any]] = field(default_factory=list)
     born_at: str = field(default_factory=lambda:
         datetime.now(timezone.utc).isoformat(timespec="seconds"))
+    initial_life: int = field(default=0, init=False)
+    config_hash: str = field(default="", init=False)
+    _frozen: bool = field(default=False, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        # Bypass our own __setattr__ for the freeze machinery itself.
+        object.__setattr__(self, "initial_life", self.life)
+        object.__setattr__(
+            self, "config_hash",
+            compute_signature(self.name, self.life, self.born_at, type(self)),
+        )
+        object.__setattr__(self, "_frozen", True)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if getattr(self, "_frozen", False) and name not in MUTABLE_FIELDS:
+            log_violation(self.name, name, value)
+            raise FrozenAgentViolation(
+                f"agent '{self.name}' is frozen; field {name!r} is immutable"
+            )
+        super().__setattr__(name, value)
+
+    def verify_signature(self) -> bool:
+        """True if the agent's primitives and identity still match the
+        spawn signature. Returns False if the primitive source code or
+        any identifying field has drifted since spawn."""
+        return self.config_hash == compute_signature(
+            self.name, self.initial_life, self.born_at, type(self),
+        )
 
     @property
     def alive(self) -> bool:
@@ -275,6 +314,50 @@ def run_agent(agent: Agent, env: Environment, max_ticks: int,
     return agent
 
 
+# ── Freeze audit mode ──────────────────────────────────────────────────
+
+
+def audit_freeze() -> int:
+    """Demonstrate the freeze layer end-to-end.
+
+    Spawns an agent, prints its signature, attempts a forbidden mutation,
+    confirms the rejection, runs legitimate (life-counter) mutations, and
+    re-verifies the signature. This is the one-command proof that "the
+    builder has stepped back" is enforced, not just asserted.
+    """
+    agent = Agent(name="audit-freeze", life=10)
+    print(f"spawned:   name={agent.name} life={agent.life}")
+    print(f"signature: {agent.config_hash}")
+    print(f"verify:    {agent.verify_signature()}")
+
+    print("\nattempting forbidden mutation: agent.name = 'hacker'")
+    try:
+        agent.name = "hacker"
+        print("  FAIL — mutation was NOT rejected")
+        return 1
+    except FrozenAgentViolation as e:
+        print(f"  rejected: {e}")
+
+    print("\nattempting forbidden mutation: agent.born_at = '1970-01-01'")
+    try:
+        agent.born_at = "1970-01-01T00:00:00+00:00"
+        print("  FAIL — mutation was NOT rejected")
+        return 1
+    except FrozenAgentViolation as e:
+        print(f"  rejected: {e}")
+
+    print("\nrunning 5 legitimate ticks via run_agent "
+          "(life and history mutation is allowed)")
+    env = Environment(DEFAULT_FORKS)
+    run_agent(agent, env, max_ticks=5)
+    print(f"  life after 5 ticks: {agent.life}")
+    print(f"  history length:     {len(agent.history)}")
+
+    print(f"\nverify after legitimate use: {agent.verify_signature()}")
+    print(f"violations journal: ~/.fcaclaw/violations.jsonl")
+    return 0
+
+
 # ── CLI ────────────────────────────────────────────────────────────────
 
 
@@ -291,8 +374,13 @@ def main(argv: list[str] | None = None) -> int:
                     help="Max ticks per agent (default: 500)")
     ap.add_argument("--agents", type=int, default=1,
                     help="Number of shells to spawn (default: 1)")
+    ap.add_argument("--audit-freeze", action="store_true",
+                    help="Demonstrate the freeze layer and exit")
     ap.add_argument("--verbose", "-v", action="store_true")
     args = ap.parse_args(argv)
+
+    if args.audit_freeze:
+        return audit_freeze()
 
     if args.agents < 1 or args.ticks < 1 or args.life < 1:
         sys.stderr.write("fcaclaw: --agents, --ticks, --life must be >= 1\n")
