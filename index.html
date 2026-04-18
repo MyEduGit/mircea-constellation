@@ -210,7 +210,7 @@ svg.connections line.bot-link {
     <span class="truth">Truth</span>
     <span class="beauty">Beauty</span>
     <span class="goodness">Goodness</span>
-    | <span>20 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
+    | <span>21 nodes &middot; 4 repos &middot; 11 bots &middot; 5 AI models</span>
   </div>
 </div>
 <div class="panel" id="panel">
@@ -268,6 +268,7 @@ const nodes = [
   { id: 'chatgpt',  icon: '🟢', label: 'ChatGPT',          sub: 'Hetzner Vault',        type: 'ai',         x: 0.06, y: 0.46, tier: 'ai' },
   { id: 'ollama',   icon: '🧠', label: 'Ollama',           sub: 'qwen2.5:32b',         type: 'ai',         x: 0.90, y: 0.44, tier: 'ai' },
   { id: 'cognee',   icon: '🧬', label: 'Cognee',           sub: 'Knowledge Graph',      type: 'ai',         x: 0.48, y: 0.50, tier: 'ai' },
+  { id: 'grok',     icon: '🌠', label: 'Grok',             sub: 'Trinity · xAI',        type: 'ai',         x: 0.04, y: 0.38, tier: 'ai' },
 
   // ── TIER 4: BOT FLEET ───────────────────────────────────────────
   { id: 'hetzy',    icon: '🎖️', label: 'Hetzy PhD',        sub: 'Fleet Commander',      type: 'bot',        x: 0.16, y: 0.58, tier: 'bot' },
@@ -357,6 +358,11 @@ const connections = [
   ['cognee', 'obsidian',      'active'],
   ['cognee', 'phd',           'ai-link'],
 
+  // Grok — Council Seat 7 (Trinity / xAI), wired via n8n on OpenClaw
+  ['grok', 'openclaw',        'ai-link'],
+  ['grok', 'gabriel',         'ai-link'],
+  ['imac', 'grok',            'ai-link'],
+
   // Bot fleet
   ['botfleet', 'hetzy',        'bot-link'],
   ['botfleet', 'lobster',      'bot-link'],
@@ -394,6 +400,7 @@ const nodeDetails = {
   chatgpt:  { 'Model': 'ChatGPT (OpenAI)', 'Role': 'Secondary AI partner', 'Used For': 'Summaries, vault mgmt, verification', 'Workspace': 'Hetzner vault', 'Tier': 'AI' },
   ollama:   { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning (no cloud)', 'Powers': 'Gabriel brain, Cognee LLM', 'Status': 'Check required', 'Tier': 'AI' },
   cognee:   { 'Version': '1.0.0', 'Host': 'iMac M4 (local)', 'API': 'remember / recall / forget / improve', 'Dataset': 'urantia_book (197 papers)', 'Graph DB': 'LanceDB + Kuzu', 'Embedding': 'fastembed (384d)', 'Purpose': 'Semantic memory for all systems', 'Tier': 'AI' },
+  grok:     { 'Model': 'grok-4', 'Provider': 'xAI', 'Role': 'Council Seat 7 — Trinity / Outer Horizon', 'n8n Node': 'Seat7_Trinity_Grok', 'Auth': 'Bearer XAI_API_KEY', 'Endpoint': 'api.x.ai/v1/chat/completions', 'Local Fallback': 'mistral:7b (via Ollama)', 'Mandate': 'Real-time world awareness · widen the frame · challenge assumptions', 'Signed In': 'Newly wired — xAI key provisioned', 'Tier': 'AI' },
 
   hetzy:    { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30-min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10', 'Tier': 'BOT FLEET' },
   gabriel:  { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on urantipedia.org', 'LLM': 'Ollama qwen2.5:32b', 'Authority': 'Joint with Mircea', 'Tier': 'BOT FLEET' },
@@ -446,7 +453,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest' || n.id === 'grok') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
@@ -506,6 +513,7 @@ async function loadStatus() {
     if (data.lucifericlaw) items.push(`<span><span class="dot dot-${data.lucifericlaw.status === 'ok' ? 'green' : (data.lucifericlaw.status === 'warn' ? 'yellow' : (data.lucifericlaw.status === 'new' ? 'blue' : 'red'))}"></span>LuciferiClaw: ${data.lucifericlaw.version || data.lucifericlaw.status || '?'}</span>`);
     if (data.openclaw_ingest) items.push(`<span><span class="dot dot-${data.openclaw_ingest.status === 'ok' ? 'green' : (data.openclaw_ingest.status === 'warn' ? 'yellow' : (data.openclaw_ingest.status === 'new' ? 'blue' : 'red'))}"></span>OC-ingest: ${data.openclaw_ingest.version || data.openclaw_ingest.status || '?'}</span>`);
     if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
+    if (data.grok) items.push(`<span><span class="dot dot-${data.grok.status === 'ok' ? 'green' : (data.grok.status === 'warn' ? 'yellow' : (data.grok.status === 'new' ? 'blue' : 'red'))}"></span>Grok: ${data.grok.model || data.grok.status || '?'}</span>`);
     if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
