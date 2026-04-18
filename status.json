@@ -18,6 +18,7 @@
   "nanoclaw_node":{ "status": "ok" },
   "claude":       { "status": "ok" },
   "chatgpt":      { "status": "ok" },
+  "grok":         { "status": "new",  "model": "grok-4", "seat": "Seat7_Trinity_Grok", "signed_in": true },
   "hetzy":        { "status": "ok" },
   "gabriel":      { "status": "ok" },
   "uragent":      { "status": "ok" },
