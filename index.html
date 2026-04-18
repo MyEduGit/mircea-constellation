@@ -96,6 +96,50 @@ header .subtitle {
 .node[data-status="new"] .node-icon::after { background: #6495ED; box-shadow: 0 0 8px #6495ED; }
 .node-icon.controller { background: linear-gradient(135deg, #1a1a3e, #2a2a5e); border-color: #6495ED; }
 .node-icon.server { background: linear-gradient(135deg, #1a3a1a, #2a5a2a); border-color: #4CAF50; }
+/* OpenClaw live-pulse ring */
+.node[data-id="openclaw"] .node-icon {
+  border-color: #4eff91;
+  box-shadow: 0 0 0 0 rgba(78,255,145,0.7);
+  animation: openclaw-pulse 2s infinite;
+}
+.node[data-id="openclawingest"] .node-icon {
+  border-color: #4dd2ff;
+  box-shadow: 0 0 0 0 rgba(77,210,255,0.7);
+  animation: openclaw-ingest-pulse 2.4s infinite;
+}
+@keyframes openclaw-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(78,255,145,0.7); }
+  50%  { box-shadow: 0 0 0 8px rgba(78,255,145,0); }
+  100% { box-shadow: 0 0 0 0 rgba(78,255,145,0); }
+}
+@keyframes openclaw-ingest-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(77,210,255,0.7); }
+  50%  { box-shadow: 0 0 0 8px rgba(77,210,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(77,210,255,0); }
+}
+/* OpenClaw LIVE badge */
+.openclaw-live-badge {
+  position: absolute;
+  top: -8px; left: 50%; transform: translateX(-50%);
+  font-size: 0.38em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4eff91;
+  text-shadow: 0 0 6px #4eff91;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.openclawingest-live-badge {
+  position: absolute;
+  top: -8px; left: 50%; transform: translateX(-50%);
+  font-size: 0.38em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4dd2ff;
+  text-shadow: 0 0 6px #4dd2ff;
+  pointer-events: none;
+  white-space: nowrap;
+}
 .node-icon.claw { background: linear-gradient(135deg, #3a1a0a, #5a2a1a); border-color: #FF6B35; }
 .node-icon.ai { background: linear-gradient(135deg, #2a1a3a, #4a2a5a); border-color: #BB86FC; }
 .node-icon.bot { background: linear-gradient(135deg, #3a1a3a, #5a2a5a); border-color: #DDA0DD; }
@@ -128,6 +172,17 @@ svg.connections line.ai-link {
 svg.connections line.bot-link {
   stroke: rgba(221,160,221,0.2);
   stroke-width: 1;
+}
+/* OpenClaw connection highlight */
+svg.connections line.openclaw-link {
+  stroke: rgba(78,255,145,0.45);
+  stroke-width: 1.5;
+  animation: pulse-line 2s infinite;
+}
+svg.connections line.openclawingest-link {
+  stroke: rgba(77,210,255,0.38);
+  stroke-width: 1.4;
+  animation: pulse-line 2.4s infinite;
 }
 @keyframes pulse-line {
   0%, 100% { stroke-opacity: 0.15; }
@@ -298,7 +353,7 @@ const connections = [
   ['iphone', 'nanoclaw',   'active'],
 
   // iMac hub (controller to everything it touches)
-  ['imac', 'openclaw',     'active'],
+  ['imac', 'openclaw',     'openclaw-link'],
   ['imac', 'urantios',     'active'],
   ['imac', 'tailscale',    'active'],
   ['imac', 'claude',       'ai-link'],
@@ -307,19 +362,19 @@ const connections = [
   ['imac', 'amep',         'active'],
 
   // Tailscale mesh
-  ['tailscale', 'openclaw',  'active'],
+  ['tailscale', 'openclaw',  'openclaw-link'],
   ['tailscale', 'urantios',  'active'],
 
   // Server-to-server
-  ['openclaw', 'urantios',   'active'],
+  ['openclaw', 'urantios',   'openclaw-link'],
 
   // OpenClaw connections
-  ['openclaw', 'botfleet',   'active'],
-  ['openclaw', 'chatgpt',    'ai-link'],
-  ['openclaw', 'uragent',    'bot-link'],
+  ['openclaw', 'botfleet',   'openclaw-link'],
+  ['openclaw', 'chatgpt',    'openclaw-link'],
+  ['openclaw', 'uragent',    'openclaw-link'],
 
   // Fireclaw — remediation layer reads NemoClaw signals & acts on infra
-  ['fireclaw', 'openclaw',     'active'],
+  ['fireclaw', 'openclaw',     'openclaw-link'],
   ['fireclaw', 'urantios',     'active'],
   ['fireclaw', 'botfleet',     'bot-link'],
   ['imac',     'fireclaw',     'active'],
@@ -331,11 +386,11 @@ const connections = [
   ['imac',         'lucifericlaw', 'active'],
 
   // OpenClaw@URANTiOS-ingest — second OpenClaw instance, co-located with Cognee on URANTiOS
-  ['openclawingest', 'urantios',   'active'],
-  ['openclawingest', 'cognee',     'ai-link'],
-  ['openclawingest', 'ollama',     'ai-link'],
-  ['imac',           'openclawingest', 'active'],
-  ['fireclaw',       'openclawingest', 'bot-link'],
+  ['openclawingest', 'urantios',   'openclawingest-link'],
+  ['openclawingest', 'cognee',     'openclawingest-link'],
+  ['openclawingest', 'ollama',     'openclawingest-link'],
+  ['imac',           'openclawingest', 'openclawingest-link'],
+  ['fireclaw',       'openclawingest', 'openclawingest-link'],
 
   // URANTiOS connections
   ['urantios', 'nanoclaw',     'active'],
@@ -449,7 +504,12 @@ function layoutNodes() {
     div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
-    div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
+    const liveBadge = n.id === 'openclaw'
+      ? `<span class="openclaw-live-badge">● LIVE</span>`
+      : n.id === 'openclawingest'
+        ? `<span class="openclawingest-live-badge">● DEPLOYING</span>`
+        : '';
+    div.innerHTML = `<div class="node-icon ${n.type}" style="position:relative">${liveBadge}${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
     div.onclick = () => openPanel(n);
     map.appendChild(div);
   });
@@ -469,6 +529,62 @@ function layoutNodes() {
   });
 }
 layoutNodes();
+
+// ── OpenClaw data-packet particles ────────────────────────────────────
+const packetCanvas = document.createElement('canvas');
+packetCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none';
+map.appendChild(packetCanvas);
+const pctx = packetCanvas.getContext('2d');
+
+const ocPacketRoutes = [
+  { from: 'openclaw', to: 'urantios',  color: '#4eff91' },
+  { from: 'openclaw', to: 'botfleet',  color: '#4eff91' },
+  { from: 'imac',     to: 'openclaw',  color: '#4eff91' },
+  { from: 'openclawingest', to: 'cognee',   color: '#4dd2ff' },
+  { from: 'openclawingest', to: 'urantios', color: '#4dd2ff' },
+  { from: 'imac', to: 'openclawingest',    color: '#4dd2ff' },
+];
+
+const packets = ocPacketRoutes.map(r => ({
+  ...r,
+  t: Math.random(),
+  speed: 0.0015 + Math.random() * 0.001,
+}));
+
+function resizePacketCanvas() {
+  packetCanvas.width = map.clientWidth;
+  packetCanvas.height = map.clientHeight;
+}
+resizePacketCanvas();
+window.addEventListener('resize', resizePacketCanvas);
+
+function getNodeCenter(id) {
+  const n = nodes.find(x => x.id === id);
+  if (!n) return null;
+  return { x: n.x * packetCanvas.width, y: n.y * packetCanvas.height };
+}
+
+function animatePackets() {
+  pctx.clearRect(0, 0, packetCanvas.width, packetCanvas.height);
+  packets.forEach(p => {
+    p.t += p.speed;
+    if (p.t > 1) p.t = 0;
+    const a = getNodeCenter(p.from);
+    const b = getNodeCenter(p.to);
+    if (!a || !b) return;
+    const x = a.x + (b.x - a.x) * p.t;
+    const y = a.y + (b.y - a.y) * p.t;
+    pctx.beginPath();
+    pctx.arc(x, y, 3, 0, Math.PI * 2);
+    pctx.fillStyle = p.color;
+    pctx.shadowColor = p.color;
+    pctx.shadowBlur = 8;
+    pctx.fill();
+    pctx.shadowBlur = 0;
+  });
+  requestAnimationFrame(animatePackets);
+}
+animatePackets();
 
 function openPanel(node) {
   const panel = document.getElementById('panel');
