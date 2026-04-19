@@ -1,7 +1,8 @@
 # OpenClaw@URANTiOS-ingest
 
-**Truthful label:** deployable scaffold with first real handler (`ingest_normalize`).
-Four of the five canonical handlers are declared but stubbed pending follow-up PR.
+**Truthful label:** deployable scaffold with two real handlers
+(`ingest_normalize` and `categorise_by_axes`). Three of the five canonical
+handlers remain declared-but-stubbed pending follow-up PR.
 
 Singular primary role: **controlled execution** (ingestion sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence — those
@@ -47,8 +48,8 @@ directory and reaches host Ollama via `host.docker.internal:host-gateway`.
 
 ```python
 ALLOWED_HANDLERS = {
-    "ingest_normalize",      # REAL — first handler
-    "categorise_by_axes",    # stub
+    "ingest_normalize",      # REAL — normalises raw files into Cognee
+    "categorise_by_axes",    # REAL — 12-axis classifier, see axes.py
     "cross_link",            # stub
     "governance_check",      # stub
     "export_urantipedia",    # stub
@@ -144,12 +145,48 @@ some didn't, with a per-file error list.
 | `COGNEE_MODE`           | `local`                              | Passed to `cognee_config.init(mode=...)`   |
 | `COGNEE_OLLAMA_ENDPOINT`| `http://host.docker.internal:11434`  | From inside container → host Ollama        |
 | `COGNEE_DATA_ROOT`      | `/home/openclaw/.cognee/data`        | Bind-mounted to host `~/.cognee/data`      |
+| `OLLAMA_ENDPOINT`       | falls back to `COGNEE_OLLAMA_ENDPOINT` | Classifier LLM endpoint                  |
+| `OLLAMA_MODEL`          | `qwen2.5:32b`                        | Classifier LLM model                       |
+| `OLLAMA_TIMEOUT`        | `120`                                | Per-classification timeout (seconds)       |
+| `CLASSIFY_MAX_CHARS`    | `8000`                               | Document truncation budget for classifier  |
 
 ---
 
+## Classify an ingested batch
+
+After `ingest_normalize` has moved files into `ingested/chatcode/`, the
+12-axis classifier can run over them:
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "categorise_by_axes", "payload": {}}' \
+  | python3 -m json.tool
+```
+
+For each ingested file:
+
+1. Compute `sha256(content)`.
+2. Skip if `/data/classified/{sha256}.json` already exists (idempotent).
+3. Call Ollama (`OLLAMA_ENDPOINT`, `OLLAMA_MODEL`) with a strict
+   JSON-only prompt listing all 12 axes and their allowed labels.
+4. Validate the response against the closed label sets in `axes.py`.
+   Missing or out-of-vocabulary labels are coerced to `"unclear"` and
+   the coercions are recorded in `validation_errors`.
+5. Write the full record (sha, per-axis labels, validation errors,
+   model name, timestamp) to `/data/classified/{sha256}.json`.
+
+Honest failure: if Ollama is unreachable the handler aborts the batch
+and returns `status: error` (or `status: partial` if some files already
+classified before the outage).
+
+The axes themselves live in [`axes.py`](./axes.py) — first draft,
+grounded in UrantiOS Three Values + PhD Triune Monism + corpus-practical
+metadata. Edit there; the handler reads straight from that list.
+
 ## What this is **not** yet
 
-- Not a full ingestion pipeline — four handlers are stubs.
+- Not a full ingestion pipeline — three handlers are still stubs.
 - Not hardened beyond what is actually proven. No Fireclaw integration
   beyond the shared evidence directory convention.
 - Not Paperclip-integrated — this module emits evidence records; Paperclip
@@ -157,5 +194,5 @@ some didn't, with a per-file error list.
 - Not a replacement for the existing `OpenClaw@Hetzy-bots` at 46.225.51.30.
   Two instances; same class; different sub-scopes.
 
-Follow-up PR will implement `categorise_by_axes` (the 12-axis classifier),
-then `cross_link`, then `governance_check`, then `export_urantipedia`.
+Follow-up PR will implement `cross_link`, then `governance_check`, then
+`export_urantipedia`.

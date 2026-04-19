@@ -2,13 +2,13 @@
 """OpenClaw@URANTiOS-ingest — execution runtime, ingestion sub-role.
 
 Canonical role: controlled execution (singular).
-Truthful label:  deployable scaffold with first real handler (ingest_normalize).
+Truthful label:  deployable scaffold with two real handlers
+(``ingest_normalize`` and ``categorise_by_axes``).
 
-The other four canonical handlers (categorise_by_axes, cross_link,
-governance_check, export_urantipedia) are declared in the allowlist and
-dispatched to a 'not_implemented' stub pending a follow-up PR. The
-allowlist boundary is preserved: nothing outside ALLOWED_HANDLERS can
-run.
+Three of the five canonical handlers (cross_link, governance_check,
+export_urantipedia) remain declared-but-stubbed pending follow-up PR.
+The allowlist boundary is preserved: nothing outside ALLOWED_HANDLERS
+can run.
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """
@@ -22,6 +22,8 @@ import logging
 import os
 import sys
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 from threading import Thread
 from typing import Any
@@ -30,6 +32,7 @@ import uvicorn
 from fastapi import Body, FastAPI
 
 from . import __version__
+from .axes import AXES, UNCLEAR, axis_names, validate_classification
 
 # ── Config (all via env, nothing hardcoded that the operator would override) ─
 CLAW_NAME = os.getenv("CLAW_NAME", "OpenClaw@URANTiOS-ingest")
@@ -38,6 +41,17 @@ DATASET_NAME = os.getenv("DATASET_NAME", "mircea_corpus")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 HTTP_HOST = os.getenv("HTTP_HOST", "0.0.0.0")
 HTTP_PORT = int(os.getenv("HTTP_PORT", "8080"))
+
+# Ollama — reuse the same endpoint Cognee is configured against. Same host,
+# same model, so the classifier cannot drift from the corpus embeddings' LLM.
+OLLAMA_ENDPOINT = os.getenv(
+    "OLLAMA_ENDPOINT",
+    os.getenv("COGNEE_OLLAMA_ENDPOINT", "http://host.docker.internal:11434"),
+)
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:32b")
+OLLAMA_TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "120"))
+# Classifier context budget — truncate long docs to keep the LLM honest.
+CLASSIFY_MAX_CHARS = int(os.getenv("CLASSIFY_MAX_CHARS", "8000"))
 
 # Ensure directory layout on every start (idempotent).
 for _sub in ("ingest/chatcode", "ingested/chatcode", "classified",
@@ -184,6 +198,145 @@ async def _handle_ingest_normalize(payload: dict) -> dict:
     }
 
 
+def _build_classification_prompt(content: str) -> str:
+    """Compose the strict JSON-only prompt used by ``categorise_by_axes``."""
+    axes_spec = "\n".join(
+        f"- {a['name']}: {a['prompt']} Allowed: {a['labels']}."
+        for a in AXES
+    )
+    return (
+        "You classify a document along exactly 12 axes. For each axis, "
+        "return one label from its allowed set. If the evidence does not "
+        f"support a choice, return {UNCLEAR!r}. Output strictly a single "
+        "JSON object whose keys are the axis names and whose values are "
+        "the chosen labels. No prose, no keys outside the axis set.\n\n"
+        f"Axes:\n{axes_spec}\n\n"
+        f"Document (truncated to {CLASSIFY_MAX_CHARS} chars):\n"
+        f"<<<\n{content[:CLASSIFY_MAX_CHARS]}\n>>>"
+    )
+
+
+def _classify_via_ollama(content: str) -> dict[str, Any]:
+    """Ask Ollama for a 12-axis classification. Return the parsed JSON or
+    ``{"error": ...}`` — never raises."""
+    body = json.dumps({
+        "model": OLLAMA_MODEL,
+        "prompt": _build_classification_prompt(content),
+        "stream": False,
+        "format": "json",
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        f"{OLLAMA_ENDPOINT.rstrip('/')}/api/generate",
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT) as resp:
+            raw = resp.read().decode("utf-8")
+    except (urllib.error.URLError, TimeoutError) as exc:
+        return {"error": f"ollama_unreachable: {exc}"}
+
+    try:
+        envelope = json.loads(raw)
+        response = envelope.get("response", "")
+        parsed = json.loads(response)
+    except (json.JSONDecodeError, AttributeError) as exc:
+        return {"error": f"ollama_bad_json: {exc}", "raw": raw[:500]}
+
+    if not isinstance(parsed, dict):
+        return {"error": "ollama_not_object", "raw": raw[:500]}
+    return parsed
+
+
+async def _handle_categorise_by_axes(payload: dict) -> dict:
+    """Classify every ingested document along the 12 axes in ``axes.py``.
+
+    Scans ``/data/ingested/chatcode/*.jsonl``. For each file:
+
+    * Compute ``sha256`` of the content. If ``classified/{sha256}.json``
+      already exists, skip (idempotent — safe to re-run).
+    * Ask Ollama for a 12-axis classification (strict JSON).
+    * Validate against the closed label sets in :mod:`axes`. Missing or
+      out-of-vocabulary labels are coerced to the ``unclear`` sentinel so
+      downstream handlers always receive a complete axis map, but the
+      coercions are recorded in ``validation_errors``.
+    * Write the full record to ``classified/{sha256}.json``.
+
+    Honest failure: if Ollama is unreachable, return ``status=error`` with
+    the list of pending files — no silent partial success.
+    """
+    src_dir = DATA_ROOT / "ingested" / "chatcode"
+    out_dir = DATA_ROOT / "classified"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    files = sorted(src_dir.glob("*.jsonl"))
+
+    if not files:
+        return {"status": "success", "handler": "categorise_by_axes",
+                "classified": 0, "skipped": 0,
+                "message": "no jsonl files in ingested/chatcode"}
+
+    classified = 0
+    skipped = 0
+    errors: list[dict[str, str]] = []
+
+    for f in files:
+        try:
+            content = f.read_text(encoding="utf-8")
+        except Exception as exc:
+            errors.append({"file": f.name, "error": f"read_failed: {exc}"})
+            continue
+
+        sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
+        record_path = out_dir / f"{sha}.json"
+        if record_path.exists():
+            skipped += 1
+            continue
+
+        raw = _classify_via_ollama(content)
+        if "error" in raw:
+            errors.append({"file": f.name, "error": raw["error"]})
+            # Fail fast on unreachability — retrying every file is wasteful.
+            if raw["error"].startswith("ollama_unreachable"):
+                break
+            continue
+
+        ok, validation_errors = validate_classification(raw)
+        # Coerce invalid/missing labels to UNCLEAR so downstream never sees
+        # out-of-vocabulary values. Record the coercions honestly.
+        allowed_by_axis = {ax["name"]: set(ax["labels"]) for ax in AXES}
+        axes_result = {
+            name: raw[name] if raw.get(name) in allowed_by_axis[name] else UNCLEAR
+            for name in axis_names()
+        }
+
+        record = {
+            "sha256": sha,
+            "source_file": f.name,
+            "axes": axes_result,
+            "validation_errors": validation_errors,
+            "model": OLLAMA_MODEL,
+            "claw": CLAW_NAME,
+            "version": __version__,
+            "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+        record_path.write_text(json.dumps(record, indent=2, sort_keys=True))
+        classified += 1
+        logger.info(
+            f"categorise_by_axes: {f.name} -> {sha[:12]} "
+            f"(valid={ok}, errors={len(validation_errors)})")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "categorise_by_axes",
+        "classified": classified,
+        "skipped": skipped,
+        "errors": errors,
+        "axes_version": len(AXES),
+        "model": OLLAMA_MODEL,
+    }
+
+
 async def _handle_stub(name: str, payload: dict) -> dict:
     return {
         "status": "not_implemented",
@@ -197,7 +350,7 @@ async def _handle_stub(name: str, payload: dict) -> dict:
 _HANDLERS = {
     "smoke_test": _handle_smoke_test,
     "ingest_normalize": _handle_ingest_normalize,
-    "categorise_by_axes": lambda p: _handle_stub("categorise_by_axes", p),
+    "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         lambda p: _handle_stub("cross_link", p),
     "governance_check":   lambda p: _handle_stub("governance_check", p),
     "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
@@ -238,6 +391,8 @@ def health() -> dict:
         "cognee_init": COGNEE_INIT_INFO,
         "dataset": DATASET_NAME,
         "allowed_handlers": sorted(ALLOWED_HANDLERS),
+        "axes": axis_names(),
+        "classifier_model": OLLAMA_MODEL,
     }
 
 
