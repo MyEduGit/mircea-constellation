@@ -105,6 +105,7 @@ def main():
 
     email    = os.environ.get("N8N_EMAIL",    "mircea8@me.com").strip()
     password = os.environ.get("N8N_PASSWORD", "xZevju6-fubkuv-jiqjuh").strip()
+    print()
 
     client = N8n()
 
