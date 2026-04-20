@@ -192,12 +192,81 @@ async def _handle_stub(name: str, payload: dict) -> dict:
     }
 
 
+async def _handle_categorise_by_axes(payload: dict) -> dict:
+    """Run the 12-axis classifier on every file in /data/ingested/chatcode/.
+
+    Reads each *.jsonl, classifies it, writes the result as JSON to
+    /data/classified/<stem>.classified.json.
+
+    Honest behaviour: pure rule-based. No embeddings yet (follow-up PR).
+    Per-axis confidence is reported so downstream consumers can filter
+    low-confidence hits.
+
+    payload may contain:
+      source_dir: override default '/data/ingested/chatcode'
+      target_dir: override default '/data/classified'
+      metadata:   dict applied to every file as starting metadata
+    """
+    from . import classifier  # local import — keeps cold start fast
+
+    src = Path(payload.get("source_dir") or (DATA_ROOT / "ingested" / "chatcode"))
+    dst = Path(payload.get("target_dir") or (DATA_ROOT / "classified"))
+    dst.mkdir(parents=True, exist_ok=True)
+    base_md = payload.get("metadata") or {}
+
+    files = sorted(src.glob("*.jsonl"))
+    if not files:
+        return {"status": "success", "handler": "categorise_by_axes",
+                "classified": 0, "message": f"no jsonl files in {src}"}
+
+    classified_count = 0
+    low_confidence_count = 0
+    errors: list[dict[str, str]] = []
+    summaries: list[dict[str, Any]] = []
+
+    for f in files:
+        try:
+            full = classifier.classify_file(f, metadata=dict(base_md))
+            out_path = dst / f"{f.stem}.classified.json"
+            out_path.write_text(json.dumps(full, indent=2))
+            classified_count += 1
+            # Count low-confidence axes (confidence < 0.5).
+            low_conf = [name for name, ax in full["axes"].items()
+                        if ax.get("confidence", 1.0) < 0.5]
+            if low_conf:
+                low_confidence_count += 1
+            summaries.append({
+                "file": f.name,
+                "out": out_path.name,
+                "low_confidence_axes": low_conf,
+                "doctrine_top": (full["axes"]["doctrine_topic"]["value"][0]["paper"]
+                                 if full["axes"]["doctrine_topic"]["value"]
+                                 else None),
+            })
+            logger.info(f"categorise_by_axes: {f.name} -> {out_path.name} "
+                        f"(low_conf={len(low_conf)})")
+        except Exception as exc:
+            errors.append({"file": f.name, "error": str(exc)})
+            logger.exception(f"categorise_by_axes failed on {f.name}")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "categorise_by_axes",
+        "classified": classified_count,
+        "low_confidence_files": low_confidence_count,
+        "errors": errors,
+        "summaries": summaries[:20],   # cap response size
+        "source_dir": str(src),
+        "target_dir": str(dst),
+    }
+
+
 # Dispatch table — 1:1 with ALLOWED_HANDLERS. Changes here require changes
 # to the allowlist above (and vice versa); the invariant is asserted below.
 _HANDLERS = {
     "smoke_test": _handle_smoke_test,
     "ingest_normalize": _handle_ingest_normalize,
-    "categorise_by_axes": lambda p: _handle_stub("categorise_by_axes", p),
+    "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         lambda p: _handle_stub("cross_link", p),
     "governance_check":   lambda p: _handle_stub("governance_check", p),
     "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
