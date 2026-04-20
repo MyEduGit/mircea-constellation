@@ -60,7 +60,7 @@ CROSS_LINK_MAX_FANOUT = int(os.getenv("CROSS_LINK_MAX_FANOUT", "50"))
 
 # Ensure directory layout on every start (idempotent).
 for _sub in ("ingest/chatcode", "ingested/chatcode", "classified", "linked",
-             "canon", "logs", "evidence"):
+             "governed", "canon", "logs", "evidence"):
     (DATA_ROOT / _sub).mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -505,6 +505,194 @@ async def _handle_cross_link(payload: dict) -> dict:
     }
 
 
+async def _handle_governance_check(payload: dict) -> dict:
+    """Apply governance rules to every classified document.
+
+    Reads ``/data/classified/*.json``. For each sha256 not already in
+    ``/data/governed/{sha256}.governed.json`` (idempotent — safe to re-run):
+
+    * Evaluate governance status from axes values (priority-ordered):
+
+      1. ``lucifer_test == flagged`` → **blocked** (escalate to LuciferiClaw).
+      2. ``lucifer_test == opaque``  → **requires_review**.
+      3. ``goodness == serves_self`` → **warning** (self-serving content).
+      4. ``lifecycle == canonical AND authority ∈ (user, canon)`` → **canonical**.
+      5. ``lifecycle == canonical AND authority == agent`` →
+         **pending_canonicalization** (agent cannot self-canonicalize).
+      6. ``lifecycle == working`` → **active**.
+      7. ``lifecycle == raw``     → **draft**.
+      8. Default                  → **unclassified**.
+
+    * Determine export eligibility: ``canonical`` or ``active`` AND
+      ``confidentiality == public`` AND ``lucifer_test == transparent``.
+
+    * Detect sha256 duplicates across the classified corpus.
+
+    * Write ``governed/{sha256}.governed.json`` with the decision, reason,
+      escalation target (if any), and the relevant axes snapshot.
+
+    Governance decisions are append-only: once written, a re-run skips
+    the sha256. To re-evaluate, delete the ``.governed.json`` file and
+    re-run.
+
+    Payload overrides: none currently. Future: ``force_reevaluate: true``.
+    """
+    in_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "governed"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    records: list[dict] = []
+    for f in sorted(in_dir.glob("*.json")):
+        try:
+            rec = json.loads(f.read_text())
+            if "sha256" in rec and "axes" in rec:
+                records.append(rec)
+        except Exception as exc:
+            logger.warning(f"governance_check: corrupt {f.name}: {exc}")
+
+    if not records:
+        return {"status": "success", "handler": "governance_check",
+                "governed": 0, "message": "no classified documents"}
+
+    sha_counts: dict[str, int] = {}
+    for rec in records:
+        sha = rec["sha256"]
+        sha_counts[sha] = sha_counts.get(sha, 0) + 1
+
+    existing = {p.stem.replace(".governed", "")
+                for p in out_dir.glob("*.governed.json")}
+
+    governed = 0
+    blocked = 0
+    requires_review = 0
+    warnings = 0
+    canonical_count = 0
+    export_eligible_count = 0
+    skipped = 0
+
+    for rec in records:
+        sha = rec["sha256"]
+        if sha in existing:
+            skipped += 1
+            continue
+
+        axes = rec.get("axes", {})
+        lt = axes.get("lucifer_test", UNCLEAR)
+        lc = axes.get("lifecycle", UNCLEAR)
+        au = axes.get("authority", UNCLEAR)
+        gd = axes.get("goodness", UNCLEAR)
+        conf = axes.get("confidentiality", UNCLEAR)
+
+        governance_status = "unclassified"
+        governance_reason = ""
+        escalate_to = None
+
+        if lt == "flagged":
+            governance_status = "blocked"
+            governance_reason = (
+                "lucifer_test=flagged: self-serving, mission-hostile, "
+                "or governance-rejecting pattern detected"
+            )
+            escalate_to = "LuciferiClaw"
+            blocked += 1
+        elif lt == "opaque":
+            governance_status = "requires_review"
+            governance_reason = (
+                "lucifer_test=opaque: intent not transparent; "
+                "human review required before reuse"
+            )
+            requires_review += 1
+        elif gd == "serves_self":
+            governance_status = "warning"
+            governance_reason = (
+                "goodness=serves_self: content serves agent self-interest "
+                "over the mission"
+            )
+            warnings += 1
+        elif lc == "canonical" and au in ("user", "canon"):
+            governance_status = "canonical"
+            governance_reason = (
+                f"lifecycle=canonical + authority={au}: "
+                f"accepted as authoritative"
+            )
+            canonical_count += 1
+        elif lc == "canonical" and au == "agent":
+            governance_status = "pending_canonicalization"
+            governance_reason = (
+                "lifecycle=canonical but authority=agent: agent cannot "
+                "self-canonicalize; requires Father Function ratification"
+            )
+            requires_review += 1
+        elif lc == "working":
+            governance_status = "active"
+            governance_reason = (
+                f"lifecycle=working + authority={au}: "
+                f"usable but not canonical"
+            )
+        elif lc == "raw":
+            governance_status = "draft"
+            governance_reason = (
+                "lifecycle=raw: unfinished; not for reuse without upgrade"
+            )
+        else:
+            governance_reason = (
+                f"no clear governance signal "
+                f"(lifecycle={lc}, authority={au}, lucifer_test={lt})"
+            )
+
+        export_eligible = (
+            governance_status in ("canonical", "active")
+            and conf == "public"
+            and lt == "transparent"
+        )
+        if export_eligible:
+            export_eligible_count += 1
+
+        is_duplicate = sha_counts.get(sha, 0) > 1
+
+        decision = {
+            "sha256": sha,
+            "source_file": rec.get("source_file", ""),
+            "governance_status": governance_status,
+            "governance_reason": governance_reason,
+            "escalate_to": escalate_to,
+            "export_eligible": export_eligible,
+            "is_duplicate": is_duplicate,
+            "axes_snapshot": {
+                "lucifer_test": lt,
+                "lifecycle": lc,
+                "authority": au,
+                "goodness": gd,
+                "confidentiality": conf,
+            },
+            "claw": CLAW_NAME,
+            "version": __version__,
+            "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+
+        out_path = out_dir / f"{sha}.governed.json"
+        out_path.write_text(json.dumps(decision, indent=2, sort_keys=True))
+        governed += 1
+        logger.info(
+            f"governance_check: {sha[:12]} -> {governance_status}"
+            f"{' (ESCALATE->LuciferiClaw)' if escalate_to else ''}"
+            f"{' [export_eligible]' if export_eligible else ''}"
+        )
+
+    return {
+        "status": "success",
+        "handler": "governance_check",
+        "governed": governed,
+        "skipped_existing": skipped,
+        "blocked": blocked,
+        "requires_review": requires_review,
+        "warnings": warnings,
+        "canonical": canonical_count,
+        "export_eligible": export_eligible_count,
+        "documents_total": len(records),
+    }
+
+
 async def _handle_stub(name: str, payload: dict) -> dict:
     return {
         "status": "not_implemented",
@@ -589,7 +777,7 @@ _HANDLERS = {
     "ingest_normalize": _handle_ingest_normalize,
     "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         _handle_cross_link,
-    "governance_check":   lambda p: _handle_stub("governance_check", p),
+    "governance_check":   _handle_governance_check,
     "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
 }
 assert set(_HANDLERS) == set(ALLOWED_HANDLERS), \
