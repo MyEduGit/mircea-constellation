@@ -693,11 +693,153 @@ async def _handle_governance_check(payload: dict) -> dict:
     }
 
 
-async def _handle_stub(name: str, payload: dict) -> dict:
+async def _handle_export_urantipedia(payload: dict) -> dict:
+    """Export governed documents as UrantiPedia-ready markdown sidecars.
+
+    Reads ``/data/governed/*.governed.json``. For each document where
+    ``export_eligible == true``:
+
+    * Load the source classified record from ``/data/classified/{sha256}.json``.
+    * Generate a structured markdown file with YAML frontmatter containing
+      the 12-axis classification, governance status, and source metadata.
+    * Write to ``/data/canon/{sha256}.md``.
+    * Skip if the canon file already exists (idempotent).
+
+    If Cognee is ready, also tags the canon record in the knowledge graph.
+
+    This is the final handler in the pipeline:
+      ingest → classify → cross_link → governance_check → **export_urantipedia**
+
+    Honest behaviour: only exports documents that passed the governance gate.
+    Blocked, draft, warning, and requires_review documents are skipped with
+    an honest count in the response. No silent promotion.
+    """
+    gov_dir = DATA_ROOT / "governed"
+    cls_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "canon"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    decisions: list[dict] = []
+    for f in sorted(gov_dir.glob("*.governed.json")):
+        try:
+            decisions.append(json.loads(f.read_text()))
+        except Exception as exc:
+            logger.warning(f"export_urantipedia: corrupt {f.name}: {exc}")
+
+    if not decisions:
+        return {"status": "success", "handler": "export_urantipedia",
+                "exported": 0, "message": "no governed documents"}
+
+    exported = 0
+    skipped_ineligible = 0
+    skipped_existing = 0
+    skipped_no_source = 0
+    errors: list[dict[str, str]] = []
+
+    for dec in decisions:
+        sha = dec.get("sha256", "")
+        if not dec.get("export_eligible"):
+            skipped_ineligible += 1
+            continue
+
+        canon_path = out_dir / f"{sha}.md"
+        if canon_path.exists():
+            skipped_existing += 1
+            continue
+
+        cls_path = cls_dir / f"{sha}.json"
+        if not cls_path.exists():
+            skipped_no_source += 1
+            continue
+
+        try:
+            cls_rec = json.loads(cls_path.read_text())
+        except Exception as exc:
+            errors.append({"sha256": sha, "error": f"read_failed: {exc}"})
+            continue
+
+        axes = cls_rec.get("axes", {})
+        source_file = cls_rec.get("source_file", "unknown")
+        gov_status = dec.get("governance_status", "unknown")
+
+        # Build YAML frontmatter + markdown body.
+        frontmatter_lines = [
+            "---",
+            f"sha256: {sha}",
+            f"source_file: {source_file}",
+            f"governance_status: {gov_status}",
+            f"export_eligible: true",
+            f"exported_by: {CLAW_NAME}",
+            f"exported_at: {time.strftime('%Y-%m-%dT%H:%M:%S%z')}",
+            f"dataset: {DATASET_NAME}",
+        ]
+        for axis_name in sorted(axes):
+            frontmatter_lines.append(f"{axis_name}: {axes[axis_name]}")
+        frontmatter_lines.append("---")
+        frontmatter = "\n".join(frontmatter_lines)
+
+        # Body: governance summary + axes table.
+        body_lines = [
+            f"# {source_file}",
+            "",
+            f"**Governance:** {gov_status} — {dec.get('governance_reason', '')}",
+            "",
+            "## Classification (12 axes)",
+            "",
+            "| Axis | Value |",
+            "|------|-------|",
+        ]
+        for axis_name in sorted(axes):
+            body_lines.append(f"| {axis_name} | {axes[axis_name]} |")
+        body_lines.extend([
+            "",
+            "## Provenance",
+            "",
+            f"- **SHA-256:** `{sha}`",
+            f"- **Source:** `{source_file}`",
+            f"- **Classified by:** `{cls_rec.get('claw', 'unknown')}` "
+            f"v{cls_rec.get('version', '?')}",
+            f"- **Model:** `{cls_rec.get('model', 'unknown')}`",
+            f"- **Governed at:** {dec.get('ts_iso', 'unknown')}",
+            "",
+            "---",
+            "",
+            "*Exported by OpenClaw@URANTiOS-ingest under UrantiOS governance.*",
+            "*Truth · Beauty · Goodness.*",
+        ])
+
+        md_content = frontmatter + "\n\n" + "\n".join(body_lines) + "\n"
+        canon_path.write_text(md_content)
+        exported += 1
+        logger.info(f"export_urantipedia: {sha[:12]} -> canon/{sha}.md")
+
+        if COGNEE_READY:
+            try:
+                await cognee.add(
+                    md_content,
+                    dataset_name=DATASET_NAME,
+                    node_set=[
+                        f"sha:{sha}",
+                        f"kind:canon_export",
+                        f"governance:{gov_status}",
+                    ],
+                )
+            except Exception as exc:
+                errors.append({"sha256": sha, "cognee_error": str(exc)})
+                logger.warning(
+                    f"export_urantipedia: cognee.add failed for {sha[:12]}: "
+                    f"{exc}")
+
     return {
-        "status": "not_implemented",
-        "handler": name,
-        "reason": "scaffold; follow-up PR will implement.",
+        "status": "success" if not errors else "partial",
+        "handler": "export_urantipedia",
+        "exported": exported,
+        "skipped_ineligible": skipped_ineligible,
+        "skipped_existing": skipped_existing,
+        "skipped_no_source": skipped_no_source,
+        "decisions_total": len(decisions),
+        "errors": errors,
+        "cognee_ready": COGNEE_READY,
     }
 
 
@@ -778,7 +920,7 @@ _HANDLERS = {
     "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         _handle_cross_link,
     "governance_check":   _handle_governance_check,
-    "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
+    "export_urantipedia": _handle_export_urantipedia,
 }
 assert set(_HANDLERS) == set(ALLOWED_HANDLERS), \
     "dispatch table must match ALLOWED_HANDLERS exactly"
