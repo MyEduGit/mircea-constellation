@@ -1,0 +1,26 @@
+{
+  "religia-lui-vs-religia-despre-isus": {
+    "title_ro": "Religia LUI Isus vs. Religia DESPRE Isus",
+    "title_en": "The Religion OF Jesus vs. The Religion ABOUT Jesus",
+    "title_template": "Religia LUI Isus vs. Religia DESPRE Isus — {episode_title}",
+    "tags": ["religia lui Isus", "religia despre Isus", "credinta", "doctrina", "adventism"],
+    "description_template_ro": "În acest episod, Dr. Emanoil Geaboc așază în contrast religia experiențială a lui Isus cu sistemul doctrinar care s-a construit despre El. Material original sub forma unui comentariu editorial; sursa este creditată în descriere.",
+    "description_template_en": "In this episode, Dr. Emanoil Geaboc contrasts the experiential religion of Jesus with the doctrinal system built about him. Original editorial commentary; source attribution in the description."
+  },
+  "jabbok-wrestle-shorts": {
+    "title_ro": "Lupta de la Iaboc",
+    "title_en": "The Jabbok Wrestle (Shorts)",
+    "title_template": "Lupta de la Iaboc — {episode_title}",
+    "tags": ["Iaboc", "Jabbok", "Iacob", "Israel", "luptă", "transformare", "Genesis 32"],
+    "description_template_ro": "Scurtmetraje (sub 60s) ce explorează momentul în care Iacov se luptă cu Dumnezeu la Iaboc — paralelă pentru întâlnirea adventistului contemporan cu religia LUI Isus.",
+    "description_template_en": "Sub-60s shorts exploring Jacob's wrestle with God at Jabbok — a parallel for the contemporary Adventist's encounter with the religion OF Jesus."
+  },
+  "credinta-lui-isus-paper196": {
+    "title_ro": "Credința lui Isus — Documentul 196",
+    "title_en": "The Faith of Jesus — Paper 196",
+    "title_template": "Credința lui Isus — Documentul 196 — {episode_title}",
+    "tags": ["credinta lui Isus", "Documentul 196", "Paper 196", "Cartea Urantia", "Urantia Book", "credinta"],
+    "description_template_ro": "Lecturi și meditații pe marginea Documentului 196 din Cartea Urantia, citit alături de mesajul Dr. Emanoil Geaboc despre religia LUI Isus.",
+    "description_template_en": "Readings and meditations on Paper 196 of The Urantia Book, set alongside Dr. Emanoil Geaboc's message on the religion OF Jesus."
+  }
+}

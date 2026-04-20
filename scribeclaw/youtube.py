@@ -19,6 +19,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from .channels import apply_channel, load_channel, load_series
+
 # Minimal Romanian stop-word set. Kept short and predictable; operators
 # override by supplying `extra_stopwords` in the payload.
 _STOP_RO = {
@@ -127,8 +129,27 @@ async def youtube_metadata(payload: dict[str, Any], data_root: Path) -> dict:
         top_n=int(payload.get("tag_count", 20)),
     )
 
+    # Channel overlay (opt-in via channel_slug). Pure-functional; preserves
+    # the deterministic-output contract when channel_slug is absent.
+    explicit_footer = payload.get("channel_footer")
+    footer: str | None = str(explicit_footer) if explicit_footer else None
+    channel_slug = payload.get("channel_slug")
+    channel_meta: dict[str, Any] | None = None
+    if channel_slug:
+        channel_meta = load_channel(str(channel_slug))
+        if channel_meta is not None:
+            series_key = payload.get("series")
+            series_meta = None
+            if series_key:
+                all_series = load_series(str(channel_slug))
+                series_meta = all_series.get(str(series_key))
+            titles, tags, footer = apply_channel(
+                channel_meta, series_meta, titles, tags,
+                explicit_footer=str(explicit_footer) if explicit_footer else None,
+            )
+
     # Description composition — chapters block first (YouTube surfaces them),
-    # then transcript, then operator footer.
+    # then transcript, then operator/channel footer.
     lines: list[str] = []
     if chapters:
         lines.append("Capitole:")
@@ -137,9 +158,9 @@ async def youtube_metadata(payload: dict[str, Any], data_root: Path) -> dict:
         lines.append("")
     lines.append("Transcript:")
     lines.append(full_text)
-    if payload.get("channel_footer"):
+    if footer:
         lines.append("")
-        lines.append(str(payload["channel_footer"]))
+        lines.append(footer)
     description = "\n".join(lines)
 
     # YouTube's description cap is 5000 chars. Truncate honestly at a word

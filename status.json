@@ -29,5 +29,17 @@
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
 
-  "updated": "2026-04-13T13:18:00.000Z"
+  "jabbokriver": {
+    "status": "new",
+    "host": "Dr. Emanoil Geaboc",
+    "consent_status": "pending",
+    "publishing_policy": "catalog_and_link",
+    "language": "ro+en-subs",
+    "videos_cataloged": 0,
+    "videos_transcribed": 0,
+    "public_launch_blocked_until": "host_consent_confirmed",
+    "covenant_ref": "Urantia Book Paper 196"
+  },
+
+  "updated": "2026-04-20T04:30:00.000Z"
 }
