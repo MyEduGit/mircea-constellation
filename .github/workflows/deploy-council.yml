@@ -1,0 +1,22 @@
+name: Deploy Council of Seven
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wire all Council seats in n8n
+        run: python3 setup/fix_council_complete.py
+
+      - name: Done
+        run: |
+          echo "Council of Seven deployed — all seats wired to free local Ollama"
+          echo "Cost: \$0.00/run | n8n: http://46.225.51.30"

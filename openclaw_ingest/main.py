@@ -61,7 +61,7 @@ CROSS_LINK_MAX_FANOUT = int(os.getenv("CROSS_LINK_MAX_FANOUT", "50"))
 
 # Ensure directory layout on every start (idempotent).
 for _sub in ("ingest/chatcode", "ingested/chatcode", "classified", "linked",
-             "canon", "logs", "evidence"):
+             "governed", "canon", "logs", "evidence"):
     (DATA_ROOT / _sub).mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -706,11 +706,341 @@ async def _handle_subscription_list(payload: dict) -> dict:
     }
 
 
-async def _handle_stub(name: str, payload: dict) -> dict:
+async def _handle_governance_check(payload: dict) -> dict:
+    """Apply governance rules to every classified document.
+
+    Reads ``/data/classified/*.json``. For each sha256 not already in
+    ``/data/governed/{sha256}.governed.json`` (idempotent — safe to re-run):
+
+    * Evaluate governance status from axes values (priority-ordered):
+
+      1. ``lucifer_test == flagged`` → **blocked** (escalate to LuciferiClaw).
+      2. ``lucifer_test == opaque``  → **requires_review**.
+      3. ``goodness == serves_self`` → **warning** (self-serving content).
+      4. ``lifecycle == canonical AND authority ∈ (user, canon)`` → **canonical**.
+      5. ``lifecycle == canonical AND authority == agent`` →
+         **pending_canonicalization** (agent cannot self-canonicalize).
+      6. ``lifecycle == working`` → **active**.
+      7. ``lifecycle == raw``     → **draft**.
+      8. Default                  → **unclassified**.
+
+    * Determine export eligibility: ``canonical`` or ``active`` AND
+      ``confidentiality == public`` AND ``lucifer_test == transparent``.
+
+    * Detect sha256 duplicates across the classified corpus.
+
+    * Write ``governed/{sha256}.governed.json`` with the decision, reason,
+      escalation target (if any), and the relevant axes snapshot.
+
+    Governance decisions are append-only: once written, a re-run skips
+    the sha256. To re-evaluate, delete the ``.governed.json`` file and
+    re-run.
+
+    Payload overrides: none currently. Future: ``force_reevaluate: true``.
+    """
+    in_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "governed"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    records: list[dict] = []
+    for f in sorted(in_dir.glob("*.json")):
+        try:
+            rec = json.loads(f.read_text())
+            if "sha256" in rec and "axes" in rec:
+                records.append(rec)
+        except Exception as exc:
+            logger.warning(f"governance_check: corrupt {f.name}: {exc}")
+
+    if not records:
+        return {"status": "success", "handler": "governance_check",
+                "governed": 0, "message": "no classified documents"}
+
+    sha_counts: dict[str, int] = {}
+    for rec in records:
+        sha = rec["sha256"]
+        sha_counts[sha] = sha_counts.get(sha, 0) + 1
+
+    existing = {p.stem.replace(".governed", "")
+                for p in out_dir.glob("*.governed.json")}
+
+    governed = 0
+    blocked = 0
+    requires_review = 0
+    warnings = 0
+    canonical_count = 0
+    export_eligible_count = 0
+    skipped = 0
+
+    for rec in records:
+        sha = rec["sha256"]
+        if sha in existing:
+            skipped += 1
+            continue
+
+        axes = rec.get("axes", {})
+        lt = axes.get("lucifer_test", UNCLEAR)
+        lc = axes.get("lifecycle", UNCLEAR)
+        au = axes.get("authority", UNCLEAR)
+        gd = axes.get("goodness", UNCLEAR)
+        conf = axes.get("confidentiality", UNCLEAR)
+
+        governance_status = "unclassified"
+        governance_reason = ""
+        escalate_to = None
+
+        if lt == "flagged":
+            governance_status = "blocked"
+            governance_reason = (
+                "lucifer_test=flagged: self-serving, mission-hostile, "
+                "or governance-rejecting pattern detected"
+            )
+            escalate_to = "LuciferiClaw"
+            blocked += 1
+        elif lt == "opaque":
+            governance_status = "requires_review"
+            governance_reason = (
+                "lucifer_test=opaque: intent not transparent; "
+                "human review required before reuse"
+            )
+            requires_review += 1
+        elif gd == "serves_self":
+            governance_status = "warning"
+            governance_reason = (
+                "goodness=serves_self: content serves agent self-interest "
+                "over the mission"
+            )
+            warnings += 1
+        elif lc == "canonical" and au in ("user", "canon"):
+            governance_status = "canonical"
+            governance_reason = (
+                f"lifecycle=canonical + authority={au}: "
+                f"accepted as authoritative"
+            )
+            canonical_count += 1
+        elif lc == "canonical" and au == "agent":
+            governance_status = "pending_canonicalization"
+            governance_reason = (
+                "lifecycle=canonical but authority=agent: agent cannot "
+                "self-canonicalize; requires Father Function ratification"
+            )
+            requires_review += 1
+        elif lc == "working":
+            governance_status = "active"
+            governance_reason = (
+                f"lifecycle=working + authority={au}: "
+                f"usable but not canonical"
+            )
+        elif lc == "raw":
+            governance_status = "draft"
+            governance_reason = (
+                "lifecycle=raw: unfinished; not for reuse without upgrade"
+            )
+        else:
+            governance_reason = (
+                f"no clear governance signal "
+                f"(lifecycle={lc}, authority={au}, lucifer_test={lt})"
+            )
+
+        export_eligible = (
+            governance_status in ("canonical", "active")
+            and conf == "public"
+            and lt == "transparent"
+        )
+        if export_eligible:
+            export_eligible_count += 1
+
+        is_duplicate = sha_counts.get(sha, 0) > 1
+
+        decision = {
+            "sha256": sha,
+            "source_file": rec.get("source_file", ""),
+            "governance_status": governance_status,
+            "governance_reason": governance_reason,
+            "escalate_to": escalate_to,
+            "export_eligible": export_eligible,
+            "is_duplicate": is_duplicate,
+            "axes_snapshot": {
+                "lucifer_test": lt,
+                "lifecycle": lc,
+                "authority": au,
+                "goodness": gd,
+                "confidentiality": conf,
+            },
+            "claw": CLAW_NAME,
+            "version": __version__,
+            "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+
+        out_path = out_dir / f"{sha}.governed.json"
+        out_path.write_text(json.dumps(decision, indent=2, sort_keys=True))
+        governed += 1
+        logger.info(
+            f"governance_check: {sha[:12]} -> {governance_status}"
+            f"{' (ESCALATE->LuciferiClaw)' if escalate_to else ''}"
+            f"{' [export_eligible]' if export_eligible else ''}"
+        )
+
     return {
-        "status": "not_implemented",
-        "handler": name,
-        "reason": "scaffold; follow-up PR will implement.",
+        "status": "success",
+        "handler": "governance_check",
+        "governed": governed,
+        "skipped_existing": skipped,
+        "blocked": blocked,
+        "requires_review": requires_review,
+        "warnings": warnings,
+        "canonical": canonical_count,
+        "export_eligible": export_eligible_count,
+        "documents_total": len(records),
+    }
+
+
+async def _handle_export_urantipedia(payload: dict) -> dict:
+    """Export governed documents as UrantiPedia-ready markdown sidecars.
+
+    Reads ``/data/governed/*.governed.json``. For each document where
+    ``export_eligible == true``:
+
+    * Load the source classified record from ``/data/classified/{sha256}.json``.
+    * Generate a structured markdown file with YAML frontmatter containing
+      the 12-axis classification, governance status, and source metadata.
+    * Write to ``/data/canon/{sha256}.md``.
+    * Skip if the canon file already exists (idempotent).
+
+    If Cognee is ready, also tags the canon record in the knowledge graph.
+
+    This is the final handler in the pipeline:
+      ingest → classify → cross_link → governance_check → **export_urantipedia**
+
+    Honest behaviour: only exports documents that passed the governance gate.
+    Blocked, draft, warning, and requires_review documents are skipped with
+    an honest count in the response. No silent promotion.
+    """
+    gov_dir = DATA_ROOT / "governed"
+    cls_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "canon"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    decisions: list[dict] = []
+    for f in sorted(gov_dir.glob("*.governed.json")):
+        try:
+            decisions.append(json.loads(f.read_text()))
+        except Exception as exc:
+            logger.warning(f"export_urantipedia: corrupt {f.name}: {exc}")
+
+    if not decisions:
+        return {"status": "success", "handler": "export_urantipedia",
+                "exported": 0, "message": "no governed documents"}
+
+    exported = 0
+    skipped_ineligible = 0
+    skipped_existing = 0
+    skipped_no_source = 0
+    errors: list[dict[str, str]] = []
+
+    for dec in decisions:
+        sha = dec.get("sha256", "")
+        if not dec.get("export_eligible"):
+            skipped_ineligible += 1
+            continue
+
+        canon_path = out_dir / f"{sha}.md"
+        if canon_path.exists():
+            skipped_existing += 1
+            continue
+
+        cls_path = cls_dir / f"{sha}.json"
+        if not cls_path.exists():
+            skipped_no_source += 1
+            continue
+
+        try:
+            cls_rec = json.loads(cls_path.read_text())
+        except Exception as exc:
+            errors.append({"sha256": sha, "error": f"read_failed: {exc}"})
+            continue
+
+        axes = cls_rec.get("axes", {})
+        source_file = cls_rec.get("source_file", "unknown")
+        gov_status = dec.get("governance_status", "unknown")
+
+        # Build YAML frontmatter + markdown body.
+        frontmatter_lines = [
+            "---",
+            f"sha256: {sha}",
+            f"source_file: {source_file}",
+            f"governance_status: {gov_status}",
+            f"export_eligible: true",
+            f"exported_by: {CLAW_NAME}",
+            f"exported_at: {time.strftime('%Y-%m-%dT%H:%M:%S%z')}",
+            f"dataset: {DATASET_NAME}",
+        ]
+        for axis_name in sorted(axes):
+            frontmatter_lines.append(f"{axis_name}: {axes[axis_name]}")
+        frontmatter_lines.append("---")
+        frontmatter = "\n".join(frontmatter_lines)
+
+        # Body: governance summary + axes table.
+        body_lines = [
+            f"# {source_file}",
+            "",
+            f"**Governance:** {gov_status} — {dec.get('governance_reason', '')}",
+            "",
+            "## Classification (12 axes)",
+            "",
+            "| Axis | Value |",
+            "|------|-------|",
+        ]
+        for axis_name in sorted(axes):
+            body_lines.append(f"| {axis_name} | {axes[axis_name]} |")
+        body_lines.extend([
+            "",
+            "## Provenance",
+            "",
+            f"- **SHA-256:** `{sha}`",
+            f"- **Source:** `{source_file}`",
+            f"- **Classified by:** `{cls_rec.get('claw', 'unknown')}` "
+            f"v{cls_rec.get('version', '?')}",
+            f"- **Model:** `{cls_rec.get('model', 'unknown')}`",
+            f"- **Governed at:** {dec.get('ts_iso', 'unknown')}",
+            "",
+            "---",
+            "",
+            "*Exported by OpenClaw@URANTiOS-ingest under UrantiOS governance.*",
+            "*Truth · Beauty · Goodness.*",
+        ])
+
+        md_content = frontmatter + "\n\n" + "\n".join(body_lines) + "\n"
+        canon_path.write_text(md_content)
+        exported += 1
+        logger.info(f"export_urantipedia: {sha[:12]} -> canon/{sha}.md")
+
+        if COGNEE_READY:
+            try:
+                await cognee.add(
+                    md_content,
+                    dataset_name=DATASET_NAME,
+                    node_set=[
+                        f"sha:{sha}",
+                        f"kind:canon_export",
+                        f"governance:{gov_status}",
+                    ],
+                )
+            except Exception as exc:
+                errors.append({"sha256": sha, "cognee_error": str(exc)})
+                logger.warning(
+                    f"export_urantipedia: cognee.add failed for {sha[:12]}: "
+                    f"{exc}")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "export_urantipedia",
+        "exported": exported,
+        "skipped_ineligible": skipped_ineligible,
+        "skipped_existing": skipped_existing,
+        "skipped_no_source": skipped_no_source,
+        "decisions_total": len(decisions),
+        "errors": errors,
+        "cognee_ready": COGNEE_READY,
     }
 
 
@@ -790,8 +1120,8 @@ _HANDLERS = {
     "ingest_normalize": _handle_ingest_normalize,
     "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         _handle_cross_link,
-    "governance_check":   lambda p: _handle_stub("governance_check", p),
-    "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
+    "governance_check":   _handle_governance_check,
+    "export_urantipedia": _handle_export_urantipedia,
     "subscription_subscribe":   _handle_subscription_subscribe,
     "subscription_unsubscribe": _handle_subscription_unsubscribe,
     "subscription_list":        _handle_subscription_list,
