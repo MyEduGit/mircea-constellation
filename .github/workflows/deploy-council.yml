@@ -14,9 +14,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Wire all Council seats in n8n
-        env:
-          N8N_EMAIL: mircea8@me.com
-          N8N_PASSWORD: ${{ secrets.N8N_PASSWORD }}
         run: python3 setup/fix_council_complete.py
 
       - name: Done
