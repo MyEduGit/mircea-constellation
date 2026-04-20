@@ -16,3 +16,5 @@ __pycache__/
 # Remotion (Node tooling under remotion/)
 remotion/node_modules/
 remotion/out/
+remotion/build/
+remotion/shorts-queue/
