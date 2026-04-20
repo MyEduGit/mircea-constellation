@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>__TITLE__</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #0a0a1a; color: #e0e0e0;
+    font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
+  #stage { width: 100vw; height: 100vh; display: flex; align-items: center;
+    justify-content: center; background: #0a0a1a; }
+  #stage svg { width: 100%; height: 100%; }
+  .toolbar { position: fixed; top: 12px; right: 12px; z-index: 100; display: flex;
+    gap: 6px; background: rgba(15,15,35,0.92); padding: 8px; border-radius: 10px;
+    border: 1px solid rgba(100,149,237,0.35); backdrop-filter: blur(8px); }
+  .toolbar button { background: #1b4332; color: #d8f3dc; border: 1px solid #52b788;
+    padding: 7px 11px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    font-family: inherit; transition: background 0.15s; }
+  .toolbar button:hover { background: #2d6a4f; }
+  .toolbar button.alt { background: #1a1a3e; border-color: #6495ED; color: #cde0ff; }
+  .toolbar button.alt:hover { background: #2a2a5e; }
+  .title { position: fixed; top: 12px; left: 12px; z-index: 100;
+    background: rgba(15,15,35,0.92); padding: 8px 14px; border-radius: 10px;
+    border: 1px solid rgba(100,149,237,0.35); font-size: 13px;
+    max-width: calc(100vw - 500px); overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; backdrop-filter: blur(8px); }
+  .hint { position: fixed; bottom: 12px; left: 12px; z-index: 100;
+    background: rgba(15,15,35,0.72); padding: 6px 12px; border-radius: 8px;
+    font-size: 11px; color: #888; }
+  .source-panel { position: fixed; left: 12px; right: 12px; bottom: 50px;
+    max-height: 40vh; overflow: auto; background: rgba(10,10,26,0.96);
+    border: 1px solid rgba(100,149,237,0.4); border-radius: 10px;
+    padding: 14px; font-family: Menlo, Consolas, monospace; font-size: 12px;
+    white-space: pre; color: #cde0ff; display: none; z-index: 90; }
+  .source-panel.open { display: block; }
+  .toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+    background: #1b4332; color: #d8f3dc; padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; z-index: 200; opacity: 0; transition: opacity 0.25s;
+    pointer-events: none; }
+  .toast.show { opacity: 1; }
+  @media print {
+    .toolbar, .title, .hint, .source-panel { display: none !important; }
+    #stage { height: 100vh; }
+  }
+</style>
+</head>
+<body>
+<div class="title">__TITLE__</div>
+<div class="toolbar">
+  <button onclick="App.zoomIn()">+</button>
+  <button onclick="App.zoomOut()">−</button>
+  <button onclick="App.zoomReset()" title="Fit">⊙</button>
+  <button class="alt" onclick="App.fullscreen()" title="Fullscreen (F)">⛶</button>
+  <button class="alt" onclick="App.toggleSource()" title="Toggle source (S)">&lt;/&gt;</button>
+  <button onclick="App.copySource()" title="Copy Mermaid source">📋 src</button>
+  <button onclick="App.copySVG()" title="Copy rendered SVG">📋 svg</button>
+  <button onclick="App.downloadSVG()">💾 SVG</button>
+  <button onclick="App.downloadPNG()">🖼 PNG</button>
+  <button onclick="window.print()">🖨 PDF</button>
+</div>
+<div id="stage"><div class="mermaid">__MERMAID_SOURCE_ESCAPED__</div></div>
+<pre id="source-panel" class="source-panel"></pre>
+<div class="hint">F = fullscreen · S = source · + / − = zoom · 0 = fit · drag to pan</div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+<script>
+const SOURCE = String.raw`__MERMAID_SOURCE_RAW__`;
+document.getElementById('source-panel').textContent = SOURCE;
+
+const App = {
+  panZoom: null,
+  init() {
+    mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose',
+                        flowchart: { htmlLabels: true, curve: 'basis' } });
+    mermaid.run().then(() => {
+      const svg = document.querySelector('#stage svg');
+      if (!svg) return;
+      svg.removeAttribute('width'); svg.removeAttribute('height');
+      svg.style.width = '100%'; svg.style.height = '100%';
+      this.panZoom = svgPanZoom(svg, {
+        zoomEnabled: true, controlIconsEnabled: false,
+        fit: true, center: true, minZoom: 0.1, maxZoom: 20,
+        mouseWheelZoomEnabled: true,
+      });
+    }).catch(err => {
+      document.getElementById('stage').innerHTML =
+        '<pre style="color:#f66;padding:20px">Render error: ' +
+        (err.message || err) + '</pre>';
+    });
+  },
+  zoomIn()    { this.panZoom?.zoomBy(1.3); },
+  zoomOut()   { this.panZoom?.zoomBy(0.77); },
+  zoomReset() { this.panZoom?.resize(); this.panZoom?.fit(); this.panZoom?.center(); },
+  fullscreen() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  },
+  toggleSource() { document.getElementById('source-panel').classList.toggle('open'); },
+  toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1500);
+  },
+  copySource() {
+    navigator.clipboard.writeText(SOURCE).then(() => this.toast('Mermaid source copied'));
+  },
+  copySVG() {
+    const svg = document.querySelector('#stage svg');
+    if (!svg) return;
+    navigator.clipboard.writeText(new XMLSerializer().serializeToString(svg))
+      .then(() => this.toast('SVG markup copied'));
+  },
+  downloadSVG() {
+    const svg = document.querySelector('#stage svg');
+    if (!svg) return;
+    const xml = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([xml], { type: 'image/svg+xml' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'diagram.svg'; a.click();
+    URL.revokeObjectURL(a.href);
+  },
+  downloadPNG() {
+    const svg = document.querySelector('#stage svg');
+    if (!svg) return;
+    const bbox = svg.getBBox();
+    const scale = 2;
+    const xml = new XMLSerializer().serializeToString(svg);
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width  = Math.max(1, Math.ceil(bbox.width * scale));
+      c.height = Math.max(1, Math.ceil(bbox.height * scale));
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#0a0a1a'; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = 'diagram.png'; a.click();
+        URL.revokeObjectURL(a.href);
+      }, 'image/png');
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(xml)));
+  },
+};
+
+window.addEventListener('load', () => App.init());
+window.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'f' || e.key === 'F') App.fullscreen();
+  else if (e.key === 's' || e.key === 'S') App.toggleSource();
+  else if (e.key === '+' || e.key === '=') App.zoomIn();
+  else if (e.key === '-' || e.key === '_') App.zoomOut();
+  else if (e.key === '0') App.zoomReset();
+});
+</script>
+</body>
+</html>
