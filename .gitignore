@@ -12,3 +12,7 @@ openclaw_ingest/.env
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Remotion (Node tooling under remotion/)
+remotion/node_modules/
+remotion/out/
