@@ -7,7 +7,7 @@ post-process (diacritics, punctuation) → package YouTube metadata.
 Does not observe (NemoClaw), does not remediate (Fireclaw), does not
 adjudicate (LuciferiClaw), does not explain (VisualUrantiClaw), does
 not bundle evidence (Paperclip). Emits evidence records per handler
-call; Paperclip owns the bundling contract once it ships.
+call; Paperclip bundles them.
 
 Truthful label: deployable scaffold. Real handlers:
   - media_edit         (ffmpeg; requires ffmpeg on PATH)
