@@ -16,3 +16,7 @@ __pycache__/
 # Remotion (Node tooling under remotion/)
 remotion/node_modules/
 remotion/out/
+
+# here.now — per-project claim tokens + staged site (never commit)
+.herenow/
+.here-now-site/

@@ -4,6 +4,7 @@
   "fireclaw":     { "status": "new",  "version": "0.1.0", "incidents_24h": 0 },
   "lucifericlaw": { "status": "new",  "version": "0.1.1", "open_cases": 0, "iniquitous_24h": 0 },
   "openclaw_ingest": { "status": "new", "version": "0.1.0", "dataset": "mircea_corpus", "cognee_ready": false, "handlers_implemented": 3, "handlers_stubbed": 3, "classifier_axes": 12 },
+  "here_now":     { "status": "new",  "site_url": null, "auth_mode": "anonymous" },
   "ollama":       { "status": "warn", "model": "qwen2.5:32b" },
   "cognee":       { "status": "ok",   "version": "1.0.0" },
   "disk_openclaw": "46% used",
@@ -28,6 +29,7 @@
   "amep":         { "status": "ok" },
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
+  "herenow":      { "status": "new" },
 
   "updated": "2026-04-13T13:18:00.000Z"
 }
