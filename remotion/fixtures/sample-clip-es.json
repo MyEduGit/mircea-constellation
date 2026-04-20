@@ -1,0 +1,81 @@
+{
+  "format": "image",
+  "locale": "es-MX",
+  "durationInSeconds": 28,
+  "title": "Por qué la gracia no se compra",
+  "subtitle": "Dr. Geaboc",
+  "channelName": "Dr. Emanoil Geaboc",
+  "channelHandle": "@drgeaboc",
+  "cta": "Ver predicación completa",
+  "accentColor": "#FFD34E",
+  "narrationAudio": null,
+  "images": [
+    {
+      "src": "https://picsum.photos/seed/grace-hands/1080/1920",
+      "start": 0,
+      "end": 7,
+      "panFrom": { "x": -2, "y": 0, "scale": 1.05 },
+      "panTo": { "x": 2, "y": -2, "scale": 1.18 }
+    },
+    {
+      "src": "https://picsum.photos/seed/grace-cross/1080/1920",
+      "start": 7,
+      "end": 14,
+      "panFrom": { "x": 0, "y": 2, "scale": 1.08 },
+      "panTo": { "x": 0, "y": -2, "scale": 1.22 }
+    },
+    {
+      "src": "https://picsum.photos/seed/grace-light/1080/1920",
+      "start": 14,
+      "end": 22,
+      "panFrom": { "x": 2, "y": 0, "scale": 1.05 },
+      "panTo": { "x": -2, "y": -1, "scale": 1.2 }
+    },
+    {
+      "src": "https://picsum.photos/seed/grace-dawn/1080/1920",
+      "start": 22,
+      "end": 28,
+      "panFrom": { "x": 0, "y": -2, "scale": 1.06 },
+      "panTo": { "x": 0, "y": 2, "scale": 1.18 }
+    }
+  ],
+  "words": [
+    { "text": "La", "start": 0.3, "end": 0.55 },
+    { "text": "gracia", "start": 0.6, "end": 1.2 },
+    { "text": "jamás", "start": 1.25, "end": 1.85 },
+    { "text": "se", "start": 1.9, "end": 2.05 },
+    { "text": "compra.", "start": 2.1, "end": 2.85 },
+    { "text": "Si", "start": 3.3, "end": 3.55 },
+    { "text": "intentas", "start": 3.6, "end": 4.25 },
+    { "text": "merecerla,", "start": 4.3, "end": 5.2 },
+    { "text": "ya", "start": 5.7, "end": 5.95 },
+    { "text": "la", "start": 6.0, "end": 6.15 },
+    { "text": "perdiste.", "start": 6.2, "end": 7.2 },
+    { "text": "Jesús", "start": 7.9, "end": 8.5 },
+    { "text": "no", "start": 8.55, "end": 8.8 },
+    { "text": "le", "start": 8.85, "end": 9.0 },
+    { "text": "pidió", "start": 9.05, "end": 9.5 },
+    { "text": "pago", "start": 9.55, "end": 10.0 },
+    { "text": "a", "start": 10.05, "end": 10.15 },
+    { "text": "nadie.", "start": 10.2, "end": 10.95 },
+    { "text": "Él", "start": 11.4, "end": 11.7 },
+    { "text": "pagó", "start": 11.75, "end": 12.25 },
+    { "text": "por", "start": 12.3, "end": 12.6 },
+    { "text": "ti.", "start": 12.65, "end": 13.25 },
+    { "text": "Tu", "start": 14.0, "end": 14.25 },
+    { "text": "única", "start": 14.3, "end": 14.85 },
+    { "text": "tarea", "start": 14.9, "end": 15.5 },
+    { "text": "ahora", "start": 15.55, "end": 16.0 },
+    { "text": "es", "start": 16.05, "end": 16.25 },
+    { "text": "recibir.", "start": 16.3, "end": 17.15 },
+    { "text": "Sin", "start": 17.6, "end": 17.95 },
+    { "text": "negociar.", "start": 18.0, "end": 18.95 },
+    { "text": "Sin", "start": 19.3, "end": 19.65 },
+    { "text": "demostrar", "start": 19.7, "end": 20.5 },
+    { "text": "nada.", "start": 20.55, "end": 21.25 },
+    { "text": "Sólo", "start": 22.6, "end": 23.05 },
+    { "text": "decir:", "start": 23.1, "end": 23.7 },
+    { "text": "Sí,", "start": 24.1, "end": 24.55 },
+    { "text": "Señor.", "start": 24.65, "end": 25.5 }
+  ]
+}

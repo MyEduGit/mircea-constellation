@@ -1,21 +1,22 @@
 import {
   AbsoluteFill,
-  OffthreadVideo,
+  Audio,
   Sequence,
   useVideoConfig,
 } from "remotion";
 import { Captions } from "./Captions";
 import { ChannelLockup } from "./ChannelLockup";
 import { CTA } from "./CTA";
+import { KenBurnsImage } from "./KenBurnsImage";
 import { ProgressBar } from "./ProgressBar";
 import { TitleCard } from "./TitleCard";
-import type { ShortClipProps } from "./types";
+import type { ImageShortClipProps } from "./types";
 import { DEFAULT_ACCENT } from "./types";
 
-export const ShortClip: React.FC<ShortClipProps> = ({
-  sourceVideo,
-  sourceStartSec,
+export const ImageShortClip: React.FC<ImageShortClipProps> = ({
   durationInSeconds,
+  images,
+  narrationAudio,
   title,
   subtitle,
   words,
@@ -35,22 +36,27 @@ export const ShortClip: React.FC<ShortClipProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0a0a0a" }}>
-      {sourceVideo ? (
-        <AbsoluteFill>
-          <OffthreadVideo
-            src={sourceVideo}
-            startFrom={Math.round(sourceStartSec * fps)}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </AbsoluteFill>
-      ) : (
-        <AbsoluteFill
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 30%, #1a2a55 0%, #070b1c 70%, #020311 100%)",
-          }}
-        />
-      )}
+      {images.map((img, i) => {
+        const startFrame = Math.round(img.start * fps);
+        const beatDuration = Math.max(
+          1,
+          Math.round((img.end - img.start) * fps),
+        );
+        return (
+          <Sequence
+            key={`${img.src}-${i}`}
+            from={startFrame}
+            durationInFrames={beatDuration}
+          >
+            <KenBurnsImage
+              src={img.src}
+              panFrom={img.panFrom}
+              panTo={img.panTo}
+              beatDurationInFrames={beatDuration}
+            />
+          </Sequence>
+        );
+      })}
 
       <AbsoluteFill
         style={{
@@ -58,6 +64,8 @@ export const ShortClip: React.FC<ShortClipProps> = ({
             "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 28%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.7) 100%)",
         }}
       />
+
+      {narrationAudio ? <Audio src={narrationAudio} /> : null}
 
       <TitleCard title={title} subtitle={subtitle} accentColor={accent} />
       <ChannelLockup name={channelName} handle={channelHandle} />
