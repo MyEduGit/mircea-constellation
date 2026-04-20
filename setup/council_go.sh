@@ -54,7 +54,7 @@ ok "Models ready on URANTiOS\n"
 # ── STEP 2: Wire all seats in n8n ──────────────────────────────────────────
 echo -e "${B}STEP 2/2 — Wire all 8 seats in n8n${E}\n"
 
-python3 "$SCRIPT_DIR/wire_all_free_seats.py"
+python3 "$SCRIPT_DIR/fix_council_complete.py"
 
 echo -e "\n${B}╔══════════════════════════════════════════════════╗${E}"
 echo -e "${G}║   COUNCIL DEPLOYED — ALL SEATS LIVE — \$0.00     ║${E}"
