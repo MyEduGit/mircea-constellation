@@ -6,10 +6,10 @@ not explain (VisualUrantiClaw), does not bundle evidence (Paperclip —
 this module emits evidence records, but Paperclip owns the bundling
 contract once it ships).
 
-Truthful label: deployable scaffold with three real handlers
-(``ingest_normalize``, ``categorise_by_axes``, ``cross_link``). Two of
-the five canonical handlers remain declared-but-stubbed pending
-follow-up PR.
+Truthful label: all five canonical handlers implemented —
+``ingest_normalize``, ``categorise_by_axes``, ``cross_link``,
+``governance_check``, ``export_urantipedia`` (plus ``smoke_test`` for
+bootstrap).
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """

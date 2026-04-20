@@ -2,12 +2,11 @@
 """OpenClaw@URANTiOS-ingest — execution runtime, ingestion sub-role.
 
 Canonical role: controlled execution (singular).
-Truthful label:  deployable scaffold with three real handlers
-(``ingest_normalize``, ``categorise_by_axes``, ``cross_link``).
+Truthful label:  all five canonical handlers implemented — ``ingest_normalize``,
+``categorise_by_axes``, ``cross_link``, ``governance_check``,
+``export_urantipedia`` (plus ``smoke_test`` for bootstrap).
 
-Two of the five canonical handlers (governance_check, export_urantipedia)
-remain declared-but-stubbed pending follow-up PR. The allowlist
-boundary is preserved: nothing outside ALLOWED_HANDLERS can run.
+The allowlist boundary is preserved: nothing outside ALLOWED_HANDLERS can run.
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """
@@ -60,7 +59,7 @@ CROSS_LINK_MAX_FANOUT = int(os.getenv("CROSS_LINK_MAX_FANOUT", "50"))
 
 # Ensure directory layout on every start (idempotent).
 for _sub in ("ingest/chatcode", "ingested/chatcode", "classified", "linked",
-             "governed", "canon", "logs", "evidence"):
+             "governed", "exported", "canon", "logs", "evidence"):
     (DATA_ROOT / _sub).mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -693,6 +692,222 @@ async def _handle_governance_check(payload: dict) -> dict:
     }
 
 
+def _frontmatter_value(s: Any) -> str:
+    """Render a YAML frontmatter scalar safely. Strings with ``:``, ``#``,
+    ``\\n``, leading/trailing whitespace, or starting with reserved YAML
+    chars are quoted; others pass through. Booleans and numbers render
+    natively."""
+    if isinstance(s, bool):
+        return "true" if s else "false"
+    if isinstance(s, (int, float)):
+        return str(s)
+    if s is None:
+        return "null"
+    text = str(s)
+    if not text:
+        return '""'
+    needs_quote = (
+        any(c in text for c in ":#\n")
+        or text != text.strip()
+        or text[0] in "-?*&|>!%@`"
+    )
+    if needs_quote:
+        return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return text
+
+
+def _build_frontmatter(governed: dict, source_file: str) -> str:
+    """YAML frontmatter for an exported document. Flat keys only — simple
+    by design so ``yaml`` is not a dependency and the output is trivial
+    to read by hand."""
+    axes_snapshot: dict = governed.get("axes_snapshot", {}) or {}
+    lines = [
+        "---",
+        f"sha256: {_frontmatter_value(governed.get('sha256'))}",
+        f"source_file: {_frontmatter_value(source_file)}",
+        f"governance_status: {_frontmatter_value(governed.get('governance_status'))}",
+        f"governance_reason: {_frontmatter_value(governed.get('governance_reason'))}",
+        f"export_eligible: {_frontmatter_value(bool(governed.get('export_eligible')))}",
+        f"is_duplicate: {_frontmatter_value(bool(governed.get('is_duplicate')))}",
+        f"exported_at: {_frontmatter_value(time.strftime('%Y-%m-%dT%H:%M:%S%z'))}",
+        f"claw: {_frontmatter_value(CLAW_NAME)}",
+        f"version: {_frontmatter_value(__version__)}",
+        "urantios_governed: true",
+    ]
+    if axes_snapshot:
+        lines.append("axes:")
+        for k in sorted(axes_snapshot):
+            lines.append(f"  {k}: {_frontmatter_value(axes_snapshot[k])}")
+    lines.append("---")
+    return "\n".join(lines) + "\n"
+
+
+async def _handle_export_urantipedia(payload: dict) -> dict:
+    """Export governance-approved documents as publishable markdown.
+
+    Consumes ``/data/governed/*.governed.json`` as the source of truth
+    for eligibility (``export_eligible == True`` and ``is_duplicate ==
+    False``). Resolves the original ``source_file`` by first consulting
+    the governance record, then falling back to a sha256 → classified
+    record lookup so both the old (``source_file``) and new (``file``)
+    classifier output shapes are supported.
+
+    For every eligible sha256 whose source still exists in
+    ``/data/ingested/chatcode/``, writes
+    ``/data/exported/{sha}.md`` with flat YAML frontmatter (governance
+    status, axis snapshot, timestamps) followed by the raw content in a
+    fenced code block.
+
+    A fresh ``/data/exported/manifest.json`` is written every run — it
+    reflects the current state of the ``exported/`` directory, not a
+    delta. Missing-source docs are recorded as errors (honest failure)
+    and do not halt the run.
+
+    Payload overrides (all optional):
+      * ``rescan``: re-emit markdown for already-exported shas
+      * ``limit``: cap new exports per invocation (useful for spot checks)
+    """
+    governed_dir = DATA_ROOT / "governed"
+    classified_dir = DATA_ROOT / "classified"
+    src_dir = DATA_ROOT / "ingested" / "chatcode"
+    out_dir = DATA_ROOT / "exported"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    rescan = bool(payload.get("rescan", False))
+    limit = payload.get("limit")
+    if limit is not None:
+        limit = int(limit)
+
+    governed_files = sorted(governed_dir.glob("*.governed.json"))
+    if not governed_files:
+        return {"status": "success", "handler": "export_urantipedia",
+                "exported": 0, "message": "no governance decisions",
+                "hint": "run governance_check first"}
+
+    # sha -> classified record, for source-file resolution when the
+    # governance record doesn't carry it (new classifier uses 'file').
+    classified_by_sha: dict[str, dict] = {}
+    for f in classified_dir.glob("*.json"):
+        try:
+            c = json.loads(f.read_text())
+        except Exception:
+            continue
+        sha = c.get("sha256")
+        if sha:
+            classified_by_sha.setdefault(sha, c)
+
+    exported = 0
+    skipped_existing = 0
+    skipped_not_eligible = 0
+    skipped_duplicate = 0
+    skipped_source_missing = 0
+    errors: list[dict] = []
+    manifest_entries: list[dict] = []
+
+    for f in governed_files:
+        try:
+            g = json.loads(f.read_text())
+        except Exception as exc:
+            errors.append({"file": f.name, "error": f"governed_read: {exc}"})
+            continue
+
+        sha = g.get("sha256")
+        if not sha:
+            errors.append({"file": f.name, "error": "missing sha256"})
+            continue
+
+        if not g.get("export_eligible"):
+            skipped_not_eligible += 1
+            continue
+        if g.get("is_duplicate"):
+            skipped_duplicate += 1
+            continue
+
+        # Resolve source filename: governance record first, then classified.
+        classified = classified_by_sha.get(sha, {})
+        source_file = (
+            g.get("source_file")
+            or classified.get("source_file")
+            or classified.get("file")
+            or ""
+        )
+        if not source_file:
+            errors.append({"sha": sha, "error": "source_file_unresolved"})
+            continue
+
+        source_path = src_dir / source_file
+        if not source_path.exists():
+            skipped_source_missing += 1
+            errors.append({"sha": sha, "error": f"source_missing: {source_file}"})
+            continue
+
+        out_path = out_dir / f"{sha}.md"
+        if out_path.exists() and not rescan:
+            skipped_existing += 1
+            manifest_entries.append({
+                "sha256": sha,
+                "source_file": source_file,
+                "governance_status": g.get("governance_status"),
+                "exported_path": out_path.name,
+                "status": "unchanged",
+            })
+            continue
+
+        if limit is not None and exported >= limit:
+            break
+
+        try:
+            content = source_path.read_text(encoding="utf-8")
+        except Exception as exc:
+            errors.append({"sha": sha, "error": f"source_read: {exc}"})
+            continue
+
+        markdown = (
+            _build_frontmatter(g, source_file)
+            + f"\n# {source_file}\n\n"
+            + "```jsonl\n"
+            + content
+            + ("" if content.endswith("\n") else "\n")
+            + "```\n"
+        )
+        out_path.write_text(markdown)
+        exported += 1
+        manifest_entries.append({
+            "sha256": sha,
+            "source_file": source_file,
+            "governance_status": g.get("governance_status"),
+            "authority": (g.get("axes_snapshot") or {}).get("authority"),
+            "exported_path": out_path.name,
+            "status": "exported",
+        })
+        logger.info(
+            f"export_urantipedia: {sha[:12]} -> {out_path.name} "
+            f"({g.get('governance_status')})")
+
+    manifest_path = out_dir / "manifest.json"
+    manifest_path.write_text(json.dumps({
+        "claw": CLAW_NAME,
+        "version": __version__,
+        "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "total": len(manifest_entries),
+        "exports": sorted(manifest_entries, key=lambda e: e["sha256"]),
+    }, indent=2, sort_keys=True))
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "export_urantipedia",
+        "exported": exported,
+        "skipped_existing": skipped_existing,
+        "skipped_not_eligible": skipped_not_eligible,
+        "skipped_duplicate": skipped_duplicate,
+        "skipped_source_missing": skipped_source_missing,
+        "governed_total": len(governed_files),
+        "manifest_path": str(manifest_path),
+        "manifest_total": len(manifest_entries),
+        "errors": errors,
+    }
+
+
 async def _handle_stub(name: str, payload: dict) -> dict:
     return {
         "status": "not_implemented",
@@ -778,7 +993,7 @@ _HANDLERS = {
     "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         _handle_cross_link,
     "governance_check":   _handle_governance_check,
-    "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
+    "export_urantipedia": _handle_export_urantipedia,
 }
 assert set(_HANDLERS) == set(ALLOWED_HANDLERS), \
     "dispatch table must match ALLOWED_HANDLERS exactly"

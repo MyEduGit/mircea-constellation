@@ -1,8 +1,8 @@
 # OpenClaw@URANTiOS-ingest
 
-**Truthful label:** deployable scaffold with three real handlers
-(`ingest_normalize`, `categorise_by_axes`, `cross_link`). Two of the five
-canonical handlers remain declared-but-stubbed pending follow-up PR.
+**Truthful label:** all five canonical handlers implemented —
+`ingest_normalize`, `categorise_by_axes`, `cross_link`, `governance_check`,
+`export_urantipedia` (plus `smoke_test` for bootstrap).
 
 Singular primary role: **controlled execution** (ingestion sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence — those
@@ -51,8 +51,8 @@ ALLOWED_HANDLERS = {
     "ingest_normalize",      # REAL — normalises raw files into Cognee
     "categorise_by_axes",    # REAL — 12-axis classifier, see axes.py
     "cross_link",            # REAL — pair-score edge emission, see axes.WEIGHTS
-    "governance_check",      # stub
-    "export_urantipedia",    # stub
+    "governance_check",      # REAL — axis-driven governance verdict
+    "export_urantipedia",    # REAL — emits eligible docs as markdown + manifest
     "smoke_test",            # bootstrap
 }
 ```
@@ -226,9 +226,43 @@ includes `pairs_unseen` for honest reporting of what wasn't scored.
 
 Edge weights live in [`axes.WEIGHTS`](./axes.py). Tune there.
 
+## Export approved documents
+
+Once `governance_check` has written `/data/governed/{sha}.governed.json`
+decisions, `export_urantipedia` stages publishable markdown for the
+subset where `export_eligible == true` AND `is_duplicate == false`:
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "export_urantipedia", "payload": {}}' \
+  | python3 -m json.tool
+
+# Options:
+#   {"rescan": true} — re-emit already-exported shas
+#   {"limit": 10}    — cap new exports (spot-check)
+```
+
+For each eligible sha:
+
+1. Resolve the original filename from the governance record, falling
+   back to a sha → classified record lookup (supports both the old
+   `source_file` and new `file` classifier shapes).
+2. Locate the content in `/data/ingested/chatcode/{source_file}`. If
+   the source has moved or been deleted, record the failure and move on
+   — no fabrication.
+3. Write `/data/exported/{sha}.md` with flat YAML frontmatter
+   (governance status + axes snapshot + timestamps + claw identity)
+   followed by the raw content in a fenced `jsonl` code block.
+4. Refresh `/data/exported/manifest.json` with the current state of
+   the `exported/` directory — fresh every run, not a delta.
+
+Idempotent: already-exported shas are skipped unless `rescan` is set.
+Honest failure: missing-source errors are accumulated in `errors`
+(`status: partial`); the run never silently drops a doc.
+
 ## What this is **not** yet
 
-- Not a full ingestion pipeline — two handlers are still stubs.
 - Not hardened beyond what is actually proven. No Fireclaw integration
   beyond the shared evidence directory convention.
 - Not Paperclip-integrated — this module emits evidence records; Paperclip
@@ -236,4 +270,6 @@ Edge weights live in [`axes.WEIGHTS`](./axes.py). Tune there.
 - Not a replacement for the existing `OpenClaw@Hetzy-bots` at 46.225.51.30.
   Two instances; same class; different sub-scopes.
 
-Follow-up PR will implement `governance_check`, then `export_urantipedia`.
+All five canonical handlers are now live. Follow-up work is integration
+(Paperclip bundling, Fireclaw signalling, Urantipedia publishing pipeline)
+rather than new handlers.
