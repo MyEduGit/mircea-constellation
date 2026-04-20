@@ -203,6 +203,28 @@ def alert_only(message: str, dry_run: bool = False) -> dict[str, Any]:
             "duration_ms": 0, "stdout": message, "stderr": ""}
 
 
+def exec_command(command: list[str] | str, timeout: float = 30.0,
+                 dry_run: bool = False) -> dict[str, Any]:
+    """Run an explicitly declared command (no shell expansion).
+
+    `command` must be a list of strings or a whitespace-separated string that
+    will be split with shlex.split. No shell=True — each token is a literal
+    argument, so the rule bears full responsibility for what it runs.
+    """
+    if isinstance(command, str):
+        command = shlex.split(command)
+    if not command:
+        return {"kind": "exec_command", "executed": False, "exit_code": None,
+                "duration_ms": 0, "stdout": "",
+                "stderr": "exec_command: empty command list"}
+    if dry_run:
+        return {"kind": "exec_command", "executed": False, "exit_code": None,
+                "duration_ms": 0, "stdout": "",
+                "stderr": "DRY-RUN: " + " ".join(shlex.quote(c) for c in command)}
+    out = _run(command, timeout=timeout)
+    return {"kind": "exec_command", **out}
+
+
 # Dispatch table — only declared kinds are runnable.
 DISPATCH = {
     "restart_systemd": lambda spec, dry_run: restart_systemd(
@@ -218,6 +240,8 @@ DISPATCH = {
         spec.get("bot_token"), spec.get("chat_id"), dry_run),
     "alert_only": lambda spec, dry_run: alert_only(
         spec.get("message", "Fireclaw incident"), dry_run),
+    "exec_command": lambda spec, dry_run: exec_command(
+        spec["command"], float(spec.get("timeout", 30.0)), dry_run),
 }
 
 

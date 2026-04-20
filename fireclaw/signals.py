@@ -169,6 +169,50 @@ def nemoclaw(view: str = "nemoclaw_latest_status", service: str | None = None,
         }
 
 
+def process(name: str | None = None, pid_file: str | None = None) -> dict[str, Any]:
+    """Check if a named process is running or a PID file points to a live PID.
+
+    Specify exactly one of:
+      name     — match against full command line (pgrep -f)
+      pid_file — path to a .pid file; checks that the PID inside is alive
+    """
+    import subprocess
+
+    if pid_file:
+        p = Path(os.path.expanduser(pid_file))
+        if not p.exists():
+            return {"kind": "process", "ok": False,
+                    "detail": f"pid_file missing: {p}", "raw": {}}
+        try:
+            pid = int(p.read_text().strip())
+            os.kill(pid, 0)  # signal 0 = existence check, no actual signal sent
+            return {"kind": "process", "ok": True,
+                    "detail": f"pid={pid} alive", "raw": {"pid": pid}}
+        except ValueError as e:
+            return {"kind": "process", "ok": False,
+                    "detail": f"pid_file unreadable: {e}", "raw": {}}
+        except OSError as e:
+            return {"kind": "process", "ok": False,
+                    "detail": f"pid {pid} dead: {e}", "raw": {"pid": pid}}
+
+    if name:
+        try:
+            r = subprocess.run(["pgrep", "-f", name],
+                               capture_output=True, text=True)
+            ok = r.returncode == 0
+            pids = r.stdout.strip().split() if ok else []
+            detail = (f"{name} running pids={','.join(pids)}"
+                      if ok else f"{name} not found")
+            return {"kind": "process", "ok": ok,
+                    "detail": detail, "raw": {"pids": pids}}
+        except FileNotFoundError:
+            return {"kind": "process", "ok": False,
+                    "detail": "pgrep not available on this system", "raw": {}}
+
+    return {"kind": "process", "ok": False,
+            "detail": "neither 'name' nor 'pid_file' specified", "raw": {}}
+
+
 def collect(spec: dict[str, Any]) -> dict[str, Any]:
     """Dispatch a signal spec from rules.yaml to the right collector."""
     kind = spec.get("kind")
@@ -183,5 +227,7 @@ def collect(spec: dict[str, Any]) -> dict[str, Any]:
     if kind == "nemoclaw":
         return nemoclaw(spec.get("view", "nemoclaw_latest_status"),
                         spec.get("service"), spec.get("dsn"))
+    if kind == "process":
+        return process(spec.get("name"), spec.get("pid_file"))
     return {"kind": kind or "unknown", "ok": False,
             "detail": f"unknown signal kind: {kind!r}", "raw": spec}

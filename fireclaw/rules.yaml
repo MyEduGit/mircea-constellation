@@ -8,14 +8,14 @@
 #   id:           short stable identifier (used in logs and counters)
 #   description:  human-readable purpose (Truth: must be honest)
 #   signal:
-#     kind:       http | tcp | file | nemoclaw
+#     kind:       http | tcp | file | nemoclaw | process
 #     (kind-specific fields — see fireclaw/signals.py)
 #   condition:
 #     consecutive_failures: int   how many cycles of bad signal before action
 #     cooldown_seconds:     int   minimum seconds between action firings
 #   action:
 #     kind:       restart_systemd | restart_docker | disable_n8n_workflow
-#                 | quarantine | alert_telegram | alert_only
+#                 | quarantine | alert_telegram | alert_only | exec_command
 #     (kind-specific fields — see fireclaw/actions.py)
 #   escalate:
 #     on_action_failure:    bool  alert if the action itself fails
@@ -41,10 +41,101 @@ rules:
       on_action_failure: false
       on_repeated_trigger: 5
 
-  # ── OpenClaw n8n reachability (Hetzner) ────────────────────────────────
-  # Disabled-by-default example: uncomment after confirming the URL.
-  # - id: openclaw-n8n-down
-  #   description: "Restart n8n on OpenClaw if it stops responding."
+  # ── ScribeClaw health (media pipeline, port 8081) ─────────────────────
+  - id: scribeclaw-down
+    description: "Restart ScribeClaw Docker container when its /health probe fails."
+    signal:
+      kind: http
+      url: http://127.0.0.1:8081/health
+      expect_status: 200
+      timeout: 3.0
+    condition:
+      consecutive_failures: 3
+      cooldown_seconds: 300
+    action:
+      kind: restart_docker
+      target: scribeclaw
+      host: localhost
+    escalate:
+      on_action_failure: true
+      on_repeated_trigger: 5
+
+  # ── OpenClaw ingest health (document ingestion, port 8080) ────────────
+  - id: openclaw-ingest-down
+    description: "Restart OpenClaw-ingest Docker container when /health probe fails."
+    signal:
+      kind: http
+      url: http://127.0.0.1:8080/health
+      expect_status: 200
+      timeout: 3.0
+    condition:
+      consecutive_failures: 3
+      cooldown_seconds: 300
+    action:
+      kind: restart_docker
+      target: openclaw-ingest
+      host: localhost
+    escalate:
+      on_action_failure: true
+      on_repeated_trigger: 5
+
+  # ── n8n workflow engine (Hetzner, port 5678) ──────────────────────────
+  - id: n8n-down
+    description: "Restart n8n Docker container on Hetzy when healthz probe fails."
+    signal:
+      kind: http
+      url: http://46.225.51.30:5678/healthz
+      expect_status: 200
+      timeout: 5.0
+    condition:
+      consecutive_failures: 3
+      cooldown_seconds: 600
+    action:
+      kind: restart_docker
+      target: n8n
+      host: hetzy
+    escalate:
+      on_action_failure: true
+      on_repeated_trigger: 3
+
+  # ── Cognee graph/vector store (URANTiOS, port 8765) ──────────────────
+  - id: cognee-down
+    description: "Alert when Cognee is unreachable — manual investigation required."
+    signal:
+      kind: tcp
+      host: 204.168.143.98
+      port: 8765
+      timeout: 3.0
+    condition:
+      consecutive_failures: 5
+      cooldown_seconds: 900
+    action:
+      kind: alert_only
+      message: "Cognee TCP unreachable for 5 consecutive cycles. Manual check needed."
+    escalate:
+      on_action_failure: false
+      on_repeated_trigger: 3
+
+  # ── Fireclaw self-watch (daemon liveness via process check) ──────────
+  - id: fireclaw-not-running
+    description: "Alert if the Fireclaw daemon process is not found."
+    signal:
+      kind: process
+      name: "fireclaw.fireclaw"
+    condition:
+      consecutive_failures: 2
+      cooldown_seconds: 600
+    action:
+      kind: alert_only
+      message: "Fireclaw daemon process not detected. Start it with: python3 -m fireclaw.fireclaw --execute --loop"
+    escalate:
+      on_action_failure: false
+      on_repeated_trigger: 2
+
+  # ── OpenClaw n8n reachability (Hetzner — alternative n8n port) ───────
+  # Uncomment and update URL once the exact healthz endpoint is confirmed.
+  # - id: openclaw-n8n-alt
+  #   description: "Restart n8n on OpenClaw if it stops responding on alt port."
   #   signal:
   #     kind: http
   #     url: http://46.225.51.30:18789/healthz
@@ -61,7 +152,7 @@ rules:
   #     on_repeated_trigger: 3
 
   # ── LobsterBot heartbeat ───────────────────────────────────────────────
-  # Disabled-by-default example. Enable once lobsterbot exposes a probe.
+  # Enable once lobsterbot exposes a TCP/HTTP probe.
   # - id: lobsterbot-down
   #   description: "Restart lobsterbot if its process exits."
   #   signal:
