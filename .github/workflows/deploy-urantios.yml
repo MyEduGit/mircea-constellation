@@ -1,0 +1,88 @@
+name: Deploy OpenClaw@URANTiOS-ingest
+
+# Auto-deploys to URANTiOS (204.168.143.98) whenever ingestion-related
+# files land on main. One-time SSH key setup is documented in
+# docs/AUTOPILOT_DEPLOY.md.
+#
+# UrantiOS governed — Truth, Beauty, Goodness.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'openclaw_ingest/**'
+      - 'setup/openclaw_ingest_install.sh'
+      - 'cognee_config.py'
+      - '.github/workflows/deploy-urantios.yml'
+  workflow_dispatch:           # manual trigger from Actions UI
+
+# Never run two deploys at once; never cancel a deploy mid-flight.
+concurrency:
+  group: urantios-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Pull + install on URANTiOS (204.168.143.98)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Sanity — required secrets are configured
+        run: |
+          missing=()
+          [ -n "${{ secrets.URANTIOS_SSH_KEY }}" ]  || missing+=("URANTIOS_SSH_KEY")
+          [ -n "${{ secrets.URANTIOS_HOST_KEY }}" ] || missing+=("URANTIOS_HOST_KEY")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required secrets: ${missing[*]}"
+            echo "See docs/AUTOPILOT_DEPLOY.md for one-time setup."
+            exit 2
+          fi
+          echo "Required secrets present."
+
+      - name: Configure SSH (private key + known_hosts)
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.URANTIOS_SSH_KEY }}" > ~/.ssh/urantios
+          chmod 600 ~/.ssh/urantios
+          printf '%s\n' "${{ secrets.URANTIOS_HOST_KEY }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Pull latest + run install on URANTiOS
+        run: |
+          ssh -i ~/.ssh/urantios -o BatchMode=yes mircea@204.168.143.98 'bash -se' <<'EOF'
+          set -euo pipefail
+          cd "$HOME/mircea-constellation"
+          echo "[urantios] git fetch + ff-only pull on main"
+          git fetch origin --quiet
+          git checkout main
+          git pull --ff-only origin main
+          echo "[urantios] HEAD now at: $(git rev-parse --short HEAD) — $(git log -1 --pretty=format:'%s')"
+          echo "[urantios] running setup/openclaw_ingest_install.sh"
+          bash setup/openclaw_ingest_install.sh
+          EOF
+
+      - name: Verify health on URANTiOS
+        run: |
+          ssh -i ~/.ssh/urantios -o BatchMode=yes mircea@204.168.143.98 'bash -se' <<'EOF'
+          set -euo pipefail
+          echo "[urantios] waiting for container health..."
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8080/health >/dev/null 2>&1; then
+              echo "[urantios] healthy after ${i} attempts"
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8080/health | python3 -m json.tool
+          echo "---"
+          docker logs openclaw-ingest --tail 20
+          echo "---"
+          ls -l /opt/openclaw-data/evidence/ | tail -5
+          EOF
+
+      - name: Tear down SSH key
+        if: always()
+        run: |
+          shred -u ~/.ssh/urantios 2>/dev/null || rm -f ~/.ssh/urantios
+          rm -f ~/.ssh/known_hosts
