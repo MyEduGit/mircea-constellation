@@ -511,7 +511,15 @@ async function loadStatus() {
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
     if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
     items.push(`<span><span class="dot dot-blue"></span>Nodes: ${nodes.length}</span>`);
-    if (data.updated) items.push(`<span style="color:#555">${new Date(data.updated).toLocaleTimeString()}</span>`);
+    if (data.updated) {
+      const t = new Date(data.updated).toLocaleTimeString('en-AU', {
+        timeZone: 'Australia/Melbourne',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false,
+        timeZoneName: 'short'
+      });
+      items.push(`<span style="color:#555">${t}</span>`);
+    }
     if (items.length) bar.innerHTML = items.join('');
 
     document.querySelectorAll('.node').forEach(n => {
