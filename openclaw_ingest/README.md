@@ -1,8 +1,8 @@
 # OpenClaw@URANTiOS-ingest
 
-**Truthful label:** deployable scaffold with two real handlers
-(`ingest_normalize` and `categorise_by_axes`). Three of the five canonical
-handlers remain declared-but-stubbed pending follow-up PR.
+**Truthful label:** deployable scaffold with three real handlers
+(`ingest_normalize`, `categorise_by_axes`, `cross_link`). Two of the five
+canonical handlers remain declared-but-stubbed pending follow-up PR.
 
 Singular primary role: **controlled execution** (ingestion sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence — those
@@ -50,7 +50,7 @@ directory and reaches host Ollama via `host.docker.internal:host-gateway`.
 ALLOWED_HANDLERS = {
     "ingest_normalize",      # REAL — normalises raw files into Cognee
     "categorise_by_axes",    # REAL — 12-axis classifier, see axes.py
-    "cross_link",            # stub
+    "cross_link",            # REAL — pair-score edge emission, see axes.WEIGHTS
     "governance_check",      # stub
     "export_urantipedia",    # stub
     "smoke_test",            # bootstrap
@@ -149,6 +149,9 @@ some didn't, with a per-file error list.
 | `OLLAMA_MODEL`          | `qwen2.5:32b`                        | Classifier LLM model                       |
 | `OLLAMA_TIMEOUT`        | `120`                                | Per-classification timeout (seconds)       |
 | `CLASSIFY_MAX_CHARS`    | `8000`                               | Document truncation budget for classifier  |
+| `CROSS_LINK_THRESHOLD`  | `5.0`                                | Minimum pair score to emit an edge         |
+| `CROSS_LINK_MAX_PAIRS`  | `10000`                              | Per-invocation pair budget (O(n²) guard)   |
+| `CROSS_LINK_MAX_FANOUT` | `50`                                 | Max new edges per document per run         |
 
 ---
 
@@ -184,9 +187,48 @@ The axes themselves live in [`axes.py`](./axes.py) — first draft,
 grounded in UrantiOS Three Values + PhD Triune Monism + corpus-practical
 metadata. Edit there; the handler reads straight from that list.
 
+## Cross-link a classified batch
+
+Once documents are in `/data/classified/`, `cross_link` scores every
+unordered pair and emits edges above the threshold:
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "cross_link", "payload": {}}' \
+  | python3 -m json.tool
+
+# Override knobs per call (all optional):
+#   {"handler": "cross_link",
+#    "payload": {"threshold": 6.0, "max_pairs": 500, "max_fanout": 20}}
+```
+
+Algorithm per pair `(a, b)` with `sha_a < sha_b`:
+
+1. Skip if `/data/linked/{sha_a}__{sha_b}.json` already exists
+   (idempotent — safe to re-run).
+2. Skip if either document has `lucifer_test == "flagged"`. Iniquitous
+   docs produce **zero** edges in either direction.
+3. Compute `score = Σ WEIGHTS[axis]` over axes where labels match AND
+   the label is not in `NONPOSITIVE_LABELS` (so `serves_self ↔
+   serves_self` and `absent ↔ absent` don't reinforce). Polarity-only —
+   see [`axes.py`](./axes.py).
+4. Skip if either node has already hit `max_fanout` this run (protects
+   hub-docs from runaway fan-out).
+5. Emit `/data/linked/{sha_a}__{sha_b}.json` with `score`, `axes_matched`
+   (per-axis weight breakdown), `threshold`, timestamp.
+6. If Cognee is ready, also `cognee.add` a synthetic edge-content node
+   tagged with both shas so the graph sees the relationship. Cognee
+   failures are recorded per-pair in `errors`; they don't abort the run.
+
+`O(n²)` guard: `max_pairs` caps the per-invocation budget; the response
+includes `pairs_unseen` for honest reporting of what wasn't scored.
+
+Edge weights live in [`axes.WEIGHTS`](./axes.py). Tune there.
+
 ## What this is **not** yet
 
-- Not a full ingestion pipeline — three handlers are still stubs.
+- Not a full ingestion pipeline — two handlers are still stubs.
 - Not hardened beyond what is actually proven. No Fireclaw integration
   beyond the shared evidence directory convention.
 - Not Paperclip-integrated — this module emits evidence records; Paperclip
@@ -194,5 +236,4 @@ metadata. Edit there; the handler reads straight from that list.
 - Not a replacement for the existing `OpenClaw@Hetzy-bots` at 46.225.51.30.
   Two instances; same class; different sub-scopes.
 
-Follow-up PR will implement `cross_link`, then `governance_check`, then
-`export_urantipedia`.
+Follow-up PR will implement `governance_check`, then `export_urantipedia`.
