@@ -2,13 +2,12 @@
 """OpenClaw@URANTiOS-ingest — execution runtime, ingestion sub-role.
 
 Canonical role: controlled execution (singular).
-Truthful label:  deployable scaffold with two real handlers
-(``ingest_normalize`` and ``categorise_by_axes``).
+Truthful label:  deployable scaffold with three real handlers
+(``ingest_normalize``, ``categorise_by_axes``, ``cross_link``).
 
-Three of the five canonical handlers (cross_link, governance_check,
-export_urantipedia) remain declared-but-stubbed pending follow-up PR.
-The allowlist boundary is preserved: nothing outside ALLOWED_HANDLERS
-can run.
+Two of the five canonical handlers (governance_check, export_urantipedia)
+remain declared-but-stubbed pending follow-up PR. The allowlist
+boundary is preserved: nothing outside ALLOWED_HANDLERS can run.
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """
@@ -32,7 +31,8 @@ import uvicorn
 from fastapi import Body, FastAPI
 
 from . import __version__
-from .axes import AXES, UNCLEAR, axis_names, validate_classification
+from .axes import (AXES, NONPOSITIVE_LABELS, UNCLEAR, WEIGHTS, axis_names,
+                    validate_classification)
 
 # ── Config (all via env, nothing hardcoded that the operator would override) ─
 CLAW_NAME = os.getenv("CLAW_NAME", "OpenClaw@URANTiOS-ingest")
@@ -53,8 +53,13 @@ OLLAMA_TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "120"))
 # Classifier context budget — truncate long docs to keep the LLM honest.
 CLASSIFY_MAX_CHARS = int(os.getenv("CLASSIFY_MAX_CHARS", "8000"))
 
+# Cross-link scoring knobs — see ``axes.WEIGHTS`` for per-axis weights.
+CROSS_LINK_THRESHOLD = float(os.getenv("CROSS_LINK_THRESHOLD", "5.0"))
+CROSS_LINK_MAX_PAIRS = int(os.getenv("CROSS_LINK_MAX_PAIRS", "10000"))
+CROSS_LINK_MAX_FANOUT = int(os.getenv("CROSS_LINK_MAX_FANOUT", "50"))
+
 # Ensure directory layout on every start (idempotent).
-for _sub in ("ingest/chatcode", "ingested/chatcode", "classified",
+for _sub in ("ingest/chatcode", "ingested/chatcode", "classified", "linked",
              "canon", "logs", "evidence"):
     (DATA_ROOT / _sub).mkdir(parents=True, exist_ok=True)
 
@@ -337,6 +342,169 @@ async def _handle_categorise_by_axes(payload: dict) -> dict:
     }
 
 
+def _score_pair(axes_a: dict, axes_b: dict) -> tuple[float, list[dict]]:
+    """Compute edge weight between two classification axis-maps.
+
+    Pure function — no I/O, trivially testable. Matches earn weight only
+    when labels are equal AND the label is not in ``NONPOSITIVE_LABELS``
+    (so ``serves_self ↔ serves_self`` and ``absent ↔ absent`` do not
+    reinforce linkage).
+    """
+    score = 0.0
+    matched: list[dict] = []
+    for axis in axis_names():
+        la = axes_a.get(axis)
+        lb = axes_b.get(axis)
+        if la != lb or la in NONPOSITIVE_LABELS:
+            continue
+        w = WEIGHTS[axis]
+        if w <= 0:
+            continue
+        score += w
+        matched.append({"axis": axis, "label": la, "weight": w})
+    return score, matched
+
+
+async def _handle_cross_link(payload: dict) -> dict:
+    """Score every classified-doc pair and emit edges above threshold.
+
+    Reads ``/data/classified/*.json``. For each unordered pair with
+    ``sha_a < sha_b``:
+
+    * Skip if ``/data/linked/{sha_a}__{sha_b}.json`` already exists
+      (idempotent — safe to re-run).
+    * Skip if either document carries ``lucifer_test == "flagged"``.
+      Iniquitous docs produce zero edges in either direction.
+    * Compute the score via :func:`_score_pair` against ``axes.WEIGHTS``.
+    * Emit an edge record if ``score >= threshold`` AND neither node has
+      already hit ``max_fanout`` for this run. If Cognee is ready, also
+      add a synthetic edge-content node tagged with both shas so the
+      graph sees the relationship.
+
+    Payload overrides (all optional): ``threshold``, ``max_pairs``,
+    ``max_fanout``. Honest failure: Cognee add errors are collected per
+    pair into ``errors`` (``status: partial``); nothing is silently
+    dropped.
+    """
+    in_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "linked"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    threshold = float(payload.get("threshold", CROSS_LINK_THRESHOLD))
+    max_pairs = int(payload.get("max_pairs", CROSS_LINK_MAX_PAIRS))
+    max_fanout = int(payload.get("max_fanout", CROSS_LINK_MAX_FANOUT))
+
+    records: list[dict] = []
+    for f in sorted(in_dir.glob("*.json")):
+        try:
+            rec = json.loads(f.read_text())
+            if "sha256" in rec and "axes" in rec:
+                records.append(rec)
+        except Exception as exc:
+            logger.warning(f"cross_link: corrupt {f.name}: {exc}")
+
+    if len(records) < 2:
+        return {"status": "success", "handler": "cross_link",
+                "message": f"need >=2 classified docs; have {len(records)}",
+                "edges_emitted": 0, "documents": len(records)}
+
+    records.sort(key=lambda r: r["sha256"])
+    existing = {p.name for p in out_dir.glob("*.json")}
+
+    fanout: dict[str, int] = {}
+    edges_emitted = 0
+    skipped_existing = 0
+    skipped_flagged = 0
+    skipped_below_threshold = 0
+    skipped_fanout = 0
+    pairs_considered = 0
+    errors: list[dict] = []
+
+    pairs_budget_exhausted = False
+    for i, a in enumerate(records):
+        if pairs_budget_exhausted:
+            break
+        for b in records[i + 1:]:
+            if pairs_considered >= max_pairs:
+                pairs_budget_exhausted = True
+                break
+            pairs_considered += 1
+
+            sha_a, sha_b = a["sha256"], b["sha256"]
+            pair_name = f"{sha_a}__{sha_b}.json"
+            if pair_name in existing:
+                skipped_existing += 1
+                continue
+            if (a["axes"].get("lucifer_test") == "flagged"
+                    or b["axes"].get("lucifer_test") == "flagged"):
+                skipped_flagged += 1
+                continue
+            if (fanout.get(sha_a, 0) >= max_fanout
+                    or fanout.get(sha_b, 0) >= max_fanout):
+                skipped_fanout += 1
+                continue
+
+            score, matched = _score_pair(a["axes"], b["axes"])
+            if score < threshold:
+                skipped_below_threshold += 1
+                continue
+
+            record = {
+                "sha_a": sha_a,
+                "sha_b": sha_b,
+                "score": round(score, 3),
+                "axes_matched": matched,
+                "threshold": threshold,
+                "claw": CLAW_NAME,
+                "version": __version__,
+                "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            }
+            (out_dir / pair_name).write_text(
+                json.dumps(record, indent=2, sort_keys=True))
+            fanout[sha_a] = fanout.get(sha_a, 0) + 1
+            fanout[sha_b] = fanout.get(sha_b, 0) + 1
+            edges_emitted += 1
+
+            if COGNEE_READY:
+                try:
+                    await cognee.add(
+                        f"cross_link edge: {sha_a[:12]} ↔ {sha_b[:12]} "
+                        f"(score={score:.2f}, axes_matched="
+                        f"{[m['axis'] for m in matched]})",
+                        dataset_name=DATASET_NAME,
+                        node_set=[
+                            f"edge:{sha_a[:12]}__{sha_b[:12]}",
+                            f"sha:{sha_a}",
+                            f"sha:{sha_b}",
+                            "kind:cross_link",
+                        ],
+                    )
+                except Exception as exc:
+                    errors.append({"pair": pair_name,
+                                   "cognee_error": str(exc)})
+                    logger.warning(
+                        f"cross_link: cognee.add failed for {pair_name}: {exc}")
+
+    total_pairs = len(records) * (len(records) - 1) // 2
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "cross_link",
+        "edges_emitted": edges_emitted,
+        "skipped_existing": skipped_existing,
+        "skipped_flagged": skipped_flagged,
+        "skipped_below_threshold": skipped_below_threshold,
+        "skipped_fanout": skipped_fanout,
+        "pairs_considered": pairs_considered,
+        "pairs_unseen": max(0, total_pairs - pairs_considered),
+        "documents": len(records),
+        "threshold": threshold,
+        "max_fanout": max_fanout,
+        "max_pairs": max_pairs,
+        "cognee_ready": COGNEE_READY,
+        "errors": errors,
+    }
+
+
 async def _handle_stub(name: str, payload: dict) -> dict:
     return {
         "status": "not_implemented",
@@ -351,7 +519,7 @@ _HANDLERS = {
     "smoke_test": _handle_smoke_test,
     "ingest_normalize": _handle_ingest_normalize,
     "categorise_by_axes": _handle_categorise_by_axes,
-    "cross_link":         lambda p: _handle_stub("cross_link", p),
+    "cross_link":         _handle_cross_link,
     "governance_check":   lambda p: _handle_stub("governance_check", p),
     "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
 }
@@ -393,6 +561,11 @@ def health() -> dict:
         "allowed_handlers": sorted(ALLOWED_HANDLERS),
         "axes": axis_names(),
         "classifier_model": OLLAMA_MODEL,
+        "cross_link": {
+            "threshold": CROSS_LINK_THRESHOLD,
+            "max_pairs": CROSS_LINK_MAX_PAIRS,
+            "max_fanout": CROSS_LINK_MAX_FANOUT,
+        },
     }
 
 

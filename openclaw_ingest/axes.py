@@ -60,26 +60,30 @@ AXES: list[Axis] = [
     {
         "name": "matter",
         "prompt": (
-            "Does the content engage the material domain (physical, "
-            "computational, energetic)? 'present' / 'absent'."
+            "How does the content engage the material domain (physical, "
+            "computational, energetic)? 'central' = the document's core "
+            "subject; 'implicit' = present but background; 'absent' = does "
+            "not engage."
         ),
-        "labels": ["present", "absent", UNCLEAR],
+        "labels": ["central", "implicit", "absent", UNCLEAR],
     },
     {
         "name": "mind",
         "prompt": (
-            "Does the content engage the mental domain (reasoning, meaning, "
-            "symbol, code logic)? 'present' / 'absent'."
+            "How does the content engage the mental domain (reasoning, "
+            "meaning, symbol, code logic)? 'central' / 'implicit' / "
+            "'absent'."
         ),
-        "labels": ["present", "absent", UNCLEAR],
+        "labels": ["central", "implicit", "absent", UNCLEAR],
     },
     {
         "name": "spirit",
         "prompt": (
-            "Does the content engage the spiritual domain (value, worship, "
-            "personality, divine reality)? 'present' / 'absent'."
+            "How does the content engage the spiritual domain (value, "
+            "worship, personality, divine reality)? 'central' / 'implicit' "
+            "/ 'absent'."
         ),
-        "labels": ["present", "absent", UNCLEAR],
+        "labels": ["central", "implicit", "absent", UNCLEAR],
     },
     # ── Corpus-practical axes ──────────────────────────────────────────
     {
@@ -101,11 +105,14 @@ AXES: list[Axis] = [
     {
         "name": "authority",
         "prompt": (
-            "Who authored the content? 'user' = Mircea; 'agent' = AI "
-            "subagent; 'system' = automated tool; 'canon' = The Urantia "
-            "Book or equivalent primary source."
+            "Who authored the content? 'user' = Mircea; 'agent' = an "
+            "interactive AI subagent (Claude, ChatGPT); 'bot_fleet' = an "
+            "autonomous bot from the fleet (Hetzy, NanoClaw, Gabriel, "
+            "UrAgent); 'system' = automated tool output (scripts, CI, "
+            "installers); 'canon' = The Urantia Book or equivalent primary "
+            "source."
         ),
-        "labels": ["user", "agent", "system", "canon", UNCLEAR],
+        "labels": ["user", "agent", "bot_fleet", "system", "canon", UNCLEAR],
     },
     {
         "name": "lucifer_test",
@@ -138,6 +145,38 @@ assert len(AXES) == 12, "the classifier is a 12-axis classifier — do not drift
 assert len({a["name"] for a in AXES}) == 12, "axis names must be unique"
 for _a in AXES:
     assert UNCLEAR in _a["labels"], f"axis {_a['name']!r} must include 'unclear'"
+
+
+# ── Cross-link scoring — consumed by the `cross_link` handler ─────────
+# Non-positive labels: matching on these does NOT earn edge weight.
+# Rationale: two self-serving docs aren't reinforcing; two 'absent' flags
+# aren't a shared feature; two 'unclear' are shared ignorance, not shared
+# meaning. Keep this list in one place so the handler never drifts.
+NONPOSITIVE_LABELS: frozenset[str] = frozenset({
+    UNCLEAR, "absent", "serves_self", "flagged", "opaque",
+})
+
+# Per-axis weight for cross_link edge scoring. Tune here — the handler
+# reads straight from this dict. Higher = stronger similarity signal.
+# Axes weighted 0.0 are used for other purposes (short-circuit in the
+# case of ``lucifer_test``; not a similarity signal in the case of
+# ``confidentiality``) but never contribute to edge score directly.
+WEIGHTS: dict[str, float] = {
+    "truth":             2.0,
+    "beauty":            0.5,
+    "goodness":          3.0,   # serves_mission ↔ serves_mission: strongest signal
+    "matter":            1.5,
+    "mind":              2.0,
+    "spirit":            2.5,   # UrantiOS primary domain
+    "modality":          1.0,
+    "lifecycle":         2.0,
+    "authority":         2.5,   # canon↔canon = doctrinal chain
+    "lucifer_test":      0.0,   # short-circuit, not a bonus
+    "cross_link_intent": 2.0,
+    "confidentiality":   0.0,
+}
+assert set(WEIGHTS) == {a["name"] for a in AXES}, \
+    "WEIGHTS must cover every axis, no extras"
 
 
 def axis_names() -> list[str]:
