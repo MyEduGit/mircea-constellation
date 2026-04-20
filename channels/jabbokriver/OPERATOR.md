@@ -12,6 +12,10 @@ the scaffold; nothing here can be done by an automation alone.
 - [ ] Dr. Emanoil Geaboc has given **written consent** to be the face of
       JabbokRiverProductions, with a signed letter on file under
       `channels/jabbokriver/consent/<YYYY-MM-DD>-geaboc-consent.pdf`.
+      **Draft letters ready to send:**
+      `channels/jabbokriver/consent/LETTER-TEMPLATE-ro.md` (Romanian)
+      and `LETTER-TEMPLATE-en.md` (English) — fill the `[bracketed]`
+      blanks, print, mail/email.
 - [ ] `channels/jabbokriver/channel.json` field
       `host.consent_status` has been flipped from `"pending"` to
       `"confirmed"`, with `consent_confirmed_at` set to the ISO-8601
@@ -36,30 +40,80 @@ deliberately quiet (no `youtube_upload` handler) until you say go.
    channel** → **Use a custom name** → `JabbokRiverProductions`.
 3. Verify the channel by phone (required for thumbnails > 1MB and
    videos > 15 min).
-4. Set: handle `@JabbokRiverProductions`, channel art (use a
-   `ThesisTitleCard` Remotion render at 2560×1440 as banner), about
-   text from `channel.json` `thesis.en`.
+4. Set: handle `@JabbokRiverProductions`, **channel art** via the
+   pre-built banner composition:
+   ```
+   cd remotion
+   npx remotion render ChannelBanner out/channel-banner.png --frame=0
+   npx remotion render ChannelAvatar out/channel-avatar.png --frame=0
+   ```
+   Upload `channel-banner.png` (2560×1440) as "Banner image" and
+   `channel-avatar.png` (1080×1080) as "Picture". About text: copy
+   `channel.json` → `thesis.en`.
 5. Configure default upload settings: language `Romanian`, license
    `Standard YouTube License`, category `Education`.
 
-## 2. OAuth credentials for `youtube_upload` (when ready)
+## 2. OAuth credentials for `youtube_upload`
 
-The `youtube_upload` handler in `scribeclaw/youtube.py` is intentionally
-stubbed (refuses to run). To wire it later:
+The `youtube_upload` handler in `scribeclaw/youtube.py` is now fully
+implemented. It reads the metadata bundle, calls YouTube Data API v3
+`videos.insert`, and returns a structured `not_ready` refusal if any
+prerequisite is missing. To enable live uploads:
 
-1. Google Cloud Console → create project `jabbokriver-upload` →
-   enable **YouTube Data API v3**.
-2. Create OAuth 2.0 Client ID (Desktop). Download `client_secret.json`.
-3. On the operator host, place it at:
+1. **Google Cloud project:** Cloud Console → create project
+   `jabbokriver-upload` → enable **YouTube Data API v3**.
+2. **OAuth client:** create an OAuth 2.0 Client ID (Desktop) and
+   download `client_secret.json`.
+3. **Install on the operator host:**
    ```
-   /opt/scribeclaw-data/youtube/credentials/client_secret.json
+   mkdir -p /opt/scribeclaw-data/youtube/credentials
+   mv ~/Downloads/client_secret_*.json \
+      /opt/scribeclaw-data/youtube/credentials/client_secret.json
    chmod 600 /opt/scribeclaw-data/youtube/credentials/client_secret.json
    ```
-4. Run a one-shot OAuth flow (`google-auth-oauthlib`) to mint a refresh
-   token; save next to `client_secret.json`.
-5. Open a follow-up PR replacing the stub in `scribeclaw/youtube.py`
-   (`youtube_upload`) with a `google-api-python-client` call. Until that
-   PR lands, **upload manually** through YouTube Studio.
+4. **Install optional Python deps** (scribeclaw core does not need
+   these; the handler imports them lazily and refuses gracefully):
+   ```
+   pip install google-api-python-client google-auth google-auth-oauthlib
+   ```
+5. **Mint a refresh token** (one-time, requires a browser):
+   ```python
+   # save as bootstrap_refresh_token.py and run once on the operator host
+   from google_auth_oauthlib.flow import InstalledAppFlow
+   import json, pathlib
+   SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+   creds_dir = pathlib.Path("/opt/scribeclaw-data/youtube/credentials")
+   flow = InstalledAppFlow.from_client_secrets_file(
+       str(creds_dir / "client_secret.json"), SCOPES)
+   creds = flow.run_local_server(port=0)
+   (creds_dir / "refresh_token.json").write_text(json.dumps({
+       "refresh_token": creds.refresh_token
+   }))
+   ```
+6. **Dry-run before the first real upload** — the handler will validate
+   everything without hitting the YouTube API:
+   ```
+   curl -X POST http://127.0.0.1:8081/tasks \
+     -H 'content-type: application/json' \
+     -d '{"handler":"youtube_upload","payload":{
+            "stem":"<id>.edited",
+            "dry_run":true,
+            "privacy":"unlisted"
+          }}'
+   ```
+7. **Live upload** (only after the hard launch gate at the top of this
+   doc is green):
+   ```
+   curl -X POST http://127.0.0.1:8081/tasks \
+     -H 'content-type: application/json' \
+     -d '{"handler":"youtube_upload","payload":{
+            "stem":"<id>.edited",
+            "video_path":"/opt/scribeclaw-data/media/edited/<id>.final.mp4",
+            "privacy":"private"
+          }}'
+   ```
+   Start with `privacy:"private"`, verify on YouTube Studio, then flip
+   to `unlisted` or `public` manually. The handler never auto-publishes.
 
 ## 3. Pull the operator-held archive from `messagetostephanos@gmail.com`
 
@@ -147,10 +201,12 @@ catalog entry → archive → transcribe → council review → render → uploa
 5. Concatenate (operator's choice of NLE) the rendered intro + your
    editorial commentary + outro. **Do not include full re-uploads of
    the source video.** Short excerpts under commentary only.
-6. Upload manually through YouTube Studio (until step 2 OAuth is
-   wired). Tags + description: copy from
-   `/opt/scribeclaw-data/youtube/<id>.edited/description.txt` and
-   `tags.txt`.
+6. Upload. Two options depending on whether you've wired OAuth (§2):
+   - **OAuth wired:** `dry_run: true` first, then live with
+     `privacy:"private"`; verify in Studio; manually flip to public.
+   - **Manual:** upload through YouTube Studio. Tags + description:
+     copy from `/opt/scribeclaw-data/youtube/<id>.edited/description.txt`
+     and `tags.txt`.
 7. After upload, set `commentary_episode_id` and bump
    `transcription_status: done` in `catalog.yaml`.
 

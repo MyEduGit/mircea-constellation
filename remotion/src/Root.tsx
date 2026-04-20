@@ -10,6 +10,8 @@ import {
   ThesisTitleCard,
   thesisTitleCardDefaultProps,
 } from "./jabbok/ThesisTitleCard";
+import { ChannelBanner } from "./jabbok/ChannelBanner";
+import { ChannelAvatar } from "./jabbok/ChannelAvatar";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -55,6 +57,22 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         defaultProps={thesisTitleCardDefaultProps}
+      />
+      <Composition
+        id="ChannelBanner"
+        component={ChannelBanner}
+        durationInFrames={1}
+        fps={30}
+        width={2560}
+        height={1440}
+      />
+      <Composition
+        id="ChannelAvatar"
+        component={ChannelAvatar}
+        durationInFrames={1}
+        fps={30}
+        width={1080}
+        height={1080}
       />
     </>
   );
