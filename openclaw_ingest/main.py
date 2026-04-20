@@ -38,6 +38,7 @@ from .axes import (AXES, NONPOSITIVE_LABELS, UNCLEAR, WEIGHTS, axis_names,
 CLAW_NAME = os.getenv("CLAW_NAME", "OpenClaw@URANTiOS-ingest")
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/data"))
 DATASET_NAME = os.getenv("DATASET_NAME", "mircea_corpus")
+DATASET_SUBSCRIPTIONS = os.getenv("SUBSCRIPTION_DATASET", "mircea_subscribers")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 HTTP_HOST = os.getenv("HTTP_HOST", "0.0.0.0")
 HTTP_PORT = int(os.getenv("HTTP_PORT", "8080"))
@@ -98,6 +99,9 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "governance_check",
     "export_urantipedia",
     "smoke_test",
+    "subscription_subscribe",
+    "subscription_unsubscribe",
+    "subscription_list",
 })
 
 
@@ -502,6 +506,203 @@ async def _handle_cross_link(payload: dict) -> dict:
         "max_pairs": max_pairs,
         "cognee_ready": COGNEE_READY,
         "errors": errors,
+    }
+
+
+# ── Subscription handlers ─────────────────────────────────────────────
+# Subscribers live in the Cognee graph under DATASET_SUBSCRIPTIONS, tagged
+# via ``node_set`` so other constellation services can recall them through
+# the same cognee.search() surface used for the corpus. Append-only: an
+# unsubscribe writes a new status:inactive record rather than mutating the
+# original — matches the project's evidence-trail discipline.
+_VALID_CHANNELS: frozenset[str] = frozenset({"newsletter", "telegram", "bot_fleet"})
+
+
+def _identifier_sha256(identifier: str) -> str:
+    return hashlib.sha256(identifier.encode("utf-8")).hexdigest()
+
+
+def _subscription_node_set(
+    channel: str,
+    identifier_sha: str,
+    status: str,
+    tags: list[str] | None,
+) -> list[str]:
+    ns = [
+        "source:subscription",
+        f"channel:{channel}",
+        f"identifier_sha256:{identifier_sha}",
+        f"status:{status}",
+    ]
+    for t in tags or []:
+        ns.append(f"tag:{t}")
+    return ns
+
+
+async def _handle_subscription_subscribe(payload: dict) -> dict:
+    """Record a subscriber as a Cognee node in DATASET_SUBSCRIPTIONS.
+
+    Required payload keys: ``channel`` (one of newsletter/telegram/bot_fleet)
+    and ``identifier`` (email address or ``telegram:<chat_id>``).
+    Optional: ``tags`` — list of opt-in topic tags.
+
+    Honest failure: if Cognee is unavailable or the payload is malformed,
+    return ``status=error`` with a diagnostic and do not write to the graph.
+    """
+    channel = payload.get("channel")
+    identifier = payload.get("identifier")
+    tags = payload.get("tags") or []
+
+    if channel not in _VALID_CHANNELS:
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "invalid_channel",
+                "allowed_channels": sorted(_VALID_CHANNELS)}
+    if not isinstance(identifier, str) or not identifier.strip():
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "missing_identifier"}
+    if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "invalid_tags"}
+
+    if not COGNEE_READY:
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "cognee_not_ready",
+                "hint": "check cognee_config.init() output and Ollama reachability"}
+
+    identifier_sha = _identifier_sha256(identifier)
+    record = {
+        "kind": "subscription",
+        "channel": channel,
+        "identifier_sha256": identifier_sha,
+        "status": "active",
+        "tags": tags,
+        "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
+    node_set = _subscription_node_set(channel, identifier_sha, "active", tags)
+
+    try:
+        await cognee.add(
+            json.dumps(record, sort_keys=True),
+            dataset_name=DATASET_SUBSCRIPTIONS,
+            node_set=node_set,
+        )
+    except Exception as exc:
+        logger.exception("subscription_subscribe failed")
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": f"cognee_add_failed: {exc}"}
+
+    logger.info(
+        f"subscription_subscribe: channel={channel} "
+        f"identifier_sha256={identifier_sha[:12]} tags={tags}")
+    return {
+        "status": "success",
+        "handler": "subscription_subscribe",
+        "channel": channel,
+        "identifier_sha256": identifier_sha,
+        "tags": tags,
+        "dataset": DATASET_SUBSCRIPTIONS,
+    }
+
+
+async def _handle_subscription_unsubscribe(payload: dict) -> dict:
+    """Append a ``status:inactive`` subscriber record.
+
+    Required payload key: ``identifier``. Optional: ``channel`` — if omitted
+    the unsubscribe applies to every channel the identifier might be in;
+    downstream list/search filters use the ``identifier_sha256`` node tag.
+
+    Append-only: no node is deleted — the latest record for a given
+    identifier_sha256 is authoritative.
+    """
+    identifier = payload.get("identifier")
+    channel = payload.get("channel")
+
+    if not isinstance(identifier, str) or not identifier.strip():
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": "missing_identifier"}
+    if channel is not None and channel not in _VALID_CHANNELS:
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": "invalid_channel",
+                "allowed_channels": sorted(_VALID_CHANNELS)}
+
+    if not COGNEE_READY:
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": "cognee_not_ready"}
+
+    identifier_sha = _identifier_sha256(identifier)
+    record = {
+        "kind": "subscription",
+        "channel": channel or "*",
+        "identifier_sha256": identifier_sha,
+        "status": "inactive",
+        "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
+    node_set = _subscription_node_set(
+        channel or "*", identifier_sha, "inactive", None)
+
+    try:
+        await cognee.add(
+            json.dumps(record, sort_keys=True),
+            dataset_name=DATASET_SUBSCRIPTIONS,
+            node_set=node_set,
+        )
+    except Exception as exc:
+        logger.exception("subscription_unsubscribe failed")
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": f"cognee_add_failed: {exc}"}
+
+    logger.info(
+        f"subscription_unsubscribe: channel={channel or '*'} "
+        f"identifier_sha256={identifier_sha[:12]}")
+    return {
+        "status": "success",
+        "handler": "subscription_unsubscribe",
+        "channel": channel or "*",
+        "identifier_sha256": identifier_sha,
+        "dataset": DATASET_SUBSCRIPTIONS,
+    }
+
+
+async def _handle_subscription_list(payload: dict) -> dict:
+    """Recall subscribers from DATASET_SUBSCRIPTIONS.
+
+    Optional payload key: ``channel`` — restrict the recall query.
+
+    Scope (first draft): returns whatever ``cognee.search`` surfaces for a
+    channel-scoped query, plus the raw payload. Richer filtering (last
+    status per identifier, tag intersection) can be added in a follow-up
+    once the graph surface stabilises.
+    """
+    channel = payload.get("channel")
+    if channel is not None and channel not in _VALID_CHANNELS:
+        return {"status": "error", "handler": "subscription_list",
+                "error": "invalid_channel",
+                "allowed_channels": sorted(_VALID_CHANNELS)}
+
+    if not COGNEE_READY:
+        return {"status": "error", "handler": "subscription_list",
+                "error": "cognee_not_ready"}
+
+    query = (
+        f"subscribers on channel {channel}" if channel
+        else "all subscribers"
+    )
+    try:
+        results = await cognee.search(
+            query_text=query,
+            datasets=[DATASET_SUBSCRIPTIONS],
+        )
+    except Exception as exc:
+        logger.exception("subscription_list failed")
+        return {"status": "error", "handler": "subscription_list",
+                "error": f"cognee_search_failed: {exc}"}
+
+    return {
+        "status": "success",
+        "handler": "subscription_list",
+        "channel": channel,
+        "dataset": DATASET_SUBSCRIPTIONS,
+        "results": results,
     }
 
 
@@ -921,6 +1122,9 @@ _HANDLERS = {
     "cross_link":         _handle_cross_link,
     "governance_check":   _handle_governance_check,
     "export_urantipedia": _handle_export_urantipedia,
+    "subscription_subscribe":   _handle_subscription_subscribe,
+    "subscription_unsubscribe": _handle_subscription_unsubscribe,
+    "subscription_list":        _handle_subscription_list,
 }
 assert set(_HANDLERS) == set(ALLOWED_HANDLERS), \
     "dispatch table must match ALLOWED_HANDLERS exactly"
@@ -957,6 +1161,7 @@ def health() -> dict:
         "cognee_ready": COGNEE_READY,
         "cognee_init": COGNEE_INIT_INFO,
         "dataset": DATASET_NAME,
+        "subscription_dataset": DATASET_SUBSCRIPTIONS,
         "allowed_handlers": sorted(ALLOWED_HANDLERS),
         "axes": axis_names(),
         "classifier_model": OLLAMA_MODEL,

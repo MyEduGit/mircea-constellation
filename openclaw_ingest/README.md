@@ -48,12 +48,15 @@ directory and reaches host Ollama via `host.docker.internal:host-gateway`.
 
 ```python
 ALLOWED_HANDLERS = {
-    "ingest_normalize",      # REAL — normalises raw files into Cognee
-    "categorise_by_axes",    # REAL — 12-axis classifier, see axes.py
-    "cross_link",            # REAL — pair-score edge emission, see axes.WEIGHTS
-    "governance_check",      # stub
-    "export_urantipedia",    # stub
-    "smoke_test",            # bootstrap
+    "ingest_normalize",         # REAL — normalises raw files into Cognee
+    "categorise_by_axes",       # REAL — 12-axis classifier, see axes.py
+    "cross_link",               # REAL — pair-score edge emission, see axes.WEIGHTS
+    "governance_check",         # stub
+    "export_urantipedia",       # stub
+    "smoke_test",               # bootstrap
+    "subscription_subscribe",   # REAL — record subscriber in Cognee
+    "subscription_unsubscribe", # REAL — append status:inactive record
+    "subscription_list",        # REAL — recall subscribers from Cognee
 }
 ```
 
@@ -152,6 +155,7 @@ some didn't, with a per-file error list.
 | `CROSS_LINK_THRESHOLD`  | `5.0`                                | Minimum pair score to emit an edge         |
 | `CROSS_LINK_MAX_PAIRS`  | `10000`                              | Per-invocation pair budget (O(n²) guard)   |
 | `CROSS_LINK_MAX_FANOUT` | `50`                                 | Max new edges per document per run         |
+| `SUBSCRIPTION_DATASET`  | `mircea_subscribers`                 | Cognee dataset for subscriber nodes        |
 
 ---
 
@@ -225,6 +229,58 @@ Algorithm per pair `(a, b)` with `sha_a < sha_b`:
 includes `pairs_unseen` for honest reporting of what wasn't scored.
 
 Edge weights live in [`axes.WEIGHTS`](./axes.py). Tune there.
+
+## Manage subscribers
+
+Subscribers live in a separate Cognee dataset (`SUBSCRIPTION_DATASET`,
+default `mircea_subscribers`), tagged via `node_set` so the bot fleet,
+Urantipedia, and scribeclaw can recall them through the same
+`cognee.search()` surface used for the corpus.
+
+Append-only: an unsubscribe writes a new `status:inactive` record rather
+than deleting the original — matches the module's evidence-trail
+discipline. Identifiers are hashed to `identifier_sha256` before storage
+so the Cognee graph never holds raw email addresses or Telegram chat IDs.
+
+Subscribe:
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "subscription_subscribe",
+         "payload": {"channel": "newsletter",
+                     "identifier": "reader@example.com",
+                     "tags": ["urantia_daily", "phd_updates"]}}' \
+  | python3 -m json.tool
+```
+
+Valid `channel` values: `newsletter`, `telegram`, `bot_fleet`. `tags` is
+optional; each tag is stored as a `tag:{name}` node-set entry.
+
+List subscribers on one channel (or all when `channel` is omitted):
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "subscription_list",
+         "payload": {"channel": "newsletter"}}' \
+  | python3 -m json.tool
+```
+
+Unsubscribe (append `status:inactive`):
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "subscription_unsubscribe",
+         "payload": {"identifier": "reader@example.com"}}' \
+  | python3 -m json.tool
+```
+
+Honest failures: missing/invalid payload fields return
+`status: error, error: invalid_channel|missing_identifier|invalid_tags`;
+if Cognee is down every subscription handler short-circuits with
+`error: cognee_not_ready` and leaves an evidence record.
 
 ## What this is **not** yet
 
