@@ -1,0 +1,58 @@
+name: Deploy Council of Seven
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'setup/fix_council_complete.py'
+      - 'setup/pull_free_models.sh'
+      - 'council/COUNCIL_MODEL_REGISTRY.json'
+      - '.github/workflows/deploy-council.yml'
+  workflow_dispatch:   # also allows manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Step 1: Pull free models on URANTiOS ──────────────────────────────
+      - name: Pull Ollama models on URANTiOS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 204.168.143.98
+          username: root
+          key: ${{ secrets.URANTIOS_SSH_KEY }}
+          timeout: 25m
+          script: |
+            echo "▶ Checking/pulling Council models..."
+            for model in qwen3:8b qwen2.5-coder:7b mistral:7b gemma4:e4b deepseek-r1:7b; do
+              if ollama list 2>/dev/null | grep -q "^${model}"; then
+                echo "  ✓ $model already installed"
+              else
+                echo "  ▶ Pulling $model ..."
+                ollama pull "$model"
+                echo "  ✓ $model done"
+              fi
+            done
+            echo ""
+            echo "Installed models:"
+            ollama list
+
+      # ── Step 2: Wire all nodes in n8n ─────────────────────────────────────
+      - name: Wire all Council seats in n8n
+        env:
+          N8N_EMAIL: mircea8@me.com
+          N8N_PASSWORD: ${{ secrets.N8N_PASSWORD }}
+        run: |
+          pip install --quiet urllib3 2>/dev/null || true
+          python3 setup/fix_council_complete.py
+
+      - name: Done
+        run: |
+          echo "✓ Council of Seven deployed"
+          echo "  All 8 seats wired to free local Ollama"
+          echo "  Cost: \$0.00/run"
+          echo "  n8n: http://46.225.51.30"
