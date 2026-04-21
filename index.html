@@ -210,7 +210,7 @@ svg.connections line.bot-link {
     <span class="truth">Truth</span>
     <span class="beauty">Beauty</span>
     <span class="goodness">Goodness</span>
-    | <span>20 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
+    | <span>21 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
   </div>
 </div>
 <div class="panel" id="panel">
@@ -282,6 +282,7 @@ const nodes = [
   { id: 'amep',     icon: '🎓', label: 'AMEP Hub',         sub: '21 Students',          type: 'service',    x: 0.34, y: 0.72, tier: 'service' },
   { id: 'obsidian', icon: '💎', label: 'Obsidian',         sub: 'Knowledge Vault',      type: 'service',    x: 0.55, y: 0.76, tier: 'service' },
   { id: 'phd',      icon: '📜', label: 'PhD Research',     sub: 'Triune Monism',        type: 'service',    x: 0.88, y: 0.68, tier: 'service' },
+  { id: 'jabbokriver', icon: '🎥', label: 'JabbokRiver Productions', sub: 'Religia LUI Isus', type: 'service', x: 0.20, y: 0.82, tier: 'service' },
 
   // ── FOUNDATION: GOVERNANCE ──────────────────────────────────────
   { id: 'urantios_os', icon: '☀️', label: 'UrantiOS v1.0', sub: 'Truth · Beauty · Goodness', type: 'governance', x: 0.50, y: 0.92, tier: 'governance' },
@@ -368,6 +369,11 @@ const connections = [
   ['obsidian', 'phd',          'active'],
   ['amep', 'imac',             'active'],
 
+  // JabbokRiver Productions — Romanian SDA outreach via Dr. Emanoil Geaboc
+  ['jabbokriver', 'urantipedia',     'active'],
+  ['jabbokriver', 'openclawingest',  'active'],
+  ['jabbokriver', 'urantios_os',     'bot-link'],
+
   // Governance (subtle connections to key nodes)
   ['urantios_os', 'urantios',     'active'],
   ['urantios_os', 'cognee',       'ai-link'],
@@ -406,6 +412,7 @@ const nodeDetails = {
   amep:     { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
   obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Content': 'Ontology, comparisons, Foreword analysis', 'Tier': 'SERVICES' },
   phd:      { 'Title': 'PhD — Triune Monism', 'Thesis': 'Three irreducible domains: matter, mind, spirit', 'AI Partners': 'Claude (deep analysis) + ChatGPT (summaries)', 'Repo': 'myedugit/phd-triune-monism', 'Papers': '196 Urantia Book papers as source', 'Tier': 'SERVICES' },
+  jabbokriver: { 'Channel': 'JabbokRiverProductions', 'Tagline': 'Religia LUI Isus, nu religia DESPRE Isus', 'English': 'The religion OF Jesus, not the religion ABOUT Jesus', 'Host': 'Dr. Emanoil Geaboc', 'Consent': 'PENDING — written sign-off required before public launch', 'Source Material': 'Public SDA YouTube uploads + messagetostephanos@gmail.com archive', 'Publishing Policy': 'Catalog & link only (no re-uploads; original editorial commentary)', 'Pipeline': 'scribeclaw (RO transcription) → Council review → Remotion render → manual upload', 'Languages': 'Romanian primary · English subtitles', 'Covenant': 'Urantia Book Paper 196 — The Faith of Jesus', 'Repo Path': 'channels/jabbokriver/', 'Status': 'Scaffold ready · launch gated on host consent', 'Tier': 'SERVICES' },
 
   urantios_os: { 'Version': '1.0', 'Type': 'Governing AI Operating System', 'Source': 'The Urantia Book (Foreword + Papers 1-196)', 'Values': 'Truth, Beauty, Goodness', 'Scope': 'ALL AI, bots, agents, processes', 'Lucifer Test': 'Transparent? Honest? Within mandate? Serves mission?', 'Spawn Mandate': 'Every process must load UrantiOS', 'Repo': 'myedugit/URANTiOS', 'Tier': 'GOVERNANCE' },
 };
@@ -446,7 +453,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest' || n.id === 'jabbokriver') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
@@ -510,6 +517,7 @@ async function loadStatus() {
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
     if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
+    if (data.jabbokriver) items.push(`<span><span class="dot dot-blue"></span>JabbokRiver: ${data.jabbokriver.consent_status}</span>`);
     items.push(`<span><span class="dot dot-blue"></span>Nodes: ${nodes.length}</span>`);
     if (data.updated) {
       const t = new Date(data.updated).toLocaleTimeString('en-AU', {

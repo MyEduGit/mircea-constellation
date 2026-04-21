@@ -2,3 +2,11 @@ fastapi==0.115.0
 uvicorn==0.32.0
 faster-whisper==1.0.3
 httpx==0.27.2
+
+# Optional — required only if operator invokes `youtube_upload` in live
+# mode. The handler imports these lazily and returns a structured
+# 'not_ready' refusal when they're absent, so the core pipeline keeps
+# working without them.
+# google-api-python-client==2.151.0
+# google-auth==2.35.0
+# google-auth-oauthlib==1.2.1

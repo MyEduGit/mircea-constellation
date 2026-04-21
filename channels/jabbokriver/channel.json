@@ -1,0 +1,50 @@
+{
+  "slug": "jabbokriver",
+  "name": "JabbokRiverProductions",
+  "tagline_ro": "Religia LUI Isus, nu religia DESPRE Isus",
+  "tagline_en": "The religion OF Jesus, not the religion ABOUT Jesus",
+  "thesis": {
+    "ro": "Adventismul Zilei a Șaptea contemporan se confruntă cu o întrebare străveche: cultivăm religia LUI Isus (credință experiențială, ascultare a voii Tatălui) sau religia DESPRE Isus (sistem doctrinar despre persoana Lui)?",
+    "en": "Contemporary Seventh-day Adventism faces an ancient question: do we cultivate the religion OF Jesus (experiential faith, doing the Father's will) or the religion ABOUT Jesus (a doctrinal system concerning his person)?"
+  },
+  "host": {
+    "name": "Dr. Emanoil Geaboc",
+    "credential": "Theologian",
+    "bio_ro": "Teolog de origine română, predicator în comunitatea Adventistă de Ziua a Șaptea.",
+    "bio_en": "Romanian-born theologian and preacher within the Seventh-day Adventist community.",
+    "consent_status": "pending",
+    "consent_evidence_path": "channels/jabbokriver/consent/",
+    "first_contacted": null,
+    "consent_confirmed_at": null
+  },
+  "languages": ["ro", "en"],
+  "primary_language": "ro",
+  "subtitles": "en",
+  "cadence": "weekly",
+  "covenant": {
+    "constellation": "Mircea's Constellation",
+    "paper_ref": "The Urantia Book — Paper 196: The Faith of Jesus",
+    "alignment_quote": "The religion of Jesus is the most dynamic influence ever to activate the human race."
+  },
+  "publishing_policy": "catalog_and_link",
+  "public_launch_blocked_until": "host_consent_confirmed",
+  "footer": "JabbokRiver Productions · Religia LUI Isus, nu religia DESPRE Isus / The religion OF Jesus, not the religion ABOUT Jesus · Part of Mircea's Constellation · Inspired by The Urantia Book, Paper 196.",
+  "tags": [
+    "JabbokRiver",
+    "Emanoil Geaboc",
+    "religia lui Isus",
+    "religia despre Isus",
+    "adventism",
+    "Seventh-day Adventist",
+    "Urantia",
+    "Paper 196",
+    "credinta lui Isus",
+    "faith of Jesus"
+  ],
+  "series_title_prefix": "JabbokRiver — ",
+  "dashboard": {
+    "node_id": "jabbokriver",
+    "icon": "🎥",
+    "tier": "service"
+  }
+}
