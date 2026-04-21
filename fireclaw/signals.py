@@ -38,7 +38,7 @@ def http(url: str, expect_status: int = 200, timeout: float = 3.0) -> dict[str, 
             "detail": f"http_error={e.code}",
             "raw": {"status": e.code, "url": url},
         }
-    except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
+    except (urllib.error.URLError, TimeoutError) as e:
         return {
             "kind": "http",
             "ok": False,
@@ -57,7 +57,7 @@ def tcp(host: str, port: int, timeout: float = 2.0) -> dict[str, Any]:
                 "detail": f"{host}:{port} reachable",
                 "raw": {"host": host, "port": port},
             }
-    except (OSError, socket.timeout) as e:
+    except (TimeoutError, OSError) as e:
         return {
             "kind": "tcp",
             "ok": False,

@@ -72,7 +72,7 @@ def lucifer_test(rule: dict[str, Any], signal: dict[str, Any]) -> tuple[bool, st
         return False, "no action declared (rule violates mandate)"
     if rule["action"].get("kind") not in actions.DISPATCH:
         return False, f"action kind not in DISPATCH: {rule['action'].get('kind')!r}"
-    if not signal.get("ok") is False:  # only fire when signal says NOT ok
+    if signal.get("ok") is not False:  # only fire when signal says NOT ok
         # This is defensive — main loop already filtered. Keep the invariant.
         return False, "signal is ok; refuse to act on healthy state"
     return True, "passed"
