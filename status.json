@@ -13,7 +13,7 @@
   "iphone":       { "status": "ok" },
   "imac":         { "status": "ok" },
   "tailscale":    { "status": "ok" },
-  "openclaw":     { "status": "ok" },
+  "openclaw":     { "status": "ok", "version": "2026.4.14", "released": "2026-04-14", "last_checked": "2026-04-16T00:00:00.000Z" },
   "urantios":     { "status": "ok" },
   "nanoclaw_node":{ "status": "ok" },
   "claude":       { "status": "ok" },
@@ -29,5 +29,5 @@
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
 
-  "updated": "2026-04-13T13:18:00.000Z"
+  "updated": "2026-04-16T00:00:00.000Z"
 }

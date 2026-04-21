@@ -1,0 +1,150 @@
+name: Daily OpenClaw Release Check
+
+on:
+  schedule:
+    # Every day at 06:15 UTC — ~ after typical OpenClaw release windows
+    - cron: '15 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: openclaw-daily-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch latest OpenClaw release
+        id: fetch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # The openclaw/openclaw repo publishes date-tagged releases (vYYYY.M.D).
+          # Use the public GitHub API (no auth needed for public repos, but pass
+          # token to lift rate limits).
+          API_URL="https://api.github.com/repos/openclaw/openclaw/releases/latest"
+          echo "Querying $API_URL"
+          RESP=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API_URL")
+          TAG=$(echo "$RESP" | jq -r '.tag_name')
+          PUBLISHED=$(echo "$RESP" | jq -r '.published_at')
+          HTML_URL=$(echo "$RESP" | jq -r '.html_url')
+          # Normalize: strip leading "v" for the version field.
+          VERSION="${TAG#v}"
+          # Released date: YYYY-MM-DD slice of published_at.
+          RELEASED="${PUBLISHED:0:10}"
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+          echo "tag=$TAG"           >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION"   >> "$GITHUB_OUTPUT"
+          echo "released=$RELEASED" >> "$GITHUB_OUTPUT"
+          echo "html_url=$HTML_URL" >> "$GITHUB_OUTPUT"
+          echo "now=$NOW"           >> "$GITHUB_OUTPUT"
+
+      - name: Patch status.json and index.html
+        id: patch
+        env:
+          VERSION:  ${{ steps.fetch.outputs.version }}
+          RELEASED: ${{ steps.fetch.outputs.released }}
+          NOW:      ${{ steps.fetch.outputs.now }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, re, sys
+
+          version  = os.environ["VERSION"]
+          released = os.environ["RELEASED"]
+          now      = os.environ["NOW"]
+
+          # ── status.json ──────────────────────────────────────────────
+          status_path = pathlib.Path("status.json")
+          data = json.loads(status_path.read_text())
+          oc = data.get("openclaw") or {}
+          prev_version = oc.get("version")
+          oc["status"]       = oc.get("status", "ok")
+          oc["version"]      = version
+          oc["released"]     = released
+          oc["last_checked"] = now
+          data["openclaw"]   = oc
+          data["updated"]    = now
+          status_path.write_text(json.dumps(data, indent=2) + "\n")
+
+          # ── index.html ───────────────────────────────────────────────
+          html_path = pathlib.Path("index.html")
+          html = html_path.read_text()
+          # Replace the "OpenClaw Release" field in the openclaw nodeDetails entry.
+          new_release = f"v{version} ({released})"
+          html_new, n = re.subn(
+              r"('OpenClaw Release':\s*')[^']*(')",
+              lambda m: m.group(1) + new_release + m.group(2),
+              html,
+              count=1,
+          )
+          if n == 0:
+              print("WARN: 'OpenClaw Release' field not found in index.html", file=sys.stderr)
+          html_path.write_text(html_new)
+
+          changed = (prev_version != version)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"changed={'true' if changed else 'false'}\n")
+              f.write(f"prev_version={prev_version or ''}\n")
+          print(f"prev={prev_version}  new={version}  changed={changed}")
+          PY
+
+      - name: Commit & push if changed
+        if: steps.patch.outputs.changed == 'true'
+        env:
+          VERSION:      ${{ steps.fetch.outputs.version }}
+          PREV_VERSION: ${{ steps.patch.outputs.prev_version }}
+          HTML_URL:     ${{ steps.fetch.outputs.html_url }}
+        run: |
+          set -euo pipefail
+          git config user.name  "openclaw-updater[bot]"
+          git config user.email "openclaw-updater@users.noreply.github.com"
+          git add status.json index.html
+          if git diff --cached --quiet; then
+            echo "No file changes to commit."
+            exit 0
+          fi
+          MSG="chore(openclaw): bump upstream release to v${VERSION}"
+          if [ -n "${PREV_VERSION}" ]; then
+            MSG="${MSG} (was v${PREV_VERSION})"
+          fi
+          git commit -m "${MSG}" -m "Release: ${HTML_URL}" -m "Automated daily update from openclaw/openclaw."
+          # Retry push with simple backoff for transient network failures.
+          for i in 1 2 3 4; do
+            if git push origin HEAD:main; then
+              echo "Push succeeded on attempt $i"
+              exit 0
+            fi
+            sleep $((2 ** i))
+          done
+          echo "Push failed after 4 attempts" >&2
+          exit 1
+
+      - name: Summary
+        if: always()
+        env:
+          CHANGED:      ${{ steps.patch.outputs.changed }}
+          VERSION:      ${{ steps.fetch.outputs.version }}
+          PREV_VERSION: ${{ steps.patch.outputs.prev_version }}
+          HTML_URL:     ${{ steps.fetch.outputs.html_url }}
+        run: |
+          {
+            echo "## OpenClaw daily update"
+            echo ""
+            echo "- Latest upstream: **v${VERSION}**"
+            echo "- Previous tracked: **v${PREV_VERSION:-<none>}**"
+            echo "- Changed: **${CHANGED}**"
+            echo "- Release page: ${HTML_URL}"
+          } >> "$GITHUB_STEP_SUMMARY"
