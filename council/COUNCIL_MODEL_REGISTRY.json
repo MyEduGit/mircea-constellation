@@ -1,7 +1,7 @@
 {
   "registry_name": "Council of Seven — Model Registry",
   "version": "v1.1",
-  "last_updated": "2026-04-16T00:00:00Z",
+  "last_updated": "2026-04-18T00:00:00Z",
   "description": "Canonical model assignments for all 7 seats + Gabriel synthesizer. Used by update_council_models.py for auto-update. PROVISIONAL — all assignments subject to revision.",
   "philosophy": "function-before-model. free-before-paid. local-before-cloud. dependable-before-prestigious.",
   "seats": [
@@ -194,33 +194,29 @@
       "name": "Trinity",
       "role": "Outer Awareness / Horizon Expansion",
       "archetype": "Oracle / Horizon Expander",
-      "provider": "ollama",
-      "current_model": "mistral:7b",
-      "api_model_id": "mistral:7b",
-      "ideal_model": "grok-4",
-      "ideal_provider": "xai",
-      "ideal_key_env_var": "XAI_API_KEY",
-      "ideal_api_endpoint": "https://api.x.ai/v1/chat/completions",
+      "provider": "xai",
+      "current_model": "grok-3",
+      "api_model_id": "grok-3",
       "next_model": "grok-4",
       "next_model_status": "announced",
-      "api_endpoint": "http://204.168.143.98:11434/api/chat",
-      "model_check_endpoint": "http://204.168.143.98:11434/api/tags",
-      "model_check_auth": null,
-      "key_env_var": null,
+      "api_endpoint": "https://api.x.ai/v1/chat/completions",
+      "model_check_endpoint": "https://api.x.ai/v1/models",
+      "model_check_auth": "Authorization: Bearer {XAI_API_KEY}",
+      "key_env_var": "XAI_API_KEY",
       "n8n_node_name": "Seat7_Trinity_Grok",
-      "note": "Wired to mistral:7b (free local). Mistral excels at creative + lateral thinking. Upgrade to Grok-4 when xAI key available.",
+      "note": "Wired to grok-3 (xAI live API). Run wire_seat7_grok.py to inject key and upgrade model. Mistral:7b available as local fallback via ollama_model field.",
       "alternatives": [
-        {"rank": 1, "model": "mistral:7b",     "reason": "FREE local — current primary, creative breadth"},
-        {"rank": 2, "model": "grok-4",          "reason": "Ideal paid model — real-time world awareness"},
-        {"rank": 3, "model": "grok-3",          "reason": "Paid fallback"},
-        {"rank": 4, "model": "qwen3:8b",        "reason": "Local fallback"}
+        {"rank": 1, "model": "grok-4",          "reason": "Best paid model — real-time world awareness, upgrade when available"},
+        {"rank": 2, "model": "grok-3",          "reason": "Current paid model — horizon expansion"},
+        {"rank": 3, "model": "grok-3-mini",     "reason": "Paid low-cost fallback"},
+        {"rank": 4, "model": "mistral:7b",      "reason": "FREE local fallback — creative breadth"}
       ],
-      "cost_per_1m_tokens": {"input": 0.00, "output": 0.00, "currency": "USD", "note": "FREE — local Ollama on URANTiOS"},
-      "context_window_tokens": 32768,
+      "cost_per_1m_tokens": {"input": 3.00, "output": 15.00, "currency": "USD", "note": "grok-3"},
+      "context_window_tokens": 131072,
       "ollama_model": "mistral:7b",
       "ollama_host": "204.168.143.98",
       "ollama_port": 11434,
-      "status": "LOCAL_FREE",
+      "status": "ACTIVE",
       "last_checked": null
     }
   ],
@@ -262,13 +258,13 @@
       {"seat": 4, "model": "gemma4:e4b (local)",  "cost_usd": 0.000000, "free": true},
       {"seat": 5, "model": "deepseek-r1:7b (local)", "cost_usd": 0.000000, "free": true},
       {"seat": 6, "model": "qwen2.5-coder:7b (local)", "cost_usd": 0.000000, "free": true},
-      {"seat": 7, "model": "mistral:7b (local)",  "cost_usd": 0.000000, "free": true}
+      {"seat": 7, "model": "grok-3 (xAI)",         "cost_usd": 0.002400, "free": false}
     ],
     "gabriel_cost_usd": 0.057000,
-    "total_est_usd": 0.090400,
-    "free_seats": 5,
-    "paid_seats": 3,
-    "local_savings_note": "5 of 7 seats FREE. Only Seat1 (GPT) + Seat2 (Claude) + Gabriel cost money."
+    "total_est_usd": 0.092800,
+    "free_seats": 4,
+    "paid_seats": 4,
+    "local_savings_note": "4 of 7 seats FREE. Seat1 (GPT) + Seat2 (Claude) + Seat7 (Grok) + Gabriel cost money."
   },
   "upgrade_triggers": {
     "description": "Conditions that should trigger a seat model upgrade review",
