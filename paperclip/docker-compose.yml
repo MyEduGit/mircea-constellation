@@ -1,0 +1,51 @@
+# Paperclip — compose definition.
+# Run from paperclip/ directory; .env supplies HOST_UID, HOST_GID.
+#
+# EVIDENCE_DIRS tells Paperclip which directories to sweep for evidence
+# records. Add a bind-mount for each claw's evidence directory and list
+# them comma-separated below. In a single-box deployment all claws can
+# share /opt/constellation-data/evidence and EVIDENCE_DIRS stays at
+# its default of /data/evidence.
+#
+# Example multi-claw layout:
+#   - EVIDENCE_DIRS=/data/evidence/scribeclaw,/data/evidence/openclaw
+#   volumes:
+#     - /opt/scribeclaw-data/evidence:/data/evidence/scribeclaw:ro
+#     - /opt/openclaw-data/evidence:/data/evidence/openclaw:ro
+#     - /opt/paperclip-data:/data
+
+services:
+  paperclip:
+    build:
+      context: ..
+      dockerfile: paperclip/Dockerfile
+      args:
+        USER_ID: ${HOST_UID:-1000}
+        GROUP_ID: ${HOST_GID:-1000}
+    container_name: paperclip
+    restart: unless-stopped
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    working_dir: /app
+    environment:
+      - CLAW_NAME=Paperclip
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      # Comma-separated list of dirs to sweep; extend when more claws are added.
+      - EVIDENCE_DIRS=${EVIDENCE_DIRS:-/data/evidence}
+    volumes:
+      - /opt/paperclip-data:/data
+    ports:
+      - "127.0.0.1:8083:8083"
+    networks:
+      - urantios_net
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8083/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  urantios_net:
+    driver: bridge
