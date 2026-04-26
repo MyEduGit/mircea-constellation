@@ -9,6 +9,16 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nohup bash \"$CLAUDE_PROJECT_DIR/setup/cloud-backup/backup-all.sh\" >> \"${HOME}/.cloud-backup/logs/stop-hook.log\" 2>&1 &"
+          }
+        ]
+      }
     ]
   }
 }
