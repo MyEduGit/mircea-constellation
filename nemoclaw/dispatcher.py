@@ -35,7 +35,7 @@ def handle(job_path, jobs_root):
     log(jobs_root, f"STAGED {job_path.name}")
     try:
         out = claude_run(job, jobs_root/"40_RESULTS")
-        log(jobs_root, f"EXECUTED {job[chr(39)stem chr(39)]} -> {out.name}")
+        log(jobs_root, f"EXECUTED {job["stem"]} -> {out.name}")
     except Exception as e:
         log(jobs_root, f"ERROR: {e}")
     _archive(job_path, jobs_root)
