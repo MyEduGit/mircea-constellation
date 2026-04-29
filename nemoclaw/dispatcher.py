@@ -2,6 +2,10 @@ import argparse, time
 from pathlib import Path
 from .flow import JobFlow, JobState
 from .proof import log
+try:
+    from . import dashboard as _db
+except Exception:
+    _db=None
 
 ROOT = Path.home() / "Obsidian/UrantiPedia/System/NemoClaw/Jobs"
 DONE = ".done"
@@ -14,6 +18,7 @@ def handle(job_path, jobs_root):
     f = JobFlow(); f.state = JobState(jobs_root=str(jobs_root), job_path=str(job_path))
     f.kickoff(); (job_path.parent/(job_path.name+DONE)).touch()
     log(jobs_root, f"DISPATCHED {job_path.name}")
+    if _db: _db.update(jobs_root)
 
 def run_once(jobs_root):
     inbox = jobs_root/"00_INBOX"; inbox.mkdir(parents=True,exist_ok=True)
