@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+cd /Users/mircea8me.com/mircea-constellation
+bash preservation/run.sh --quick >/tmp/mircea_preservation_last.log 2>&1 || true
+git push "$HOME/backups/mircea-constellation.git" --all >/tmp/mircea_mirror_last.log 2>&1 || true
