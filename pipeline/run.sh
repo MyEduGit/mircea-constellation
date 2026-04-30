@@ -12,7 +12,7 @@ if [ -x nemoclaw/run.sh ]; then
   if [ -f ".venv-nemoclaw/bin/activate" ]; then
     source ".venv-nemoclaw/bin/activate"
   fi
-  bash nemoclaw/run.sh --once || true
+  bash nemoclaw/run.sh || true
 else
   echo "NemoClaw runner missing or not executable"
 fi
