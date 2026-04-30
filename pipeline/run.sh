@@ -7,7 +7,8 @@ echo "=== LOCAL PIPELINE RUN ==="
 date '+%A, %d %B %Y — %H:%M:%S %Z'
 echo
 
-echo "Stage 1: NemoClaw"
+echo "Stage 1: CrewAI / crew_engine orchestration"
+echo "Stage 2: NemoClaw"
 if [ -x nemoclaw/run.sh ]; then
   if [ -f ".venv-nemoclaw/bin/activate" ]; then
     source ".venv-nemoclaw/bin/activate"
@@ -18,7 +19,7 @@ else
 fi
 echo
 
-echo "Stage 2: OpenClaw visibility"
+echo "Stage 3: OpenClaw visibility"
 if [ -d openclaw_ingest ]; then
   echo "FOUND: openclaw_ingest"
 else
@@ -26,7 +27,7 @@ else
 fi
 echo
 
-echo "Stage 3: Preservation"
+echo "Stage 4: Preservation"
 bash preservation/run.sh --quick
 echo
 
