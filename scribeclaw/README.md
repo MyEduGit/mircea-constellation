@@ -69,6 +69,7 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
+    "strip_speaker_labels",          # REAL — remove "Speaker 1:" prefixes
     "youtube_metadata",              # REAL — deterministic packaging
     "youtube_upload",                # STUB — refuses without OAuth creds
 }
@@ -176,6 +177,23 @@ to check `language_code == "ro"`, writes the matches to
 `/data/transcripts/<id>/`, and returns a `resume_before_id` that you can
 pass back as `start_before_id` to continue where the previous run stopped
 (useful for dashboards with hundreds of items).
+
+### Remove "Speaker 1:" prefixes from auto-generated captions
+
+YouTube auto-captions for monologue content prepend every cue with a
+diarisation label like `Speaker 1:`. `strip_speaker_labels` removes
+those noisy prefixes without touching timings or cue count:
+
+```bash
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"strip_speaker_labels","payload":{"stem":"interviu"}}'
+```
+
+Recognises `Speaker N:` / `SPEAKER_00:` / `[Speaker A]` / `(Speaker 2)` /
+`- Speaker 3:` / `Vorbitor 1:` / `Persoana 2:` / `Narator:` (case-
+insensitive, locale-aware). Output: `<name>.nolabels.srt` +
+`<name>.nolabels.json` audit. Idempotent — running twice is a no-op.
 
 Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
