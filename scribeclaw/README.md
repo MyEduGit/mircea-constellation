@@ -2,9 +2,10 @@
 
 **Truthful label:** deployable scaffold. Real handlers: `media_edit`,
 `audio_extract`, `transcribe_ro`, `transcribe_assemblyai`,
-`import_assemblyai_transcript`, `postprocess_transcript`,
-`youtube_metadata`. Stub: `youtube_upload` (refuses — operator must
-supply OAuth credentials in a follow-up PR).
+`import_assemblyai_transcript`, `bulk_import_assemblyai_romanian`,
+`postprocess_transcript`, `resegment_phrase_cues`, `youtube_metadata`.
+Stub: `youtube_upload` (refuses — operator must supply OAuth credentials
+in a follow-up PR).
 
 Singular primary role: **controlled execution** (media-pipeline sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence —
@@ -69,6 +70,7 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
+    "resegment_phrase_cues",         # REAL — phrase-length caption cues
     "youtube_metadata",              # REAL — deterministic packaging
     "youtube_upload",                # STUB — refuses without OAuth creds
 }
@@ -176,6 +178,30 @@ to check `language_code == "ro"`, writes the matches to
 `/data/transcripts/<id>/`, and returns a `resume_before_id` that you can
 pass back as `start_before_id` to continue where the previous run stopped
 (useful for dashboards with hundreds of items).
+
+### Re-segment into phrase-length cues (YouTube/BBC style)
+
+The default SRT/VTT that Whisper or AssemblyAI produce is sentence-length
+— readable, but uncomfortably long as captions. `resegment_phrase_cues`
+breaks each transcript into short phrase-length cues (~3-6 seconds,
+≤ 2 × 42-char lines, honouring sentence endings, Romanian conjunctions,
+and punctuation):
+
+```bash
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"resegment_phrase_cues","payload":{"stem":"interviu.edited"}}'
+```
+
+Outputs (alongside the original transcript files):
+- `transcript.cues.srt` / `transcript.cues.vtt` — the phrase-cue SRT/VTT
+- `cues.json` — structured cues with per-cue timing, word count, char count
+
+When the source lacks per-word timestamps (AssemblyAI dashboard imports),
+timing is interpolated linearly across each sentence — honest approximation,
+surfaced as `approx_timing: true` in the result. Every cap
+(`max_cue_chars`, `max_cue_sec`, `min_cue_words`, `min_cue_chars`,
+`min_cue_sec`, `max_line_chars`) is overridable per-call.
 
 Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
