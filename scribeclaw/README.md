@@ -69,6 +69,7 @@ ALLOWED_HANDLERS = {
     "import_assemblyai_transcript",     # REAL — reuse a dashboard transcript by id
     "bulk_import_assemblyai_romanian",  # REAL — clone every Romanian transcript
     "postprocess_transcript",        # REAL — deterministic, no LLM
+    "session_status",                # REAL — operator-readiness report
     "youtube_metadata",              # REAL — deterministic packaging
     "youtube_upload",                # STUB — refuses without OAuth creds
 }
@@ -176,6 +177,23 @@ to check `language_code == "ro"`, writes the matches to
 `/data/transcripts/<id>/`, and returns a `resume_before_id` that you can
 pass back as `start_before_id` to continue where the previous run stopped
 (useful for dashboards with hundreds of items).
+
+### One-shot operator readiness report
+
+`session_status` produces a markdown + JSON snapshot of what's installed,
+which transcripts have been processed, and what the operator should do
+next:
+
+```bash
+curl -sX POST http://127.0.0.1:8081/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"handler":"session_status","payload":{}}'
+```
+
+Writes `/data/status/session.md` (human-readable checklist with a per-
+stem pipeline-progress table) and `/data/status/session.json`
+(machine-readable snapshot the dashboard can poll). `next_actions` is
+split into env fixes + per-stem advances so a fresh install sees both.
 
 Both write the same `segments.json`/`.srt`/`.vtt`/`.txt` layout as
 `transcribe_ro`, so `postprocess_transcript` → `youtube_metadata` run
