@@ -82,4 +82,17 @@ else
   warn "icloud remote not configured — run: setup/cloud-backup/install.sh"
 fi
 
+# ── UrantiPedia perpetual-capture vault (if it exists) ───────────────────────
+URANTIPEDIA_VAULT="${OBSIDIAN_URANTIPEDIA_VAULT:-${HOME}/Obsidian/UrantiPedia}"
+if [ -d "$URANTIPEDIA_VAULT" ]; then
+  say "=== UrantiPedia vault ==="
+  if check_remote gdrive; then
+    rclone_sync "$URANTIPEDIA_VAULT" "gdrive:UrantiPedia" "UrantiPedia → GDrive"
+  fi
+  if check_remote icloud; then
+    ICLOUD_UT="${ICLOUD_URANTIPEDIA_PATH:-Documents/Obsidian/UrantiPedia}"
+    rclone_sync "$URANTIPEDIA_VAULT" "icloud:$ICLOUD_UT" "UrantiPedia → iCloud"
+  fi
+fi
+
 say "Sync complete. Full log: $LOG_FILE"

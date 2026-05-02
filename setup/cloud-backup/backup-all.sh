@@ -23,6 +23,19 @@ err()  { printf '\033[1;31m  [err]\033[0m %s\n' "$*" | tee -a "$LOG_FILE" >&2; }
 
 say "Cloud backup started: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
+# ── Step 0: Perpetual Capture (all AI/work sources → UrantiPedia vault) ──────
+PERPETUAL_SCRIPT="$(dirname "$SCRIPT_DIR")/perpetual-capture/capture.py"
+if [ -f "$PERPETUAL_SCRIPT" ]; then
+  say "Step 0/3 — Perpetual Capture (all sources → UrantiPedia)..."
+  if command -v python3 &>/dev/null; then
+    if python3 "$PERPETUAL_SCRIPT" 2>&1 | tee -a "$LOG_FILE"; then
+      ok "Perpetual capture complete"
+    else
+      warn "Perpetual capture had errors (non-fatal, continuing)"
+    fi
+  fi
+fi
+
 # ── Step 1: Export Anthropic/Claude data to Obsidian vault ────────────────────
 say "Step 1/3 — Export Anthropic data to Obsidian..."
 if command -v python3 &>/dev/null; then
