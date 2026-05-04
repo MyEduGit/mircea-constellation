@@ -18,8 +18,8 @@ Prerequisites:
   3. Run this script:
        python channels/jabbokriver/tools/bootstrap_refresh_token.py
 
-  4. A browser window opens. Log in as messagestostephanos@gmail.com
-     (the account managing Dr. Geaboc's YouTube channel) and click Allow.
+  4. A browser window opens. Log in as jabbokriverproductions@gmail.com
+     and click Allow.
 
   5. refresh_token.json is written to the credentials directory.
      The youtube_upload handler will find it automatically from now on.
@@ -73,8 +73,8 @@ def main() -> None:
 
     print(f"Found client_secret.json at: {client_secret}")
     print("Opening browser for Google sign-in...")
-    print("Sign in as: messagestostephanos@gmail.com")
-    print("(This is the account that manages Dr. Geaboc's channel)\n")
+    print("Sign in as: jabbokriverproductions@gmail.com")
+    print("(Your personal JabbokRiver Productions channel)\n")
 
     flow = InstalledAppFlow.from_client_secrets_file(str(client_secret), SCOPES)
     creds = flow.run_local_server(port=0)
