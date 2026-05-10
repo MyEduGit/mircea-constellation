@@ -24,8 +24,10 @@ command -v rclone &>/dev/null || fail "rclone not found — run: setup/cloud-bac
 
 # ── Load credentials ──────────────────────────────────────────────────────────
 if [ -f "$CRED_FILE" ]; then
+  set +u
   # shellcheck disable=SC1090
-  set +u; source "$CRED_FILE"; set -u
+  source "$CRED_FILE"
+  set -u
 fi
 
 RCLONE_OPTS=(

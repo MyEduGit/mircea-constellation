@@ -20,20 +20,22 @@ if [ ! -f "$CRED_FILE" ]; then
   err "Credentials not found at $CRED_FILE — run: setup/cloud-backup/install.sh"
   exit 1
 fi
+set +u
 # shellcheck disable=SC1090
-set +u; source "$CRED_FILE"; set -u
+source "$CRED_FILE"
+set -u
 
 JOBS_VAULT="${OBSIDIAN_JOBS_VAULT:-${HOME}/Documents/Obsidian/Jobs}"
 ANTHR_VAULT="${OBSIDIAN_ANTHROPIC_VAULT:-${HOME}/Documents/Obsidian/Anthropic-Data}"
 
-GDRIVE_JOBS_DEST="gdrive:ObsidianJobs"
-GDRIVE_ANTHR_DEST="gdrive:AnthropicData"
-if [ -n "${GDRIVE_OBSIDIAN_FOLDER_ID:-}" ]; then
-  GDRIVE_JOBS_DEST="gdrive:ObsidianJobs --drive-root-folder-id=${GDRIVE_OBSIDIAN_FOLDER_ID}"
-fi
-
 ICLOUD_JOBS_DEST="icloud:${ICLOUD_OBSIDIAN_PATH:-Documents/Obsidian/Jobs}"
 ICLOUD_ANTHR_DEST="icloud:${ICLOUD_ANTHROPIC_PATH:-Documents/Obsidian/Anthropic-Data}"
+
+# Build extra rclone flags when a root folder ID is configured
+GDRIVE_EXTRA_FLAGS=()
+if [ -n "${GDRIVE_OBSIDIAN_FOLDER_ID:-}" ]; then
+  GDRIVE_EXTRA_FLAGS=(--drive-root-folder-id "${GDRIVE_OBSIDIAN_FOLDER_ID}")
+fi
 
 RCLONE_OPTS=(
   --create-empty-src-dirs
@@ -47,12 +49,14 @@ RCLONE_OPTS=(
 
 rclone_sync() {
   local src="$1" dest="$2" label="$3"
+  shift 3
   if [ ! -d "$src" ]; then
     warn "$label: source $src not found — skipping"
     return 0
   fi
   say "Syncing $label → $dest"
-  if rclone sync "$src" $dest "${RCLONE_OPTS[@]}" 2>&1 | grep -v '^$' | tail -5; then
+  # shellcheck disable=SC2068
+  if rclone sync "$src" "$dest" "${RCLONE_OPTS[@]}" "$@" 2>&1 | grep -v '^$' | tail -5; then
     ok "$label synced"
   else
     warn "$label sync exited non-zero (check $LOG_FILE)"
@@ -67,8 +71,8 @@ check_remote() {
 # ── Google Drive sync ─────────────────────────────────────────────────────────
 say "=== Google Drive ==="
 if check_remote gdrive; then
-  rclone_sync "$JOBS_VAULT"  "gdrive:ObsidianJobs"   "Jobs vault → GDrive"
-  rclone_sync "$ANTHR_VAULT" "gdrive:AnthropicData"  "Anthropic data → GDrive"
+  rclone_sync "$JOBS_VAULT"  "gdrive:ObsidianJobs"  "Jobs vault → GDrive"  "${GDRIVE_EXTRA_FLAGS[@]+"${GDRIVE_EXTRA_FLAGS[@]}"}"
+  rclone_sync "$ANTHR_VAULT" "gdrive:AnthropicData" "Anthropic data → GDrive"
 else
   warn "gdrive remote not configured — run: setup/cloud-backup/install.sh"
 fi

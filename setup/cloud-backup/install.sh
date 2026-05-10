@@ -77,8 +77,10 @@ ENVEOF
 fi
 
 # ── Source credentials ────────────────────────────────────────────────────────
+set +u
 # shellcheck disable=SC1090
-set +u; source "$CRED_FILE"; set -u
+source "$CRED_FILE"
+set -u
 
 # ── rclone Google Drive remote ────────────────────────────────────────────────
 say "Configuring rclone gdrive remote..."
