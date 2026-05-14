@@ -1,3 +1,18 @@
+---
+title: "Module 1 — Teacher's Book — What Is AI?"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 1
+cefr: [Pre-A1, A1]
+tags: [amep, ai-literacy, teacher-book, module-1, what-is-ai]
+aliases: ["T-01", "Teacher Module 1"]
+pair: "[[S-01-what-is-ai]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[00-front-matter]]"
+next: "[[T-02-opening-claude]]"
+---
+
 # Module 1 — Teacher's Book
 ## What Is AI?
 **Mirror of Student Book pages S-1.1 to S-1.11**
@@ -54,7 +69,7 @@ If you do not, switch to the offline plan (see T-1.9).
 ## T-1.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Welcome, attendance, overview of module | Write "AI" on the board. Ask: "Who has heard this word?" |
 | 0:10–0:20 | Today's 5 words (S-1.2) | Write each on board. Say, repeat, students repeat. |
 | 0:20–0:30 | Look and Listen — dialogue (S-1.4) | Read aloud twice. Students follow text. |
@@ -196,7 +211,7 @@ If you do not, switch to the offline plan (see T-1.9).
 ## T-1.7 · Things That Will Go Wrong (and How to Recover)
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Projector does not connect | Switch to offline plan B. Draw a phone screen on the whiteboard. Write a fake "AI conversation" on the board as a model. |
 | Claude takes more than 30 seconds to respond | Say: "Sometimes AI is slow, like a website. We wait. This is normal." Count aloud together — students practise numbers. |
 | Claude gives a very long answer that confuses students | Say: "AI sometimes writes a lot. We only read the first part today. That is enough." Scroll to show only the first paragraph. |
@@ -213,7 +228,7 @@ If you do not, switch to the offline plan (see T-1.9).
 *(Confirm current unit codes with your RTO before printing.)*
 
 | Student activity | Mapped element |
-|-----------------|----------------|
+|-----------------|---------------|
 | Completing vocabulary table (S-1.2) | Reading for vocabulary acquisition |
 | Reading dialogue aloud (S-1.4) | Oral language — listening and responding |
 | Filling in the blank sentences (S-1.6) | Writing — controlled composition |
@@ -223,7 +238,7 @@ If you do not, switch to the offline plan (see T-1.9).
 ### Course: 22638VIC — Certificate II in ESOL (Further Access)
 
 | Student activity | Mapped element |
-|-----------------|----------------|
+|-----------------|---------------|
 | Vocabulary and sentence construction (S-1.2, 1.6) | Reading and writing — word level and sentence level |
 | Dialogue analysis (S-1.4) | Listening — identifying key information in a short exchange |
 | Speaking frames (S-1.7) | Speaking — participating in structured conversation |
@@ -238,7 +253,7 @@ If you do not, switch to the offline plan (see T-1.9).
 ## T-1.9 · Digital Literacy Rubric — Module 1
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can identify the screen and chat box when pointed to. Can respond yes/no to questions about AI. Needs physical guidance to engage with the device. |
 | **Developing** | Student can locate the chat box independently. Can write or dictate one question. Understands that AI is a program, not a person. |
 | **Consolidating** | Student can explain what AI does in one or two sentences. Can identify what not to type (personal information). Asks follow-up questions about AI. |
@@ -302,7 +317,7 @@ Ask the student to:
 | Check | Result |
 |-------|--------|
 | **Truth** — Every AI claim accurate? | Yes. AI described as predictive text program, not sentient. Hallucination noted. Claude.ai correctly identified as free-tier available. ⏱ *Free tier availability may change — verify at claude.ai before printing.* |
-| **Beauty** — Layout clean, language kind, visuals describable? | Yes. All images described for designer. Sentence length ≤12 words in Student Book. Numbered steps used throughout. |
+| **Beauty** — Layout clean, language kind, visuals describable? | Yes. All images described for designer. Sentence length ≤ 12 words in Student Book. Numbered steps used throughout. |
 | **Goodness** — Increases student agency, safety, and dignity? | Yes. Safety Box introduced immediately. No assumptions about prior knowledge. No shaming language. Adult dignity maintained throughout. |
 
 ---

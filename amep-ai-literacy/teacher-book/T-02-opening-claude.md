@@ -1,3 +1,18 @@
+---
+title: "Module 2 — Teacher's Book — Opening Claude"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 2
+cefr: [A1]
+tags: [amep, ai-literacy, teacher-book, module-2, opening-claude]
+aliases: ["T-02", "Teacher Module 2"]
+pair: "[[S-02-opening-claude]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[T-01-what-is-ai]]"
+next: "[[T-03-voice-mode]]"
+---
+
 # Module 2 — Teacher's Book
 ## Opening Claude
 **Mirror of Student Book pages S-2.1 to S-2.11**
@@ -52,7 +67,7 @@ Open claude.ai → type "Hello. What can you help me with?" → confirm a reply 
 ## T-2.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 1 · Today's 5 words | Ask: "What is AI?" Students recall. |
 | 0:10–0:20 | Look and Listen — Kofi and Lin dialogue | Read aloud; students read along. |
 | 0:20–0:40 | Do It With Me — live demo + student practice | Walk through all steps on projector, then students try on their devices. |
@@ -176,7 +191,7 @@ Open claude.ai → type "Hello. What can you help me with?" → confirm a reply 
 ## T-2.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Student types in address bar incorrectly | Common error: typing "claude.ai" in a Google search bar rather than the browser address bar. Say: "Look at the very top of the screen. There is a long bar. Tap there first." |
 | Student gets a "sign up" wall | Some regions require an account. Pair the student with one who can access without sign-up, or use your teacher screen for the demo. |
 | Student's phone has very small text | Show them: hold the page with two fingers and spread apart to zoom in. |
@@ -203,7 +218,7 @@ Open claude.ai → type "Hello. What can you help me with?" → confirm a reply 
 ## T-2.9 · Digital Literacy Rubric — Module 2
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can navigate to claude.ai with direct guidance at each step. Can locate the message box when pointed to. |
 | **Developing** | Student can open claude.ai independently. Can type a simple question and send it without prompting. |
 | **Consolidating** | Student opens Claude, types a self-generated question, reads the reply, and identifies at least one word or idea from the response. |

@@ -1,3 +1,19 @@
+---
+title: "Module 3 — Teacher's Book — Voice Mode"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 3
+cefr: [A1]
+tags: [amep, ai-literacy, teacher-book, module-3, voice-mode]
+aliases: ["T-03", "Teacher Module 3"]
+pair: "[[S-03-voice-mode]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[T-02-opening-claude]]"
+next: "[[T-04-english-practice]]"
+---
+
 # Module 3 — Teacher's Book
 ## Speak to Claude
 **Mirror of Student Book pages S-3.1 to S-3.11**
@@ -35,7 +51,7 @@ There are two distinct voice pathways students may encounter:
 ## T-3.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 2 · Today's 5 words | Ask: "Who tried Claude at home?" |
 | 0:10–0:20 | Look and Listen — Sana dialogue | Read aloud. Students follow. |
 | 0:20–0:35 | Do It With Me — voice demo and practice | Demonstrate on your device first. |
@@ -136,7 +152,7 @@ There are two distinct voice pathways students may encounter:
 ## T-3.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Microphone permission denied | Say: "Your phone needs permission to use the microphone. Go to Settings > Apps > Chrome (or Safari) > Permissions > Microphone > Allow." |
 | Phone mishears every student | Switch to typing for this lesson. The typing prompt works identically. |
 | Student speaks too quietly and phone doesn't hear | Suggest: "Hold the phone about 10 cm from your mouth. Speak a little more clearly — not louder, just clearer." |
@@ -159,7 +175,7 @@ There are two distinct voice pathways students may encounter:
 ## T-3.9 · Digital Literacy Rubric — Module 3
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can tap the microphone icon when shown. Speaks into phone with guidance. |
 | **Developing** | Student independently activates voice input and speaks a short question. Corrects phone errors by retyping. |
 | **Consolidating** | Student uses voice input fluently, identifies when the phone mishears them, corrects the text, and uses Claude's pronunciation guide to practise independently. |

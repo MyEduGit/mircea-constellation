@@ -1,3 +1,18 @@
+---
+title: "Module 4 — Teacher's Book — AI for English Practice"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 4
+cefr: [A2]
+tags: [amep, ai-literacy, teacher-book, module-4, english-practice]
+aliases: ["T-04", "Teacher Module 4"]
+pair: "[[S-04-english-practice]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[T-03-voice-mode]]"
+next: "[[T-05-real-life]]"
+---
+
 # Module 4 — Teacher's Book
 ## AI for English Practice
 **Mirror of Student Book pages S-4.1 to S-4.11**
@@ -40,7 +55,7 @@ Claude is a genuinely useful grammar checker for ESL learners, with important ca
 ## T-4.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 3 · Today's 5 words | Ask students to share pronunciation words from homework. |
 | 0:10–0:20 | Look and Listen — Dalia dialogue (S-4.4) | Read aloud twice. First time: listen. Second time: follow text. |
 | 0:20–0:35 | Do It With Me — prompt structure and demo (S-4.5) | Write prompt templates on the board. Demo each one live. |
@@ -151,7 +166,7 @@ Claude is a genuinely useful grammar checker for ESL learners, with important ca
 ## T-4.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Claude gives a very long grammar explanation | Say: "We only need to read the first correction. The rest is extra. Let us focus on one thing at a time." Ask Claude: "Please give a shorter explanation." |
 | Student becomes anxious about grammar mistakes | Redirect: "I see Claude found one thing to change. That is great — one thing to learn. You are doing well." Never tally errors aloud. |
 | Claude corrects something that is actually correct | Say: "Interesting. Let me check that. [Check with your own knowledge or resources.] Claude can be wrong. This is why we always double-check." |
@@ -174,7 +189,7 @@ Claude is a genuinely useful grammar checker for ESL learners, with important ca
 ## T-4.9 · Digital Literacy Rubric — Module 4
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can type a sentence into Claude with prompt support. Identifies that Claude has made a correction but may not understand why. |
 | **Developing** | Student independently uses the correction prompt. Reads and understands the correction. Can ask one follow-up question. |
 | **Consolidating** | Student generates sentences from their own experience, requests correction, understands the explanation, and applies the corrected form in new writing. |

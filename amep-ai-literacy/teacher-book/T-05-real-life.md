@@ -1,3 +1,18 @@
+---
+title: "Module 5 — Teacher's Book — AI in Real Life"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 5
+cefr: [A2]
+tags: [amep, ai-literacy, teacher-book, module-5, real-life]
+aliases: ["T-05", "Teacher Module 5"]
+pair: "[[S-05-real-life]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[T-04-english-practice]]"
+next: "[[T-06-web-search]]"
+---
+
 # Module 5 — Teacher's Book
 ## AI in Real Life
 **Mirror of Student Book pages S-5.1 to S-5.11**
@@ -33,7 +48,7 @@ This module has two core functions:
 ## T-5.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 4 · Today's 5 words | Students share grammar corrections from homework. |
 | 0:10–0:22 | Look and Listen — Fatima dialogue (S-5.4) | Read aloud. Discuss: what did Fatima need? |
 | 0:22–0:40 | Do It With Me — email drafting demo (S-5.5) | Use sample letter. Walk through the prompt. |
@@ -149,7 +164,7 @@ This module has two core functions:
 ## T-5.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Student pastes a real letter with their name and address | Calmly stop the activity. Say: "Let us remove your real information first. We will use a made-up name." Do not embarrass the student. Close the tab and start a new chat. |
 | Claude produces an email that is too formal or unusual | Say: "Claude sometimes writes very formal English. That is fine for official letters. Let us check the key words." Read the email aloud together. |
 | Student cannot find a letter to use | Use a sample letter from Appendix D-5. Every student has a copy. |
@@ -172,7 +187,7 @@ This module has two core functions:
 ## T-5.9 · Digital Literacy Rubric — Module 5
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can copy text and paste it into Claude's message box with support. Reads Claude's simple explanation with help. |
 | **Developing** | Student independently uses a document comprehension prompt. Reads and uses Claude's email draft, checking at least one fact. |
 | **Consolidating** | Student selects the appropriate prompt for their task, reads Claude's draft critically, verifies facts against the original document, and edits before sending. |
