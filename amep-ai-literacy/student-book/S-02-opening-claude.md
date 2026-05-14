@@ -1,3 +1,18 @@
+---
+title: "Module 2 — Opening Claude"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 2
+cefr: [A1]
+tags: [amep, ai-literacy, student-book, module-2, opening-claude]
+aliases: ["S-02", "Student Module 2"]
+pair: "[[T-02-opening-claude]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[S-01-what-is-ai]]"
+next: "[[S-03-voice-mode]]"
+---
+
 # Module 2 — Opening Claude
 **CEFR: A1 · Pages S-2.1 to S-2.11**
 
@@ -170,14 +185,14 @@ Write your question here.
 
 > Remember: Do not use your real name or personal information.
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 Now type your question into Claude. Read the reply.
 Write one word from the reply that you like.
 
-My word: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+My word: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -209,7 +224,7 @@ My word: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can open claude.ai in a browser. | ☐ | ☐ |
 | I can find the message box. | ☐ | ☐ |
 | I can type a question and send it. | ☐ | ☐ |

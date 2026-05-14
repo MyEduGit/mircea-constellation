@@ -1,3 +1,18 @@
+---
+title: "Module 5 — AI in Real Life"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 5
+cefr: [A2]
+tags: [amep, ai-literacy, student-book, module-5, real-life]
+aliases: ["S-05", "Student Module 5"]
+pair: "[[T-05-real-life]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[S-04-english-practice]]"
+next: "[[S-06-web-search]]"
+---
+
 # Module 5 — AI in Real Life
 **CEFR: A2 · Pages S-5.1 to S-5.11**
 
@@ -139,9 +154,9 @@ Use this prompt:
 
 Write a better, more formal version here:
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -172,9 +187,9 @@ Write about a time when you needed to write a message in English. How did it go?
 > "It was hard / easy because \_\_\_\_\_\_\_\_\_ ."
 > "Next time I will ask Claude to \_\_\_\_\_\_\_\_\_ ."
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -197,7 +212,7 @@ Write about a time when you needed to write a message in English. How did it go?
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can ask Claude to explain a letter. | ☐ | ☐ |
 | I can ask Claude to help me write an email. | ☐ | ☐ |
 | I know how to protect my information when I use Claude. | ☐ | ☐ |

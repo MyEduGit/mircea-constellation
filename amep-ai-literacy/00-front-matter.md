@@ -1,3 +1,14 @@
+---
+title: "AI in Everyday English — Front Matter"
+product: AMEP AI Literacy Manual
+version: "1.0"
+year: 2026
+type: front-matter
+book: both
+tags: [amep, ai-literacy, front-matter]
+aliases: ["Front Matter", "AMEP Manual Introduction"]
+---
+
 # AI in Everyday English
 ### A Two-Book Manual for the AMEP Classroom
 
@@ -96,7 +107,7 @@ from the Common European Framework of Reference for Languages.
 
 ---
 
-*Version 1.0 · 2024*
+*Version 1.0 · 2026*
 *For updates, speak to your AMEP coordinator.*
 
 ---

@@ -1,3 +1,18 @@
+---
+title: "Module 1 — What Is AI?"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 1
+cefr: [Pre-A1, A1]
+tags: [amep, ai-literacy, student-book, module-1, what-is-ai]
+aliases: ["S-01", "Student Module 1"]
+pair: "[[T-01-what-is-ai]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[00-front-matter]]"
+next: "[[S-02-opening-claude]]"
+---
+
 # Module 1 — What Is AI?
 **CEFR: Pre-A1 / A1 · Pages S-1.1 to S-1.8**
 
@@ -167,11 +182,11 @@ Tell your partner one thing you learned today.
 
 *(Write on the lines below or in your notebook.)*
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -207,7 +222,7 @@ Tell your partner one thing you learned today.
 ✅ **Answer these questions. Tick the box.**
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can say what AI is. | ☐ | ☐ |
 | I know one thing AI can do. | ☐ | ☐ |
 | I know one thing NOT to type into AI. | ☐ | ☐ |

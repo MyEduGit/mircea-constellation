@@ -1,3 +1,18 @@
+---
+title: "Module 4 — AI for English Practice"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 4
+cefr: [A2]
+tags: [amep, ai-literacy, student-book, module-4, english-practice]
+aliases: ["S-04", "Student Module 4"]
+pair: "[[T-04-english-practice]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[S-03-voice-mode]]"
+next: "[[S-05-real-life]]"
+---
+
 # Module 4 — AI for English Practice
 **CEFR: A2 · Pages S-4.1 to S-4.11**
 
@@ -142,7 +157,7 @@ After this lesson, I can:
 
 Now type one of these sentences into Claude.
 Use this prompt: **"Please check my sentence and explain the correction."**
-Write what Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Write what Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -168,9 +183,9 @@ Write about something Claude helped you understand.
 > "Claude explained that \_\_\_\_\_\_\_\_\_\_\_ ."
 > "Now I understand that \_\_\_\_\_\_\_\_\_\_\_ ."
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -192,7 +207,7 @@ Write about something Claude helped you understand.
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can ask Claude to check my sentence. | ☐ | ☐ |
 | I can ask Claude to explain a word. | ☐ | ☐ |
 | I can ask Claude to give me examples. | ☐ | ☐ |

@@ -1,3 +1,19 @@
+---
+title: "Module 3 — Voice Mode"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 3
+cefr: [A1]
+tags: [amep, ai-literacy, student-book, module-3, voice-mode]
+aliases: ["S-03", "Student Module 3"]
+pair: "[[T-03-voice-mode]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[S-02-opening-claude]]"
+next: "[[S-04-english-practice]]"
+---
+
 # Module 3 — Speak to Claude
 **CEFR: A1 · Pages S-3.1 to S-3.11**
 
@@ -129,7 +145,7 @@ Use this sentence: **"How do I pronounce the word \_\_\_\_\_\_\_\_\_\_?"**
 
 Write your word here: \_\_\_\_\_\_\_\_\_\_
 
-Write what Claude told you: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Write what Claude told you: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -171,9 +187,9 @@ Write about a word you want to say better.
 > "This word is hard because…"
 > "Claude told me to say it like this: \_\_\_\_\_\_\_\_\_\_\_ ."
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -197,7 +213,7 @@ When you speak to AI:
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can find the microphone icon on my phone. | ☐ | ☐ |
 | I can speak a question to Claude. | ☐ | ☐ |
 | I can ask Claude to help me say a word. | ☐ | ☐ |
