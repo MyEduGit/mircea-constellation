@@ -109,8 +109,8 @@ curl -s -X POST http://127.0.0.1:8080/tasks \
   | python3 -m json.tool
 ```
 
-Allowlisted handlers that are stubs return `status: not_implemented` with a
-`reason` field — honest, not silent success.
+Handlers outside the allowlist return `status: rejected` with an evidence
+record — no bypass path exists.
 
 ---
 
