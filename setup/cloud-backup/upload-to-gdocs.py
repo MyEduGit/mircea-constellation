@@ -85,8 +85,8 @@ def get_or_create_folder(drive, name: str, parent_id: str | None) -> str:
     folder = drive.files().create(body=metadata, fields="id").execute()
     return folder["id"]
 
-def upload_as_gdoc(drive, md_path: Path, folder_id: str, title: str) -> str:
-    """Upload a markdown file as a Google Doc, returning the file URL."""
+def upload_as_gdoc(drive, md_path: Path, folder_id: str, title: str) -> tuple[str, str]:
+    """Upload a markdown file as a Google Doc. Returns (file_id, webViewLink)."""
     media = MediaFileUpload(str(md_path), mimetype="text/plain", resumable=False)
     metadata = {
         "name": title,
@@ -98,7 +98,7 @@ def upload_as_gdoc(drive, md_path: Path, folder_id: str, title: str) -> str:
         media_body=media,
         fields="id,webViewLink"
     ).execute()
-    return result.get("webViewLink", "")
+    return result.get("id", ""), result.get("webViewLink", "")
 
 def update_gdoc(drive, file_id: str, md_path: Path) -> str:
     """Replace content of an existing Google Doc."""
@@ -109,6 +109,17 @@ def update_gdoc(drive, file_id: str, md_path: Path) -> str:
         fields="id,webViewLink"
     ).execute()
     return result.get("webViewLink", "")
+
+def make_public(drive, file_id: str):
+    """Grant anyone-with-link reader access so the doc is accessible without login."""
+    try:
+        drive.permissions().create(
+            fileId=file_id,
+            body={"type": "anyone", "role": "reader"},
+            fields="id",
+        ).execute()
+    except Exception:
+        pass  # non-fatal: best-effort public sharing
 
 def find_existing(drive, title: str, folder_id: str) -> str | None:
     """Return file ID of existing Google Doc with this title in folder, or None."""
@@ -174,10 +185,13 @@ def main():
 
         if existing:
             url = update_gdoc(drive, existing, job_md)
+            make_public(drive, existing)
             print(f"[gdocs] updated {title}")
             updated += 1
         else:
-            url = upload_as_gdoc(drive, job_md, date_folder_id, title)
+            file_id, url = upload_as_gdoc(drive, job_md, date_folder_id, title)
+            if file_id:
+                make_public(drive, file_id)
             print(f"[gdocs] created {title} → {url}")
             uploaded += 1
 
@@ -200,10 +214,13 @@ def main():
         existing = find_existing(drive, title, folder_id)
         if existing:
             update_gdoc(drive, existing, md_path)
+            make_public(drive, existing)
             print(f"[gdocs] updated AnthropicData/{rel}")
             updated += 1
         else:
-            url = upload_as_gdoc(drive, md_path, folder_id, title)
+            file_id, url = upload_as_gdoc(drive, md_path, folder_id, title)
+            if file_id:
+                make_public(drive, file_id)
             print(f"[gdocs] created AnthropicData/{rel} → {url}")
             uploaded += 1
         seen[seen_key] = fhash
