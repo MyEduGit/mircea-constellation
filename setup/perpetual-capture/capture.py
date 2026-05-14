@@ -405,6 +405,91 @@ def capture_drop(seen: dict) -> int:
         count += 1
     return count
 
+# ── Dashboard update ─────────────────────────────────────────────────────────
+
+def update_dashboard(total: int, seen: dict):
+    """Rewrite the AUTO-* sections of DASHBOARD.md with live stats."""
+    dash = VAULT / "DASHBOARD.md"
+    if not dash.exists():
+        return  # scaffold hasn't run yet; skip silently
+
+    ts = now_melb()
+    host = detect_host()
+
+    # File counts per source
+    source_rows = []
+    for src, d in SOURCE_MAP.items():
+        files = sorted(d.glob("*.md")) if d.exists() else []
+        n = len(files)
+        last = (
+            datetime.fromtimestamp(
+                files[-1].stat().st_mtime, tz=TZ_MELB
+            ).strftime("%Y-%m-%d %H:%M")
+            if files else "—"
+        )
+        folder = f"00_Inbox/{d.name}"
+        source_rows.append(
+            f"| {src:<12} | `{folder}` | {n:>4} | {last} |"
+        )
+
+    total_md = sum(
+        len(list(d.glob("*.md"))) for d in SOURCE_MAP.values() if d.exists()
+    )
+    try:
+        vault_size = f"{sum(f.stat().st_size for f in VAULT.rglob('*.md')) / 1_048_576:.1f} MB"
+    except Exception:
+        vault_size = "—"
+
+    # Recent captures: last 10 .md files across all sources by mtime
+    all_files = []
+    for d in SOURCE_MAP.values():
+        if d.exists():
+            all_files.extend(d.glob("*.md"))
+    all_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+    recent_lines = []
+    for f in all_files[:10]:
+        rel = f.relative_to(VAULT)
+        mtime = datetime.fromtimestamp(f.stat().st_mtime, tz=TZ_MELB).strftime("%Y-%m-%d")
+        recent_lines.append(f"- `{mtime}` [[{rel}|{f.stem}]]")
+
+    status_block = (
+        f"| Last capture run | `{ts}` |\n"
+        f"| Total .md files | {total_md} |\n"
+        f"| Vault size | {vault_size} |\n"
+        f"| Sync: Google Drive | pending sync |\n"
+        f"| Sync: iCloud | pending sync |\n"
+        f"| Sync: External SSD | pending sync |\n"
+        f"| Host device | `{host}` |"
+    )
+
+    sources_header = "| Source | Inbox Folder | Files | Last Captured |\n|:---|:---|---:|:---|"
+    sources_block = sources_header + "\n" + "\n".join(source_rows)
+
+    recent_block = "\n".join(recent_lines) if recent_lines else "_No captures yet._"
+
+    text = dash.read_text(encoding="utf-8")
+
+    def replace_section(content: str, tag: str, replacement: str) -> str:
+        start = f"<!-- {tag}-START -->"
+        end   = f"<!-- {tag}-END -->"
+        if start not in content or end not in content:
+            return content
+        before = content[:content.index(start) + len(start)]
+        after  = content[content.index(end):]
+        return before + "\n" + replacement + "\n" + after
+
+    text = replace_section(text, "AUTO-STATUS",  status_block)
+    text = replace_section(text, "AUTO-SOURCES", sources_block)
+    text = replace_section(text, "AUTO-RECENT",  recent_block)
+
+    # Update frontmatter updated_at and total_captures
+    import re
+    text = re.sub(r"^updated_at:.*$",       f"updated_at: {ts}",       text, flags=re.MULTILINE)
+    text = re.sub(r"^total_captures:.*$",   f"total_captures: {total_md}", text, flags=re.MULTILINE)
+
+    dash.write_text(text, encoding="utf-8")
+    print(f"[capture] dashboard → DASHBOARD.md updated ({total_md} total captures)")
+
 # ── Day index ─────────────────────────────────────────────────────────────────
 
 def update_day_index(today: str):
@@ -519,6 +604,7 @@ def main():
     today = datetime.now(TZ_MELB).strftime("%Y-%m-%d")
     update_day_index(today)
     update_master_index(total)
+    update_dashboard(total, seen)
 
     save_seen(seen)
 

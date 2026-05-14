@@ -257,6 +257,19 @@ header .breadcrumb { font-size: 0.72em; color: var(--muted); flex: 1; min-width:
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="sidebar-section">
+      <div class="sidebar-section-title">Navigation</div>
+      <div id="pinnedList">
+        <div class="source-item" id="pin-dashboard" onclick="openDashboard()">
+          <span class="source-icon">🏠</span>
+          <span>Dashboard</span>
+        </div>
+        <div class="source-item" id="pin-sysmap" onclick="openSystemMap()">
+          <span class="source-icon">🗺</span>
+          <span>System Map</span>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-section">
       <div class="sidebar-section-title">Sources</div>
       <div id="sourceList"></div>
     </div>
@@ -265,16 +278,7 @@ header .breadcrumb { font-size: 0.72em; color: var(--muted); flex: 1; min-width:
 
   <!-- Content -->
   <div class="content" id="content">
-    <div class="placeholder">
-      <div class="big">🌌</div>
-      <p>All captured knowledge — Claude Code sessions, ChatGPT, n8n/Council, Telegram, terminal history and more — lives here.</p>
-      <p style="margin-top:8px">Select a note from the sidebar, or browse by source.</p>
-      <div class="links">
-        <a href="index.html">← Mission Control</a>
-        <a href="https://github.com/MyEduGit/mircea-constellation/tree/main/jobs" target="_blank">GitHub: /jobs</a>
-        <a href="https://github.com/MyEduGit/mircea-constellation" target="_blank">Repository</a>
-      </div>
-    </div>
+    <div style="padding:40px;color:var(--muted);font-size:0.8em;text-align:center">Loading dashboard…</div>
   </div>
 
 </div>
@@ -309,11 +313,13 @@ let allNotes = [];   // { source, date, slug, path, title, meta }
 let filtered = [];
 let activeSource = null;
 let activeNote  = null;
+let activePin   = null;   // 'dashboard' | 'sysmap' | null
 
 // ── Bootstrap ────────────────────────────────────────────────────────────────
 async function init() {
   renderSources([]);
-  await loadAllSources();
+  await openDashboard();           // land on the dashboard immediately
+  loadAllSources();                // load sources in background (non-blocking)
 }
 
 async function loadAllSources() {
@@ -377,6 +383,50 @@ async function loadSource(source) {
   filtered = [...allNotes];
 }
 
+// ── Pinned pages (Dashboard, System Map) ─────────────────────────────────────
+function setActivePin(id) {
+  activePin    = id;
+  activeNote   = null;
+  activeSource = null;
+  document.querySelectorAll('#pinnedList .source-item').forEach(el => el.classList.remove('active'));
+  if (id) {
+    const el = document.getElementById(`pin-${id}`);
+    if (el) el.classList.add('active');
+  }
+  document.getElementById('backBtn').style.display = 'none';
+  renderSources(SOURCES);
+  renderNoteList(filtered.length ? filtered : allNotes);
+}
+
+async function openDashboard() {
+  setActivePin('dashboard');
+  document.getElementById('breadcrumb').textContent = 'Dashboard';
+  await openStaticPage('vault/DASHBOARD.md', 'Dashboard');
+}
+
+async function openSystemMap() {
+  setActivePin('sysmap');
+  document.getElementById('breadcrumb').textContent = 'System Map';
+  await openStaticPage('vault/01_System/SYSTEM_MAP.md', 'System Map');
+}
+
+async function openStaticPage(path, title) {
+  const content = document.getElementById('content');
+  content.innerHTML = '<div style="padding:40px;color:var(--muted);font-size:0.8em;text-align:center">Loading…</div>';
+  try {
+    const res = await fetch(`${RAW}/${path}`);
+    if (!res.ok) throw new Error(`${res.status} — ${path} not found in repo yet`);
+    const md = await res.text();
+    renderNote(md, path, title, '');
+  } catch (e) {
+    content.innerHTML = `<div class="error-box">${escHtml(e.message)}</div>
+      <div class="md-body" style="padding:0 0 32px">
+        <p>The file <code>${path}</code> has not been committed to the repository yet.</p>
+        <p>It will appear here after merging PR <a href="https://github.com/${OWNER}/${REPO}/pulls" target="_blank">#65</a> to <code>main</code>.</p>
+      </div>`;
+  }
+}
+
 // ── Sidebar: sources ─────────────────────────────────────────────────────────
 function renderSources(sources) {
   const el = document.getElementById('sourceList');
@@ -397,12 +447,22 @@ function renderSources(sources) {
 
 function selectSource(id) {
   activeSource = id;
+  activePin    = null;
+  document.querySelectorAll('#pinnedList .source-item').forEach(el => el.classList.remove('active'));
   filtered = id ? allNotes.filter(n => n.source === id) : [...allNotes];
   document.getElementById('search').value = '';
   renderSources(SOURCES);
   renderNoteList(filtered);
   document.getElementById('breadcrumb').textContent =
     id ? (SOURCES.find(s=>s.id===id)||{label:id}).label : 'All sources';
+  if (!id) {
+    document.getElementById('content').innerHTML = `
+      <div class="placeholder">
+        <div class="big">🌌</div>
+        <p>Select a note from the sidebar, or click Dashboard to return home.</p>
+        <div class="links"><a href="javascript:void(0)" onclick="openDashboard()">Dashboard</a></div>
+      </div>`;
+  }
 }
 
 // ── Note list ─────────────────────────────────────────────────────────────────
@@ -448,6 +508,8 @@ function filterNotes(q) {
 // ── Open note ─────────────────────────────────────────────────────────────────
 async function openNote(path, title, date) {
   activeNote = path;
+  activePin  = null;
+  document.querySelectorAll('#pinnedList .source-item').forEach(el => el.classList.remove('active'));
   renderNoteList(filtered);
   document.getElementById('breadcrumb').textContent = title;
   document.getElementById('backBtn').style.display = 'inline-block';
@@ -508,15 +570,20 @@ function renderNote(raw, path, title, date) {
 function goBack() {
   activeNote = null;
   document.getElementById('backBtn').style.display = 'none';
-  document.getElementById('breadcrumb').textContent = activeSource
-    ? (SOURCES.find(s=>s.id===activeSource)||{label:activeSource}).label
-    : 'All sources';
-  renderNoteList(filtered);
-  document.getElementById('content').innerHTML = `
-    <div class="placeholder">
-      <div class="big">🌌</div>
-      <p>Select a note from the sidebar.</p>
-    </div>`;
+  if (activePin) {
+    // return to pinned page
+    if (activePin === 'dashboard') openDashboard();
+    else if (activePin === 'sysmap') openSystemMap();
+  } else if (activeSource) {
+    document.getElementById('breadcrumb').textContent =
+      (SOURCES.find(s=>s.id===activeSource)||{label:activeSource}).label;
+    renderNoteList(filtered);
+    document.getElementById('content').innerHTML = `
+      <div class="placeholder"><div class="big">🌌</div>
+      <p>Select a note from the sidebar.</p></div>`;
+  } else {
+    openDashboard();
+  }
 }
 
 function escHtml(s) {

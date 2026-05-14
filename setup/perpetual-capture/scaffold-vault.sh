@@ -66,6 +66,61 @@ EOF
   ok "04_Backups_Index/PERPETUAL_CAPTURE_INDEX.md"
 fi
 
+# Dashboard — seed from repo if available, else write inline stub
+DASHBOARD="$VAULT/DASHBOARD.md"
+if [ ! -f "$DASHBOARD" ]; then
+  REPO_DASH="$(cd "$(dirname "$0")/../.." && pwd)/vault/DASHBOARD.md"
+  if [ -f "$REPO_DASH" ]; then
+    cp "$REPO_DASH" "$DASHBOARD"
+    ok "DASHBOARD.md (seeded from repo)"
+  else
+    cat > "$DASHBOARD" <<'EOF'
+---
+cssClasses: [dashboard, wide-page]
+type: dashboard
+vault: UrantiPedia
+updated_at: —
+total_captures: 0
+---
+
+# UrantiPedia — Mission Control
+
+Auto-updated by `capture.py`. Run it to populate stats.
+
+## System Status
+<!-- AUTO-STATUS-START -->
+| Field | Value |
+|:---|:---|
+| Last capture run | — |
+| Total .md files | — |
+<!-- AUTO-STATUS-END -->
+
+## Source Health
+<!-- AUTO-SOURCES-START -->
+| Source | Inbox Folder | Files | Last Captured |
+|:---|:---|---:|:---|
+<!-- AUTO-SOURCES-END -->
+
+## Recent Captures
+<!-- AUTO-RECENT-START -->
+_No captures recorded yet._
+<!-- AUTO-RECENT-END -->
+EOF
+    ok "DASHBOARD.md (stub created)"
+  fi
+fi
+
+# System map stub
+mkdir -p "$VAULT/01_System"
+SYSMAP="$VAULT/01_System/SYSTEM_MAP.md"
+if [ ! -f "$SYSMAP" ]; then
+  REPO_MAP="$(cd "$(dirname "$0")/../.." && pwd)/vault/01_System/SYSTEM_MAP.md"
+  if [ -f "$REPO_MAP" ]; then
+    cp "$REPO_MAP" "$SYSMAP"
+    ok "01_System/SYSTEM_MAP.md (seeded from repo)"
+  fi
+fi
+
 say "Vault scaffold complete: $VAULT"
 # Proof
 echo ""
