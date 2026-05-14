@@ -131,9 +131,9 @@ chain-of-thought token generation. A 770M RDT matches a 1.3B dense transformer.
 - [x] `openmythos/` module scaffold — `__init__.py`, `serve.py`, `PLAN.md` committed
 - [x] Council Seat 4 registry updated — `COUNCIL_MODEL_REGISTRY.json` v1.1→v1.2, OpenMythos wired as next_model
 - [x] All files pushed to remote (merged to main — branch creation blocked in session)
-- [ ] Seat 4 fallback wiring Phase 2 — import updated n8n node into Council workflow
-- [ ] Content generator hook for JabbokRiver (16-loop Foreword synthesis)
-- [ ] Fine-tune dataset spec (vault + Foreword → Q&A pairs for RDT training)
+- [x] Seat 4 fallback wiring Phase 2 — `council_of_seven_v1.n8n.json` updated; Seat 4 node → OpenMythos `localhost:11435` (**operator: re-import JSON into n8n on Hetzy**)
+- [x] Content generator hook for JabbokRiver — `scribeclaw/thesis.py` + `openmythos_thesis` handler, 12 loops default
+- [x] Fine-tune dataset spec — `openmythos/finetune/build_dataset.py` (vault + UB + corpus → 50k pairs)
 
 ---
 
