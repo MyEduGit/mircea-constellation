@@ -283,14 +283,64 @@ Honest failures: missing/invalid payload fields return
 if Cognee is down every subscription handler short-circuits with
 `error: cognee_not_ready` and leaves an evidence record.
 
+## Obsidian integration
+
+Two env vars wire the vault bidirectionally. Both are optional; unset means
+the corresponding handler skips the vault gracefully.
+
+| Env var | Direction | Purpose |
+|---------|-----------|---------|
+| `OBSIDIAN_VAULT_PATH` | Vault → Cognee | `ingest_obsidian` reads `.md` files from this path |
+| `OBSIDIAN_EXPORT_DIR` | Cognee → Vault | `export_urantipedia` mirrors canon `.md` here |
+
+Set them in `openclaw_ingest/.env` and uncomment the matching volume mounts
+in `docker-compose.yml`. The vault path must be bind-mounted into the container
+at the same path (see the commented-out volume examples in compose).
+
+### Ingest the UrantiPedia vault
+
+```bash
+# Drop .md files into the mounted vault dir, then:
+curl -sX POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "ingest_obsidian", "payload": {}}' \
+  | python3 -m json.tool
+
+# Or override the vault path for a one-off run:
+curl -sX POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "ingest_obsidian",
+         "payload": {"vault_path": "/obsidian/vault"}}' \
+  | python3 -m json.tool
+```
+
+`ingest_obsidian` is idempotent: a `.done` sentinel under
+`/data/ingested/obsidian/{sha256}.done` prevents re-ingestion. Delete the
+sentinel to force re-ingest of a specific document.
+
+### Export canon notes back to the vault
+
+After `governance_check` marks documents export-eligible, run:
+
+```bash
+curl -sX POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "export_urantipedia", "payload": {}}' \
+  | python3 -m json.tool
+```
+
+If `OBSIDIAN_EXPORT_DIR` is configured, each eligible document is also
+written to `{OBSIDIAN_EXPORT_DIR}/canon-{source_slug}.md` — standard
+Obsidian markdown with YAML frontmatter and a 12-axis classification table.
+
+---
+
 ## What this is **not** yet
 
-- Not a full ingestion pipeline — two handlers are still stubs.
-- Not hardened beyond what is actually proven. No Fireclaw integration
-  beyond the shared evidence directory convention.
 - Not Paperclip-integrated — this module emits evidence records; Paperclip
   will later bind, bundle, and preserve them under its own contract.
 - Not a replacement for the existing `OpenClaw@Hetzy-bots` at 46.225.51.30.
   Two instances; same class; different sub-scopes.
-
-Follow-up PR will implement `governance_check`, then `export_urantipedia`.
+- Obsidian vault path must be reachable inside the container (bind-mount).
+  There is no built-in rsync or Tailscale transfer — that is a host-side
+  concern (e.g., a cron job or Tailscale + sshfs mount).
