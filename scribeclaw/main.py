@@ -70,6 +70,7 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "import_assemblyai_transcript",
     "bulk_import_assemblyai_romanian",
     "postprocess_transcript",
+    "openmythos_thesis",
     "youtube_metadata",
     "youtube_upload",
 })
