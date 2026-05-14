@@ -56,6 +56,14 @@ CROSS_LINK_THRESHOLD = float(os.getenv("CROSS_LINK_THRESHOLD", "5.0"))
 CROSS_LINK_MAX_PAIRS = int(os.getenv("CROSS_LINK_MAX_PAIRS", "10000"))
 CROSS_LINK_MAX_FANOUT = int(os.getenv("CROSS_LINK_MAX_FANOUT", "50"))
 
+# Obsidian integration — both optional. If unset the handlers skip gracefully.
+# OBSIDIAN_VAULT_PATH: directory to read .md files from (ingest_obsidian).
+# OBSIDIAN_EXPORT_DIR: directory to write canon .md into (export_urantipedia).
+_obs_vault_raw = os.getenv("OBSIDIAN_VAULT_PATH", "").strip()
+_obs_export_raw = os.getenv("OBSIDIAN_EXPORT_DIR", "").strip()
+OBSIDIAN_VAULT_PATH: Path | None = Path(_obs_vault_raw) if _obs_vault_raw else None
+OBSIDIAN_EXPORT_DIR: Path | None = Path(_obs_export_raw) if _obs_export_raw else None
+
 # Ensure directory layout on every start (idempotent).
 for _sub in ("ingest/chatcode", "ingested/chatcode", "classified", "linked",
              "governed", "canon", "logs", "evidence"):
