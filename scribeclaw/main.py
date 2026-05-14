@@ -2,9 +2,11 @@
 """ScribeClaw — media transcription execution runtime.
 
 Canonical role: controlled execution (media-pipeline sub-role).
-Truthful label: deployable scaffold. Real handlers: media_edit,
-audio_extract, transcribe_ro, postprocess_transcript, youtube_metadata.
-Stub handler: youtube_upload (refuses; operator must supply OAuth).
+Real handlers: media_edit, audio_extract, transcribe_ro,
+transcribe_assemblyai, import_assemblyai_transcript,
+bulk_import_assemblyai_romanian, postprocess_transcript,
+openmythos_thesis, youtube_metadata.
+Stub: youtube_upload (refuses without OAuth credentials).
 
 The allowlist boundary is preserved: nothing outside ALLOWED_HANDLERS
 can run. Every call writes an evidence record.
