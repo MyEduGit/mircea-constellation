@@ -36,6 +36,7 @@ from .assemblyai import (
 )
 from .edit import audio_extract, media_edit
 from .postprocess import postprocess_transcript
+from .thesis import openmythos_thesis
 from .transcribe import transcribe_ro
 from .youtube import youtube_metadata, youtube_upload
 
