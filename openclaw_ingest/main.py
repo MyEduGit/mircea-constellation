@@ -214,6 +214,118 @@ async def _handle_ingest_normalize(payload: dict) -> dict:
     }
 
 
+async def _handle_ingest_obsidian(payload: dict) -> dict:
+    """Ingest Obsidian vault markdown files into Cognee.
+
+    Reads every ``*.md`` file found under ``OBSIDIAN_VAULT_PATH`` (env var) or
+    the ``vault_path`` key in the payload. System dirs (``*.obsidian/``) are
+    skipped. Each file is deduplicated by sha256 — a sentinel file at
+    ``/data/ingested/obsidian/{sha256}.done`` prevents re-ingestion on repeat
+    runs.
+
+    Honest failure: returns ``status=error`` if the vault path is not
+    configured, the directory does not exist, or Cognee is unavailable.
+    No silent no-ops.
+    """
+    vault_override = payload.get("vault_path", "").strip()
+    vault: Path | None = Path(vault_override) if vault_override else OBSIDIAN_VAULT_PATH
+    if not vault:
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": "obsidian_vault_not_configured",
+            "hint": (
+                "Set OBSIDIAN_VAULT_PATH env var or pass vault_path in payload. "
+                "The path must be accessible inside the container (bind-mount it "
+                "in docker-compose.yml under volumes)."
+            ),
+        }
+    vault = Path(vault)
+    if not vault.is_dir():
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": f"vault_not_found: {vault}",
+        }
+
+    if not COGNEE_READY:
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": "cognee_not_ready",
+            "hint": "check cognee_config.init() output and Ollama reachability",
+        }
+
+    done_dir = DATA_ROOT / "ingested" / "obsidian"
+    done_dir.mkdir(parents=True, exist_ok=True)
+
+    # Collect .md files; skip Obsidian system directories.
+    md_files = [
+        f for f in sorted(vault.rglob("*.md"))
+        if ".obsidian" not in f.parts
+    ]
+    if not md_files:
+        return {
+            "status": "success",
+            "handler": "ingest_obsidian",
+            "ingested": 0,
+            "message": f"no .md files in {vault}",
+        }
+
+    ingested = 0
+    skipped = 0
+    errors: list[dict[str, str]] = []
+
+    for f in md_files:
+        try:
+            content = f.read_text(encoding="utf-8", errors="replace")
+        except Exception as exc:
+            errors.append({"file": str(f), "error": f"read_failed: {exc}"})
+            continue
+
+        sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
+        done_path = done_dir / f"{sha}.done"
+        if done_path.exists():
+            skipped += 1
+            continue
+
+        rel_path = str(f.relative_to(vault))
+        try:
+            await cognee.add(
+                content,
+                dataset_name=DATASET_NAME,
+                node_set=[
+                    "source:obsidian",
+                    f"file:{f.name}",
+                    f"vault_path:{rel_path}",
+                    f"sha256:{sha}",
+                ],
+            )
+            done_path.write_text(
+                json.dumps({
+                    "sha256": sha,
+                    "file": rel_path,
+                    "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                })
+            )
+            ingested += 1
+            logger.info(f"ingest_obsidian: {rel_path} sha256={sha[:12]}")
+        except Exception as exc:
+            errors.append({"file": rel_path, "error": str(exc)})
+            logger.exception(f"ingest_obsidian failed on {rel_path}")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "ingest_obsidian",
+        "ingested": ingested,
+        "skipped_existing": skipped,
+        "total_found": len(md_files),
+        "errors": errors,
+        "vault": str(vault),
+        "dataset": DATASET_NAME,
+    }
+
+
 def _build_classification_prompt(content: str) -> str:
     """Compose the strict JSON-only prompt used by ``categorise_by_axes``."""
     axes_spec = "\n".join(
