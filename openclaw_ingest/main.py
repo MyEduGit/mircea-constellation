@@ -1133,6 +1133,17 @@ async def _handle_export_urantipedia(payload: dict) -> dict:
         exported += 1
         logger.info(f"export_urantipedia: {sha[:12]} -> canon/{sha}.md")
 
+        # Mirror to the Obsidian vault export dir if configured.
+        if OBSIDIAN_EXPORT_DIR and OBSIDIAN_EXPORT_DIR.is_dir():
+            slug = (
+                Path(source_file).stem
+                if source_file and source_file != "unknown"
+                else sha[:12]
+            )
+            obs_path = OBSIDIAN_EXPORT_DIR / f"canon-{slug}.md"
+            obs_path.write_text(md_content)
+            logger.info(f"export_urantipedia: also wrote {obs_path}")
+
         if COGNEE_READY:
             try:
                 await cognee.add(
