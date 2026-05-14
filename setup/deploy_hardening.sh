@@ -34,11 +34,17 @@ echo "  Time: $(date '+%Y-%m-%d %H:%M:%S')"
 echo ""
 
 # ── Pre-flight ────────────────────────────────────────────────────
-info "Pre-flight: checking SSH connectivity..."
-if ! ssh -o ConnectTimeout=10 -o BatchMode=yes "$OPENCLAW_HOST" 'exit' 2>/dev/null; then
-  err "Cannot reach $OPENCLAW_HOST — check SSH keys and VPS status"
+info "Pre-flight: checking SSH connectivity to $OPENCLAW_HOST ..."
+# Try key-based first, then fall back to interactive (allows passphrase prompts)
+if ssh -o ConnectTimeout=10 -o BatchMode=yes "$OPENCLAW_HOST" 'exit' 2>/dev/null; then
+  ok "SSH OK (key already loaded)"
+elif ssh -o ConnectTimeout=15 "$OPENCLAW_HOST" 'exit'; then
+  ok "SSH OK (interactive auth)"
+else
+  echo ""
+  err "Cannot reach $OPENCLAW_HOST"
 fi
-ok "SSH OK"
+ok "SSH confirmed"
 
 # ── Step 1: Backup current config on VPS ─────────────────────────
 section "Step 1 — Backup current VPS config"
