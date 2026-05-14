@@ -137,6 +137,7 @@ _HANDLERS: dict[str, Any] = {
     "import_assemblyai_transcript": lambda p: import_assemblyai_transcript(p, DATA_ROOT),
     "bulk_import_assemblyai_romanian": lambda p: bulk_import_assemblyai_romanian(p, DATA_ROOT),
     "postprocess_transcript":       lambda p: postprocess_transcript(p, DATA_ROOT),
+    "openmythos_thesis":            lambda p: openmythos_thesis(p, DATA_ROOT),
     "youtube_metadata":             lambda p: youtube_metadata(p, DATA_ROOT),
     "youtube_upload":               lambda p: youtube_upload(p, DATA_ROOT),
 }
