@@ -48,15 +48,16 @@ directory and reaches host Ollama via `host.docker.internal:host-gateway`.
 
 ```python
 ALLOWED_HANDLERS = {
-    "ingest_normalize",         # REAL — normalises raw files into Cognee
-    "categorise_by_axes",       # REAL — 12-axis classifier, see axes.py
-    "cross_link",               # REAL — pair-score edge emission, see axes.WEIGHTS
-    "governance_check",         # stub
-    "export_urantipedia",       # stub
-    "smoke_test",               # bootstrap
-    "subscription_subscribe",   # REAL — record subscriber in Cognee
-    "subscription_unsubscribe", # REAL — append status:inactive record
-    "subscription_list",        # REAL — recall subscribers from Cognee
+    "ingest_normalize",         # normalises chatcode JSONL into Cognee
+    "ingest_obsidian",          # ingest Obsidian vault .md files into Cognee
+    "categorise_by_axes",       # 12-axis LLM classifier, see axes.py
+    "cross_link",               # pair-score edge emission, see axes.WEIGHTS
+    "governance_check",         # apply governance rules; flag iniquitous docs
+    "export_urantipedia",       # export eligible docs as Obsidian-ready markdown
+    "smoke_test",               # bootstrap / health check
+    "subscription_subscribe",   # record subscriber in Cognee
+    "subscription_unsubscribe", # append status:inactive record
+    "subscription_list",        # recall subscribers from Cognee
 }
 ```
 
