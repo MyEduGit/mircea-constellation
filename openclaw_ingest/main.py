@@ -2,12 +2,9 @@
 """OpenClaw@URANTiOS-ingest — execution runtime, ingestion sub-role.
 
 Canonical role: controlled execution (singular).
-Truthful label:  deployable scaffold with three real handlers
-(``ingest_normalize``, ``categorise_by_axes``, ``cross_link``).
-
-Two of the five canonical handlers (governance_check, export_urantipedia)
-remain declared-but-stubbed pending follow-up PR. The allowlist
-boundary is preserved: nothing outside ALLOWED_HANDLERS can run.
+Handlers (all real): ingest_normalize, ingest_obsidian,
+categorise_by_axes, cross_link, governance_check, export_urantipedia,
+subscription_subscribe, subscription_unsubscribe, subscription_list.
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """
