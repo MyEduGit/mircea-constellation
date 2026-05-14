@@ -40,9 +40,9 @@ Status key: 🔴 not started · 🟡 in progress · 🟢 active · 💰 earning
 | 3 | **AMEP Hub** | 21 students, Gabriel AI tutor | $8–15k/yr per RTO | **Weeks** | 🔴 email not sent | Send email to AMES Australia | Mircea |
 | 4 | **Urantia Foundation** | UrantiPedia stewardship grant | $60–120k/yr | **1–3 months** | 🔴 email not sent | Send to Tamara Strumfeld | Mircea |
 | 5 | **PhD book** | *Triune Monism* monograph | $2–15k advance + grant | **1–3 months** | 🔴 not submitted | Email Templeton Press + Routledge | Mircea |
-| 6 | **LuciferiClaw paper** | AI safety adjudication framework | $50–250k grant | **3–6 months** | 🔴 paper not written | Write 4-page abstract first | Claude |
-| 7 | **JabbokRiver YouTube** | Romanian SDA theology channel | AdSense + Patreon | **2–4 months** | 🔴 blocked: consent | Get Dr. Geaboc consent letter signed | Mircea |
-| 8 | **Cognee dataset license** | Urantia graph × universities | $5–15k/yr/institution | **2–4 months** | 🔴 pitch not made | Email Chicago Divinity + Harvard CSWR | Claude |
+| 6 | **LuciferiClaw paper** | AI safety adjudication framework | $50–250k grant | **3–6 months** | 🟡 abstract written | Mircea sends to 5 funders — see `docs/revenue/lucifericlaw-grant-abstract.md` | Claude ✓ |
+| 7 | **JabbokRiver YouTube** | Romanian SDA theology channel | AdSense + Patreon | **2–4 months** | 🟡 unblocked | Channel is Mircea's — create it at jabbokriverproductions@gmail.com | Mircea |
+| 8 | **Cognee dataset license** | Urantia graph × universities | $5–15k/yr/institution | **2–4 months** | 🟡 pitch written | Mircea sends to 6 institutions — see `docs/revenue/email-university-cognee-dataset.md` | Claude ✓ |
 | 9 | **OpenClaw SaaS** | Managed agent infra layer | $500–2k/mo per client | **3–6 months** | 🔴 not packaged | Package + landing page | Claude |
 | 10 | **Patreon** | Supporters of the Mission | $5–50/mo/patron | **Days** | 🔴 not set up | Mircea creates page | Mircea |
 
