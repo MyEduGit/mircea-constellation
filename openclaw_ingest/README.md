@@ -1,8 +1,8 @@
 # OpenClaw@URANTiOS-ingest
 
-**Truthful label:** deployable scaffold with three real handlers
-(`ingest_normalize`, `categorise_by_axes`, `cross_link`). Two of the five
-canonical handlers remain declared-but-stubbed pending follow-up PR.
+**Truthful label:** v0.2.0 — all 10 handlers real, none stubbed. Full pipeline:
+`ingest_normalize` / `ingest_obsidian` → `categorise_by_axes` → `cross_link`
+→ `governance_check` → `export_urantipedia`, plus three subscription handlers.
 
 Singular primary role: **controlled execution** (ingestion sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence — those
