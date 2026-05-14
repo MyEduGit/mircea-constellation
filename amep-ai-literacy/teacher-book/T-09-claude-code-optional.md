@@ -1,3 +1,21 @@
+---
+title: "Module 9 — Teacher's Book — Claude Code (Optional)"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 9
+optional: true
+stream: IT
+cefr: [B1]
+tags: [amep, ai-literacy, teacher-book, module-9, claude-code, optional, it-stream]
+aliases: ["T-09", "Teacher Module 9"]
+pair: "[[S-09-claude-code-optional]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[T-08-cowork]]"
+next: "[[T-10-ethics-privacy-future]]"
+---
+
 # Module 9 — Teacher's Book
 ## Claude Code (Optional Extension)
 **Mirror of Student Book pages S-9.1 to S-9.8**
@@ -60,7 +78,7 @@ If students want to install it, direct them to: **docs.anthropic.com/claude-code
 ## T-9.3 · Lesson Timing (Option A: Full IT-stream lesson — 90 minutes)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 8 · Today's 5 words | |
 | 0:10–0:20 | What is Claude Code? (S-9.4) | Read together. Discuss: who uses this? |
 | 0:20–0:40 | Look and Listen — Rustam dialogue (S-9.5) | Read and analyse the code error. |
@@ -72,7 +90,7 @@ If students want to install it, direct them to: **docs.anthropic.com/claude-code
 ### Lesson Timing (Option B: Awareness-only — 30 minutes)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | What is Claude Code? (S-9.4) | Read and explain. |
 | 0:10–0:20 | Look and Listen — Rustam dialogue | Read together. Explain the concept. |
 | 0:20–0:30 | Discussion: Who might use this? What jobs? | Brief discussion. |
@@ -162,7 +180,7 @@ This module is not differentiated by CEFR level — it is differentiated by whet
 ## T-9.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | No students have any coding experience | Run the 30-minute awareness version. Focus on: what is code, what is an error, how does AI help. |
 | One student knows much more than you | Embrace it. Ask them to explain to the class. Say: "You are the expert here today." |
 | Students want to install Claude Code in class | Note: installation takes time and requires admin permissions on some computers. Defer to homework. |
@@ -187,7 +205,7 @@ For IT-stream students enrolled in digital literacy or computing units:
 ## T-9.9 · Digital Literacy Rubric — Module 9 (IT-stream only)
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can identify that Claude Code is a tool for programmers. Reads the code example with support and understands the concept of an error. |
 | **Developing** | Student can find a simple error in a short code excerpt. Can formulate a Claude prompt to request error explanation. |
 | **Consolidating** | Student writes short code independently, uses Claude to identify and fix an error, and explains the correction in plain English to a partner. |

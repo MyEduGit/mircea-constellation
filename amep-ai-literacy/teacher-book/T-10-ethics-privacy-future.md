@@ -1,3 +1,17 @@
+---
+title: "Module 10 — Teacher's Book — Ethics, Privacy and the Future"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 10
+cefr: [Pre-A1, A1, A2, B1]
+tags: [amep, ai-literacy, teacher-book, module-10, ethics, privacy, future]
+aliases: ["T-10", "Teacher Module 10"]
+pair: "[[S-10-ethics-privacy-future]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[T-09-claude-code-optional]]"
+---
+
 # Module 10 — Teacher's Book
 ## AI, Ethics, and the Future
 **Mirror of Student Book pages S-10.1 to S-10.12**
@@ -57,7 +71,7 @@ perspectives without advocating for one position.
 ## T-10.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Course reflection · Today's 5 words | Ask: "What is one thing you learned in this course?" |
 | 0:10–0:22 | Look and Listen — class discussion dialogue (S-10.5) | Read aloud. Highlight each student's point. |
 | 0:22–0:40 | Do It With Me — AI questions (S-10.6) | Students ask Claude about bias. Discuss replies as a class. |
@@ -187,7 +201,7 @@ perspectives without advocating for one position.
 ## T-10.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Discussion becomes politically charged | Redirect: "This is a very important topic in politics. Let us focus today on the ethics — right and wrong — not on political parties." |
 | Student shares a personal experience of unfair treatment | Acknowledge: "Thank you for sharing that. That sounds very difficult. The OAIC and community legal services can help with situations like this." Do not attempt to resolve the issue in class. |
 | Student is very anxious about AI surveillance | Provide concrete facts: "Here is what Claude can and cannot see. [Review S-7.9.] Here are your rights under the Privacy Act." Anxiety is reduced by specific information. |
@@ -212,7 +226,7 @@ perspectives without advocating for one position.
 ## T-10.9 · Digital Literacy Rubric — Module 10
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can identify one thing AI should not do. Responds to scenarios with thumbs up/down and a simple reason. |
 | **Developing** | Student uses "ethical" and "unethical" correctly. Participates in the discussion with a sentence or two. Writes one sentence about AI and the future. |
 | **Consolidating** | Student articulates a reasoned opinion about AI ethics using evidence from the course. Writes a 3–6 sentence paragraph with a clear point of view. Knows their privacy rights. |

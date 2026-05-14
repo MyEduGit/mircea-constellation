@@ -1,3 +1,19 @@
+---
+title: "Module 7 — Teacher's Book — Claude in Chrome"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 7
+cefr: [B1]
+tags: [amep, ai-literacy, teacher-book, module-7, claude-chrome, browser-extension]
+aliases: ["T-07", "Teacher Module 7"]
+pair: "[[S-07-claude-chrome]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[T-06-web-search]]"
+next: "[[T-08-cowork]]"
+---
+
 # Module 7 — Teacher's Book
 ## Claude in Chrome
 **Mirror of Student Book pages S-7.1 to S-7.11**
@@ -51,7 +67,7 @@ about the webpage currently visible in the browser.
 ## T-7.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 6 · Today's 5 words | Share source-checking homework. |
 | 0:10–0:22 | Look and Listen — Nadia dialogue (S-7.4) | Read aloud. Discuss permissions. |
 | 0:22–0:40 | Do It With Me — setup and demo (S-7.5) | Demo on classroom laptop. Walk through installation steps. |
@@ -167,7 +183,7 @@ about the webpage currently visible in the browser.
 ## T-7.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Extension installation fails | Try: disable any existing ad-blocker temporarily, refresh the Chrome Web Store page, ensure Chrome is up to date. |
 | Student can't find the Claude icon after installation | Look in the Extensions puzzle-piece icon in the top-right corner. Click it, then pin Claude. |
 | Claude panel opens but shows nothing | Refresh the webpage. Then click the Claude icon again. |
@@ -179,7 +195,7 @@ about the webpage currently visible in the browser.
 ## T-7.8 · Assessment Mapping
 
 | Activity | Evidence |
-|----------|----------|
+|----------|---------|
 | Installing and opening Claude in Chrome (S-7.5) | Digital literacy — managing browser software |
 | Highlighting text and formulating a query | Reading — identifying text for a purpose |
 | Reading Claude's explanation | Reading — extracting information from a simplified text |
@@ -191,7 +207,7 @@ about the webpage currently visible in the browser.
 ## T-7.9 · Digital Literacy Rubric — Module 7
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student understands what a browser extension does when explained. Can locate the Claude icon when shown. |
 | **Developing** | Student can open the Claude panel, highlight text, and send a comprehension query with minimal support. |
 | **Consolidating** | Student independently uses Claude in Chrome to navigate complex webpages. Applies the privacy rules (no panel on banking/medical pages). Compares Claude's summary to the original text. |

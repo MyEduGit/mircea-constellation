@@ -1,3 +1,19 @@
+---
+title: "Module 8 — Teacher's Book — AI and Your Files"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 8
+cefr: [B1]
+tags: [amep, ai-literacy, teacher-book, module-8, files, documents, forms]
+aliases: ["T-08", "Teacher Module 8"]
+pair: "[[S-08-cowork]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[T-07-claude-chrome]]"
+next: "[[T-09-claude-code-optional]]"
+---
+
 # Module 8 — Teacher's Book
 ## Cowork: AI and Your Files
 **Mirror of Student Book pages S-8.1 to S-8.11**
@@ -49,7 +65,7 @@ if someone I don't know could read this?" If no — don't upload. Type the quest
 ## T-8.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 7 · Today's 5 words | Share Claude-in-Chrome homework. |
 | 0:10–0:22 | Look and Listen — Paulo dialogue (S-8.4) | Read aloud. Highlight Sam's safety advice. |
 | 0:22–0:42 | Do It With Me — three methods demo (S-8.5) | Demo each method. Emphasise safety checkpoint. |
@@ -164,7 +180,7 @@ if someone I don't know could read this?" If no — don't upload. Type the quest
 ## T-8.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Student uploads a document with full passport details | Calmly: "Let us close this conversation. We will not use that upload. Next time, let us black out personal information first." Start a new chat. |
 | File upload fails (wrong format or too large) | Switch to Method 1 or 2. Say: "We will type the question instead — it is actually safer." |
 | Claude explains a form question incorrectly | Treat as a teachable moment: "Let us check this with another source. I will look it up now, or you can ask a settlement worker." |
@@ -175,7 +191,7 @@ if someone I don't know could read this?" If no — don't upload. Type the quest
 ## T-8.8 · Assessment Mapping
 
 | Activity | Evidence |
-|----------|----------|
+|----------|---------|
 | Asking Claude to explain a form question (S-8.5–8.6) | Reading — understanding a specific-purpose text |
 | Writing a response to a form question (S-8.6) | Writing — completing an official form |
 | Pair discussion (S-8.7) | Oral — sharing experience of a specific task |
@@ -186,7 +202,7 @@ if someone I don't know could read this?" If no — don't upload. Type the quest
 ## T-8.9 · Digital Literacy Rubric — Module 8
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can watch and identify the three methods. Applies the "type the question" method with support. Understands the privacy checkpoint when explained. |
 | **Developing** | Student independently types a form question and reads Claude's explanation. Applies at least one privacy rule (no personal info in the typed question). |
 | **Consolidating** | Student chooses the appropriate method for the document type. Applies the consent checkpoint before uploading. Uses Claude's explanation to write a real (or made-up) answer for a form. |

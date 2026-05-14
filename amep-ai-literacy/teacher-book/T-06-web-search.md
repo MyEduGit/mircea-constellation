@@ -1,3 +1,18 @@
+---
+title: "Module 6 — Teacher's Book — AI and the Internet"
+product: AMEP AI Literacy Manual
+book: teacher
+type: module
+module: 6
+cefr: [A2, B1]
+tags: [amep, ai-literacy, teacher-book, module-6, web-search, source-literacy]
+aliases: ["T-06", "Teacher Module 6"]
+pair: "[[S-06-web-search]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[T-05-real-life]]"
+next: "[[T-07-claude-chrome]]"
+---
+
 # Module 6 — Teacher's Book
 ## AI and the Internet
 **Mirror of Student Book pages S-6.1 to S-6.11**
@@ -45,7 +60,7 @@ This habit (source literacy) is one of the most transferable digital skills in t
 ## T-6.3 · Lesson Timing (90-minute block)
 
 | Time | Activity | Notes |
-|------|----------|---------|
+|------|----------|-------|
 | 0:00–0:10 | Recap Module 5 · Today's 5 words | Share email homework. |
 | 0:10–0:22 | Look and Listen — Omar dialogue (S-6.4) | Read aloud. Highlight the verification step. |
 | 0:22–0:40 | Do It With Me — live demo of current information query (S-6.5) | Show Claude web search (or limitation). Show verification on original site. |
@@ -174,7 +189,7 @@ This habit (source literacy) is one of the most transferable digital skills in t
 ## T-6.7 · Things That Will Go Wrong
 
 | Problem | What to do |
-|---------|------------|
+|---------|-----------|
 | Claude web search is not enabled | Use the knowledge cutoff demonstration as the lesson. Teach source literacy through the limitation — this is equally valid and more dramatic. |
 | Claude gives wrong transport information | Treat it as a deliberate teaching moment: "Claude got this wrong. Let us check the official website." |
 | Official website is hard to navigate | Acknowledge: "Government websites can be complicated. Claude can help you understand what you find there — but you need to visit the website first." |
@@ -185,7 +200,7 @@ This habit (source literacy) is one of the most transferable digital skills in t
 ## T-6.8 · Assessment Mapping
 
 | Activity | Evidence |
-|----------|----------|
+|----------|---------|
 | Performing a current information query (S-6.5) | Digital literacy — using an AI tool to locate information |
 | Identifying and visiting a source (S-6.5) | Reading — navigating a digital source |
 | Reliability checklist (S-6.6) | Critical thinking — evaluating information quality |
@@ -197,7 +212,7 @@ This habit (source literacy) is one of the most transferable digital skills in t
 ## T-6.9 · Digital Literacy Rubric — Module 6
 
 | Level | Descriptor |
-|-------|------------|
+|-------|-----------|
 | **Emerging** | Student can ask a factual question in Claude with support. Identifies that information has a source when shown. |
 | **Developing** | Student independently asks for current information. Reads and identifies the source Claude mentions. Visits the source website with guidance. |
 | **Consolidating** | Student applies the three-question checklist independently. Identifies when Claude information is unreliable or outdated. Verifies facts on official websites. |
