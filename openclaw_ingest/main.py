@@ -1246,8 +1246,9 @@ async def _handle_categorise_by_axes(payload: dict) -> dict:
 # Dispatch table — 1:1 with ALLOWED_HANDLERS. Changes here require changes
 # to the allowlist above (and vice versa); the invariant is asserted below.
 _HANDLERS = {
-    "smoke_test": _handle_smoke_test,
-    "ingest_normalize": _handle_ingest_normalize,
+    "smoke_test":         _handle_smoke_test,
+    "ingest_normalize":   _handle_ingest_normalize,
+    "ingest_obsidian":    _handle_ingest_obsidian,
     "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         _handle_cross_link,
     "governance_check":   _handle_governance_check,
