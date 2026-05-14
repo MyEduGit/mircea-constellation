@@ -65,8 +65,8 @@ OBSIDIAN_VAULT_PATH: Path | None = Path(_obs_vault_raw) if _obs_vault_raw else N
 OBSIDIAN_EXPORT_DIR: Path | None = Path(_obs_export_raw) if _obs_export_raw else None
 
 # Ensure directory layout on every start (idempotent).
-for _sub in ("ingest/chatcode", "ingested/chatcode", "classified", "linked",
-             "governed", "canon", "logs", "evidence"):
+for _sub in ("ingest/chatcode", "ingested/chatcode", "ingested/obsidian",
+             "classified", "linked", "governed", "canon", "logs", "evidence"):
     (DATA_ROOT / _sub).mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
