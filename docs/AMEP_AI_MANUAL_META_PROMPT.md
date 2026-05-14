@@ -141,7 +141,7 @@ CHAPTER 2 — Your AI Toolkit: 10 Tools You Can Use Today
   classroom devices. The point of this chapter is awareness, not mastery.]
 
 - THIS CHAPTER IS A LIVING DOCUMENT. At the bottom, leave a printed box:
-  ┌────────────────────────────────────────────────────┐
+  ┌──────────────────────────────────────────────────┐
   │  NEW TOOLS (added by your teacher):                │
   │                                                    │
   │  Date: ___________                                 │
@@ -151,7 +151,7 @@ CHAPTER 2 — Your AI Toolkit: 10 Tools You Can Use Today
   │  Date: ___________                                 │
   │  Tool: ___________  Website: ___________           │
   │  Good for: _________________________________       │
-  └────────────────────────────────────────────────────┘
+  └──────────────────────────────────────────────────┘
 
 ────────────────────────────────────────
 CHAPTER 3 — Talking to AI: How to Write a Good Prompt
@@ -337,7 +337,7 @@ Column 2 — The 3-part prompt formula with one example
 Column 3 — Stay safe: 5 things to never share
 
 AI UPDATE CARD (printable, replaced each term):
-┌─────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────┐
 │  AI TOOLS — Updated: _______________                    │
 │                                                         │
 │  NEW THIS TERM:                                         │
@@ -352,7 +352,7 @@ AI UPDATE CARD (printable, replaced each term):
 │                                                         │
 │  TOOLS NO LONGER RECOMMENDED:                          │
 │  ________________________________________________       │
-└─────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────┘
 
 ══════════════════════════════════════════
 PART B — TEACHER'S BOOK: "Teaching AI to New Australians"
