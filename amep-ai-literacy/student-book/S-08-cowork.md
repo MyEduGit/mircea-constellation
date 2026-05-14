@@ -1,3 +1,19 @@
+---
+title: "Module 8 — AI and Your Files"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 8
+cefr: [B1]
+tags: [amep, ai-literacy, student-book, module-8, files, documents, forms]
+aliases: ["S-08", "Student Module 8"]
+pair: "[[T-08-cowork]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[S-07-claude-chrome]]"
+next: "[[S-09-claude-code-optional]]"
+---
+
 # Module 8 — Cowork: AI and Your Files
 **CEFR: B1 · Pages S-8.1 to S-8.11**
 
@@ -120,7 +136,7 @@ After this lesson, I can:
 **Choose one form question from the list below. Ask Claude to explain it.**
 
 | Form question | My explanation (what Claude told me) |
-|--------------|--------------------------------------|
+|--------------|-------------------------------------|
 | "Country of birth:" | |
 | "Preferred name (if different from legal name):" | |
 | "Cultural background (optional):" | |
@@ -136,7 +152,7 @@ Read this form question. Write what information you would put there.
 
 > **"Emergency contact name and phone number:"**
 >
-> My made-up answer: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+> My made-up answer: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -159,13 +175,13 @@ Read this form question. Write what information you would put there.
 Describe one form or document that you need help understanding.
 What would you ask Claude?
 
-> "I have a form from \_\_\_\_\_\_\_\_\_\_\_ ."
-> "I do not understand the part that says \_\_\_\_\_\_\_\_\_\_\_ ."
-> "I will ask Claude to \_\_\_\_\_\_\_\_\_\_\_ ."
+> "I have a form from \_\_\_\_\_\_\_\_\_ ."
+> "I do not understand the part that says \_\_\_\_\_\_\_\_\_ ."
+> "I will ask Claude to \_\_\_\_\_\_\_\_\_ ."
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -195,7 +211,7 @@ What would you ask Claude?
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can ask Claude to explain a form question. | ☐ | ☐ |
 | I know the three ways to share text with Claude. | ☐ | ☐ |
 | I know which files are safe to upload and which are not. | ☐ | ☐ |

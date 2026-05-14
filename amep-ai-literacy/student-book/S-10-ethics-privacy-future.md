@@ -1,3 +1,18 @@
+---
+title: "Module 10 — Ethics, Privacy and the Future"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 10
+cefr: [Pre-A1, A1, A2, B1]
+tags: [amep, ai-literacy, student-book, module-10, ethics, privacy, future]
+aliases: ["S-10", "Student Module 10"]
+pair: "[[T-10-ethics-privacy-future]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[S-09-claude-code-optional]]"
+next: "[[S-glossary]]"
+---
+
 # Module 10 — AI, Ethics, and the Future
 **CEFR: All levels · Pages S-10.1 to S-10.12**
 
@@ -89,7 +104,7 @@ After this lesson, I can:
 **Read again. Write one thing each person said AI should NOT do.**
 
 | Person | AI should not… |
-|--------|----------------|
+|--------|---------------|
 | Maria | |
 | Omar | |
 | Fatima | |
@@ -122,13 +137,13 @@ That is bias. It is not fair.
 Ask Claude these questions. Write what Claude says.
 
 1. **"Can AI be biased?"**
-   Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+   Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 2. **"What should I do if AI gives me wrong information?"**
-   Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+   Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 3. **"Who is responsible for AI mistakes — the company or the person using it?"**
-   Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+   Claude says: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 Do you agree with Claude's answers? Why or why not?
 
@@ -184,13 +199,13 @@ Do you agree with Claude's answers? Why or why not?
 
 **Question C:** "What rules do you think AI companies should follow?"
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -215,7 +230,7 @@ You have the right to:
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can name two things AI should not do. | ☐ | ☐ |
 | I can explain what bias in AI means. | ☐ | ☐ |
 | I know I have rights when AI is used about me. | ☐ | ☐ |

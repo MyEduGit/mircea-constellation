@@ -1,3 +1,18 @@
+---
+title: "Module 6 — AI and the Internet"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 6
+cefr: [A2, B1]
+tags: [amep, ai-literacy, student-book, module-6, web-search, source-literacy]
+aliases: ["S-06", "Student Module 6"]
+pair: "[[T-06-web-search]]"
+worksheet: "[[appendix-D-worksheets]]"
+prev: "[[S-05-real-life]]"
+next: "[[S-07-claude-chrome]]"
+---
+
 # Module 6 — AI and the Internet
 **CEFR: A2–B1 · Pages S-6.1 to S-6.11**
 
@@ -91,7 +106,7 @@ After this lesson, I can:
 ### Two types of Claude questions:
 
 | Type | Example | Does Claude search? |
-|------|---------|--------------------|
+|------|---------|-------------------|
 | General knowledge | "What is a democracy?" | Sometimes — uses training |
 | Current information | "What time does the clinic open today?" | Yes — uses web search ⏱ |
 
@@ -143,7 +158,7 @@ After this lesson, I can:
 > "According to the pharmacy's official website, the pharmacy opens at 9:00 am Monday to Friday. Source: [pharmacy website]. ⏱"
 
 Which answer is more reliable? **A / B**
-Why? \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+Why? \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -152,7 +167,7 @@ Why? \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 When you get information from Claude, ask:
 
 | Question | Yes | No |
-|----------|-----|----|
+|----------|-----|-----|
 | Does Claude give a source? | ☐ | ☐ |
 | Is the source an official website (.gov.au, .edu.au)? | ☐ | ☐ |
 | Can I check this information myself? | ☐ | ☐ |
@@ -182,9 +197,9 @@ Write about one piece of information you found with Claude today.
 > "Claude said \_\_\_\_\_\_\_\_\_\_\_ ."
 > "I checked this by \_\_\_\_\_\_\_\_\_\_\_ ."
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -204,7 +219,7 @@ Write about one piece of information you found with Claude today.
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can ask Claude for current information. | ☐ | ☐ |
 | I can identify the source Claude uses. | ☐ | ☐ |
 | I can check information on a real website. | ☐ | ☐ |

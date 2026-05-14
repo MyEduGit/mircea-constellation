@@ -1,3 +1,21 @@
+---
+title: "Module 9 — Claude Code (Optional)"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 9
+optional: true
+stream: IT
+cefr: [B1]
+tags: [amep, ai-literacy, student-book, module-9, claude-code, optional, it-stream]
+aliases: ["S-09", "Student Module 9"]
+pair: "[[T-09-claude-code-optional]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[S-08-cowork]]"
+next: "[[S-10-ethics-privacy-future]]"
+---
+
 # Module 9 — Claude Code (Optional Extension)
 **CEFR: B1+ · For IT-stream students only · Pages S-9.1 to S-9.8**
 
@@ -101,8 +119,8 @@ Developers use Claude Code to:
 **Read again. Answer the questions.**
 
 1. What language is Rustam learning? \_\_\_\_\_\_\_\_\_\_
-2. What is the error? \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
-3. How does Claude fix it? \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+2. What is the error? \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+3. How does Claude fix it? \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 *(Answers: 1. Python · 2. Capital N in "Name" instead of small n · 3. Changes "Name" to "name")*
 
@@ -122,7 +140,7 @@ The error is on line: \_\_\_\_
 
 **Describe the error in your own words:**
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 **Now type this code into Claude and ask:**
 > "What is wrong with this code? Please explain the error."

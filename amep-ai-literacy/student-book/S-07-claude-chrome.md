@@ -1,3 +1,19 @@
+---
+title: "Module 7 — Claude in Chrome"
+product: AMEP AI Literacy Manual
+book: student
+type: module
+module: 7
+cefr: [B1]
+tags: [amep, ai-literacy, student-book, module-7, claude-chrome, browser-extension]
+aliases: ["S-07", "Student Module 7"]
+pair: "[[T-07-claude-chrome]]"
+worksheet: "[[appendix-D-worksheets]]"
+cheat-sheet: "[[appendix-C-cheat-sheets]]"
+prev: "[[S-06-web-search]]"
+next: "[[S-08-cowork]]"
+---
+
 # Module 7 — Claude in Chrome
 **CEFR: B1 · Pages S-7.1 to S-7.11**
 
@@ -69,8 +85,8 @@ After this lesson, I can:
 >
 > **Sam:** Click the Claude icon in the top corner of your browser.
 > A panel opens on the right.
-> Highlight the text you do not understand.
-> Then type: "Please explain this in simple English."
+> Highlight the text you find hard.
+> In the panel, type: "Please explain this in simple English."
 >
 > **Nadia:** *(tries it)* Oh! It is much clearer now.
 >
@@ -128,7 +144,7 @@ Use Claude in Chrome to get a simple explanation.
 Write what you did:
 
 1. The webpage I opened: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
-2. I highlighted this text: *(describe or copy a few words)* \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+2. I highlighted this text: *(describe or copy a few words)* \_\_\_\_\_\_\_\_\_\_\_\_\_\_
 3. Claude explained it as: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
@@ -139,7 +155,7 @@ Read this text. Rewrite it in simple English.
 
 > "Recipients of the Commonwealth Seniors Health Card are entitled to a concessional rate for Pharmaceutical Benefits Scheme medicines."
 
-My simple version: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+My simple version: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 *(Suggested: People with a Seniors Health Card pay less money for medicines.)*
 
@@ -168,9 +184,9 @@ Explain how you could use Claude to help.
 > "The hard part is \_\_\_\_\_\_\_\_\_\_\_ ."
 > "I could ask Claude to \_\_\_\_\_\_\_\_\_\_\_ ."
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 ---
 
@@ -196,7 +212,7 @@ Explain how you could use Claude to help.
 ✅
 
 | Question | Yes | Not yet |
-|----------|-----|--------|
+|----------|-----|---------|
 | I can find and open Claude in Chrome. | ☐ | ☐ |
 | I can highlight text and ask Claude to explain it. | ☐ | ☐ |
 | I know what Claude in Chrome can and cannot see. | ☐ | ☐ |
@@ -230,4 +246,4 @@ Explain how you could use Claude to help.
 ---
 
 *End of Module 7 — Student Book*
-*Continue to Module 8: Cowork →*
+*Continue to Module 8: AI and Your Files →*

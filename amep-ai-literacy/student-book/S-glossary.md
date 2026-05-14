@@ -1,3 +1,14 @@
+---
+title: "Student Book Glossary"
+product: AMEP AI Literacy Manual
+book: student
+type: glossary
+cefr: [Pre-A1, A1, A2, B1]
+tags: [amep, ai-literacy, student-book, glossary, vocabulary]
+aliases: ["Glossary", "AMEP Glossary"]
+prev: "[[S-10-ethics-privacy-future]]"
+---
+
 # Student Book Glossary
 ## AI in Everyday English — Plain-English Dictionary
 
