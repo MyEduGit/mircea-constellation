@@ -100,6 +100,7 @@ except Exception as exc:  # honest failure — scaffold still runs
 # ── Allowlist — canonical boundary. Nothing bypasses this. ─────────────
 ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "ingest_normalize",
+    "ingest_obsidian",
     "categorise_by_axes",
     "cross_link",
     "governance_check",
