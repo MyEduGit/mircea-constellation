@@ -40,6 +40,23 @@ python3 scribeclaw/fix_romanian_subs.py <VIDEO_ID>
 python3 scribeclaw/fix_romanian_subs.py --from-srt fisier.srt --out fisier_corectat.srt
 ```
 
+### Cazul 2b — Fișier SBV (descărcat din YouTube Studio)
+
+YouTube Studio exportă subtitrări în format `.sbv`, nu `.srt`.
+
+```bash
+# Pas 1: convertire + corecție deterministă
+python3 scribeclaw/convert_sbv_to_srt.py fisier.sbv GFttc7f5zEo_RO_corrected.srt
+
+# Pas 2: reformatare în propoziții complete (elimină tăierile mid-frază)
+python3 scribeclaw/reformat_srt.py GFttc7f5zEo_RO_corrected.srt GFttc7f5zEo_RO_final.srt
+
+# Pas 3: corecție Claude AI (dacă ANTHROPIC_API_KEY disponibil)
+python3 scribeclaw/fix_romanian_subs.py --from-srt GFttc7f5zEo_RO_final.srt --out GFttc7f5zEo_RO_final_ai.srt
+```
+
+**Notă:** `reformat_srt.py` unește segmentele care continuă propoziția (verificare: word count input = word count output).
+
 ### Cazul 3 — AssemblyAI fallback (fără subtitrări auto)
 
 ```bash
