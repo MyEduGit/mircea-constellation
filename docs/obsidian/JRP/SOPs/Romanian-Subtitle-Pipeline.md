@@ -109,7 +109,7 @@ Alternativă viitoare: rulare pe OpenClaw (46.225.51.30) cu cookie fișier YouTu
 
 | Data | Video | Status | Note |
 |---|---|---|---|
-| 2026-05-15 | C0072 / GFttc7f5zEo | 🔄 Pending Mac run | Script creat, Notion + Obsidian actualizate |
+| 2026-05-15 | C0072 / GFttc7f5zEo | ✅ SRT gata de upload | SBV→SRT convertit, corectat (468 seg), reformat în propoziții complete (494 cards). Fișier: GFttc7f5zEo_RO_final.srt |
 
 ---
 
