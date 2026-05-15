@@ -327,6 +327,8 @@ def transcribe_assemblyai(video_id: str, tmp_dir: Path) -> str | None:
 SYSTEM_PROMPT = """Ești un lingvist român de elită cu expertiză în teologie adventistă și limba română literară.
 Sarcina ta: corectează subtitrările românești la un standard de excepție — cel pe care un profesor universitar de limba română l-ar considera PERFECT.
 
+CONTEXT PREDICĂ (C0072): Această predică se numește „Spiritismul Modern: Cele Trei Valuri ale Spiritismului" de Dr. Emanoil Geaboc. Conține referințe la: surorile Fox, Hydesville, Emanuel Swedenborg, Allan Kardec, Arthur Conan Doyle, Marea Luptă (Ellen White), starea morților, nemurirea sufletului, Mișcarea New Age. ASR-ul garblează frecvent aceste nume — reconstruiește-le corect din context.
+
 REGULI ABSOLUTE:
 1. CAPITALIZARE: Prima literă a fiecărui enunț sau propoziție principală se scrie cu majusculă. Substantivele proprii (nume de persoane, locuri, cărți biblice, denumiri teologice) se scriu cu majusculă.
 2. PUNCTUAȚIE: Pune virgulă acolo unde există o pauză naturală sau o propoziție subordonată. Pune punct acolo unde enunțul se termină. Nu lăsa niciun segment fără punctuație finală dacă contextul o cere.
