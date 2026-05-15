@@ -487,9 +487,53 @@ def main():
         print(f"  4. Select 'Cu sincronizare' → Publică\n")
 
 
+def sbv_ts_to_srt(ts: str) -> str:
+    """Convert SBV H:MM:SS.mmm → SRT HH:MM:SS,mmm"""
+    ts = ts.strip()
+    main, ms = ts.rsplit(".", 1) if "." in ts else (ts, "000")
+    ms = ms.ljust(3, "0")[:3]
+    parts = main.split(":")
+    h, m, s = (parts[0].zfill(2), parts[1], parts[2]) if len(parts) == 3 else ("00", parts[0], parts[1])
+    return f"{h}:{m.zfill(2)}:{s.zfill(2)},{ms}"
+
+
+def parse_sbv(text: str) -> list[dict]:
+    """Parse YouTube SBV format into SRT-compatible entry list."""
+    blocks = re.split(r"\n{2,}", text.strip())
+    entries = []
+    for block in blocks:
+        lines = block.strip().splitlines()
+        if not lines:
+            continue
+        m = re.match(r"(\d+:\d+:\d+\.\d+),(\d+:\d+:\d+\.\d+)", lines[0].strip())
+        if not m:
+            continue
+        start = sbv_ts_to_srt(m.group(1))
+        end = sbv_ts_to_srt(m.group(2))
+        body = " ".join(l.strip() for l in lines[1:] if l.strip())
+        entries.append({"index": len(entries) + 1, "start": start, "end": end, "text": body})
+    return entries
+
+
 if __name__ == "__main__":
     # Also support running directly on an existing SRT file
-    if len(sys.argv) > 1 and sys.argv[1] == "--from-srt":
+    if len(sys.argv) > 1 and sys.argv[1] == "--from-sbv":
+        if len(sys.argv) < 3:
+            print("Usage: fix_romanian_subs.py --from-sbv <file.sbv> [--out output.srt]")
+            sys.exit(1)
+        sbv_path = Path(sys.argv[2])
+        raw = sbv_path.read_text(encoding="utf-8")
+        entries = parse_sbv(raw)
+        for e in entries:
+            e["text"] = _fix_deterministic(e["text"])
+        det_srt = render_srt(entries)
+        out = Path(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[3] == "--out" else sbv_path.with_suffix("").with_stem(sbv_path.stem + "_corrected")
+        out = out.with_suffix(".srt")
+        skip_ai = "--skip-ai" in sys.argv
+        final = det_srt if skip_ai else correct_with_claude(det_srt)
+        out.write_text(final, encoding="utf-8")
+        print(f"✅ Written: {out}")
+    elif len(sys.argv) > 1 and sys.argv[1] == "--from-srt":
         if len(sys.argv) < 3:
             print("Usage: fix_romanian_subs.py --from-srt <file.srt> [--out output.srt]")
             sys.exit(1)
