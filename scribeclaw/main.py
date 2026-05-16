@@ -37,6 +37,7 @@ from .assemblyai import (
 from .edit import audio_extract, media_edit
 from .postprocess import postprocess_transcript
 from .transcribe import transcribe_ro
+from .validate_srt import validate_srt
 from .youtube import youtube_metadata, youtube_upload
 
 CLAW_NAME = os.getenv("CLAW_NAME", "ScribeClaw")
@@ -69,6 +70,7 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "import_assemblyai_transcript",
     "bulk_import_assemblyai_romanian",
     "postprocess_transcript",
+    "validate_srt",
     "youtube_metadata",
     "youtube_upload",
 })
@@ -135,6 +137,7 @@ _HANDLERS: dict[str, Any] = {
     "import_assemblyai_transcript": lambda p: import_assemblyai_transcript(p, DATA_ROOT),
     "bulk_import_assemblyai_romanian": lambda p: bulk_import_assemblyai_romanian(p, DATA_ROOT),
     "postprocess_transcript":       lambda p: postprocess_transcript(p, DATA_ROOT),
+    "validate_srt":                 lambda p: validate_srt(p, DATA_ROOT),
     "youtube_metadata":             lambda p: youtube_metadata(p, DATA_ROOT),
     "youtube_upload":               lambda p: youtube_upload(p, DATA_ROOT),
 }
