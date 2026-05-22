@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cold-Open Phrases Config",
+  "description": "Per-sermon phrase list for find_phrases.py + build_coldopen.py",
+  "type": "array",
+  "minItems": 1,
+  "maxItems": 8,
+  "items": {
+    "type": "object",
+    "required": ["id", "label", "search", "card_text"],
+    "properties": {
+      "id":        { "type": "string", "description": "Unique slug for this hook" },
+      "label":     { "type": "string", "description": "Human-readable label" },
+      "search":    { "type": "string", "description": "Distinctive substring to search in Whisper output (normalised)" },
+      "duration":  { "type": "integer", "default": 7, "description": "Clip duration in seconds" },
+      "card_text": { "type": "string", "description": "Romanian on-screen card text (ALL CAPS)" },
+      "fallbacks": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Alternative search strings if primary not found"
+      },
+      "card_style": {
+        "type": "string",
+        "enum": ["default", "pivot"],
+        "default": "default",
+        "description": "pivot = gold bg / navy text (for the Sora White thesis reveal)"
+      }
+    }
+  }
+}
