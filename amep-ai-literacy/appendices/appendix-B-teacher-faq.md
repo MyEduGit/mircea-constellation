@@ -1,3 +1,14 @@
+---
+title: "Appendix B — FAQ for Teachers"
+product: AMEP AI Literacy Manual
+book: teacher
+type: appendix
+appendix: B
+tags: [amep, ai-literacy, appendix, faq, teacher-support]
+aliases: ["Appendix B", "Teacher FAQ"]
+related: ["[[appendix-A-pd-primer]]", "[[appendix-C-cheat-sheets]]"]
+---
+
 # Teacher's Book — Appendix B
 ## FAQ for Teachers
 

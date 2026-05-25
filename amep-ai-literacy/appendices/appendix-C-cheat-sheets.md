@@ -1,3 +1,14 @@
+---
+title: "Appendix C — One-Page Cheat Sheets"
+product: AMEP AI Literacy Manual
+book: both
+type: appendix
+appendix: C
+tags: [amep, ai-literacy, appendix, cheat-sheets, quick-reference, print-ready]
+aliases: ["Appendix C", "Cheat Sheets"]
+related: ["[[appendix-D-worksheets]]"]
+---
+
 # Teacher's Book — Appendix C
 ## One-Page Cheat Sheets
 
@@ -144,7 +155,7 @@ claude
 **NEVER type or say these in AI:**
 
 | ❌ Not safe | ✅ Safe alternative |
-|------------|--------------------|
+|------------|-------------------|
 | Your full name | A made-up name: "Anna" |
 | Your home address | "[my address]" or a made-up one |
 | Your phone number | Leave it out |

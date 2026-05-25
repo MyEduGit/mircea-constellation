@@ -1,3 +1,14 @@
+---
+title: "Appendix A — PD Primer for Teachers"
+product: AMEP AI Literacy Manual
+book: teacher
+type: appendix
+appendix: A
+tags: [amep, ai-literacy, appendix, pd-primer, professional-development]
+aliases: ["Appendix A", "PD Primer"]
+related: ["[[appendix-B-teacher-faq]]"]
+---
+
 # Teacher's Book — Appendix A
 ## AI in 20 Minutes: A PD Primer for the Staff Room
 

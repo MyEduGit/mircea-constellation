@@ -38,6 +38,7 @@ VECTOR_DB = "lancedb"
 DATASET_URANTIA = "urantia_book"
 DATASET_PHD = "phd_triune_monism"
 DATASET_NEMOCLAW = "nemoclaw_memory"
+DATASET_AMEP = "amep_ai_literacy"
 
 
 def _check_ollama(endpoint: str, timeout: float = 2.0) -> bool:
