@@ -1,12 +1,15 @@
-import { useCurrentFrame, useVideoConfig } from "remotion";
+import { useCurrentFrame } from "remotion";
 
 type ProgressBarProps = {
   accentColor: string;
+  durationInFrames: number;
 };
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({ accentColor }) => {
+export const ProgressBar: React.FC<ProgressBarProps> = ({
+  accentColor,
+  durationInFrames,
+}) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
   const progress = Math.min(1, frame / Math.max(1, durationInFrames - 1));
 
   return (
