@@ -2,13 +2,9 @@
 """OpenClaw@URANTiOS-ingest — execution runtime, ingestion sub-role.
 
 Canonical role: controlled execution (singular).
-Truthful label:  deployable scaffold with two real handlers
-(``ingest_normalize`` and ``categorise_by_axes``).
-
-Three of the five canonical handlers (cross_link, governance_check,
-export_urantipedia) remain declared-but-stubbed pending follow-up PR.
-The allowlist boundary is preserved: nothing outside ALLOWED_HANDLERS
-can run.
+Handlers (all real): ingest_normalize, ingest_obsidian,
+categorise_by_axes, cross_link, governance_check, export_urantipedia,
+subscription_subscribe, subscription_unsubscribe, subscription_list.
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """
@@ -32,12 +28,14 @@ import uvicorn
 from fastapi import Body, FastAPI
 
 from . import __version__
-from .axes import AXES, UNCLEAR, axis_names, validate_classification
+from .axes import (AXES, NONPOSITIVE_LABELS, UNCLEAR, WEIGHTS, axis_names,
+                    validate_classification)
 
 # ── Config (all via env, nothing hardcoded that the operator would override) ─
 CLAW_NAME = os.getenv("CLAW_NAME", "OpenClaw@URANTiOS-ingest")
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/data"))
 DATASET_NAME = os.getenv("DATASET_NAME", "mircea_corpus")
+DATASET_SUBSCRIPTIONS = os.getenv("SUBSCRIPTION_DATASET", "mircea_subscribers")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 HTTP_HOST = os.getenv("HTTP_HOST", "0.0.0.0")
 HTTP_PORT = int(os.getenv("HTTP_PORT", "8080"))
@@ -53,9 +51,22 @@ OLLAMA_TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "120"))
 # Classifier context budget — truncate long docs to keep the LLM honest.
 CLASSIFY_MAX_CHARS = int(os.getenv("CLASSIFY_MAX_CHARS", "8000"))
 
+# Cross-link scoring knobs — see ``axes.WEIGHTS`` for per-axis weights.
+CROSS_LINK_THRESHOLD = float(os.getenv("CROSS_LINK_THRESHOLD", "5.0"))
+CROSS_LINK_MAX_PAIRS = int(os.getenv("CROSS_LINK_MAX_PAIRS", "10000"))
+CROSS_LINK_MAX_FANOUT = int(os.getenv("CROSS_LINK_MAX_FANOUT", "50"))
+
+# Obsidian integration — both optional. If unset the handlers skip gracefully.
+# OBSIDIAN_VAULT_PATH: directory to read .md files from (ingest_obsidian).
+# OBSIDIAN_EXPORT_DIR: directory to write canon .md into (export_urantipedia).
+_obs_vault_raw = os.getenv("OBSIDIAN_VAULT_PATH", "").strip()
+_obs_export_raw = os.getenv("OBSIDIAN_EXPORT_DIR", "").strip()
+OBSIDIAN_VAULT_PATH: Path | None = Path(_obs_vault_raw) if _obs_vault_raw else None
+OBSIDIAN_EXPORT_DIR: Path | None = Path(_obs_export_raw) if _obs_export_raw else None
+
 # Ensure directory layout on every start (idempotent).
-for _sub in ("ingest/chatcode", "ingested/chatcode", "classified",
-             "canon", "logs", "evidence"):
+for _sub in ("ingest/chatcode", "ingested/chatcode", "ingested/obsidian",
+             "classified", "linked", "governed", "canon", "logs", "evidence"):
     (DATA_ROOT / _sub).mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -75,6 +86,7 @@ COGNEE_READY = False
 COGNEE_INIT_INFO: dict[str, Any] = {"initialized": False}
 try:
     import cognee  # noqa: F401  (ensures lib is actually installed)
+
     import cognee_config  # repo-root module, copied into /app
     COGNEE_INIT_INFO = cognee_config.init(
         mode=os.getenv("COGNEE_MODE", "auto"),
@@ -88,11 +100,15 @@ except Exception as exc:  # honest failure — scaffold still runs
 # ── Allowlist — canonical boundary. Nothing bypasses this. ─────────────
 ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "ingest_normalize",
+    "ingest_obsidian",
     "categorise_by_axes",
     "cross_link",
     "governance_check",
     "export_urantipedia",
     "smoke_test",
+    "subscription_subscribe",
+    "subscription_unsubscribe",
+    "subscription_list",
 })
 
 
@@ -194,6 +210,118 @@ async def _handle_ingest_normalize(payload: dict) -> dict:
         "handler": "ingest_normalize",
         "normalized": processed,
         "errors": errors,
+        "dataset": DATASET_NAME,
+    }
+
+
+async def _handle_ingest_obsidian(payload: dict) -> dict:
+    """Ingest Obsidian vault markdown files into Cognee.
+
+    Reads every ``*.md`` file found under ``OBSIDIAN_VAULT_PATH`` (env var) or
+    the ``vault_path`` key in the payload. System dirs (``*.obsidian/``) are
+    skipped. Each file is deduplicated by sha256 — a sentinel file at
+    ``/data/ingested/obsidian/{sha256}.done`` prevents re-ingestion on repeat
+    runs.
+
+    Honest failure: returns ``status=error`` if the vault path is not
+    configured, the directory does not exist, or Cognee is unavailable.
+    No silent no-ops.
+    """
+    vault_override = payload.get("vault_path", "").strip()
+    vault: Path | None = Path(vault_override) if vault_override else OBSIDIAN_VAULT_PATH
+    if not vault:
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": "obsidian_vault_not_configured",
+            "hint": (
+                "Set OBSIDIAN_VAULT_PATH env var or pass vault_path in payload. "
+                "The path must be accessible inside the container (bind-mount it "
+                "in docker-compose.yml under volumes)."
+            ),
+        }
+    vault = Path(vault)
+    if not vault.is_dir():
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": f"vault_not_found: {vault}",
+        }
+
+    if not COGNEE_READY:
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": "cognee_not_ready",
+            "hint": "check cognee_config.init() output and Ollama reachability",
+        }
+
+    done_dir = DATA_ROOT / "ingested" / "obsidian"
+    done_dir.mkdir(parents=True, exist_ok=True)
+
+    # Collect .md files; skip Obsidian system directories.
+    md_files = [
+        f for f in sorted(vault.rglob("*.md"))
+        if ".obsidian" not in f.parts
+    ]
+    if not md_files:
+        return {
+            "status": "success",
+            "handler": "ingest_obsidian",
+            "ingested": 0,
+            "message": f"no .md files in {vault}",
+        }
+
+    ingested = 0
+    skipped = 0
+    errors: list[dict[str, str]] = []
+
+    for f in md_files:
+        try:
+            content = f.read_text(encoding="utf-8", errors="replace")
+        except Exception as exc:
+            errors.append({"file": str(f), "error": f"read_failed: {exc}"})
+            continue
+
+        sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
+        done_path = done_dir / f"{sha}.done"
+        if done_path.exists():
+            skipped += 1
+            continue
+
+        rel_path = str(f.relative_to(vault))
+        try:
+            await cognee.add(
+                content,
+                dataset_name=DATASET_NAME,
+                node_set=[
+                    "source:obsidian",
+                    f"file:{f.name}",
+                    f"vault_path:{rel_path}",
+                    f"sha256:{sha}",
+                ],
+            )
+            done_path.write_text(
+                json.dumps({
+                    "sha256": sha,
+                    "file": rel_path,
+                    "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                })
+            )
+            ingested += 1
+            logger.info(f"ingest_obsidian: {rel_path} sha256={sha[:12]}")
+        except Exception as exc:
+            errors.append({"file": rel_path, "error": str(exc)})
+            logger.exception(f"ingest_obsidian failed on {rel_path}")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "ingest_obsidian",
+        "ingested": ingested,
+        "skipped_existing": skipped,
+        "total_found": len(md_files),
+        "errors": errors,
+        "vault": str(vault),
         "dataset": DATASET_NAME,
     }
 
@@ -337,23 +465,797 @@ async def _handle_categorise_by_axes(payload: dict) -> dict:
     }
 
 
-async def _handle_stub(name: str, payload: dict) -> dict:
+def _score_pair(axes_a: dict, axes_b: dict) -> tuple[float, list[dict]]:
+    """Compute edge weight between two classification axis-maps.
+
+    Pure function — no I/O, trivially testable. Matches earn weight only
+    when labels are equal AND the label is not in ``NONPOSITIVE_LABELS``
+    (so ``serves_self ↔ serves_self`` and ``absent ↔ absent`` do not
+    reinforce linkage).
+    """
+    score = 0.0
+    matched: list[dict] = []
+    for axis in axis_names():
+        la = axes_a.get(axis)
+        lb = axes_b.get(axis)
+        if la != lb or la in NONPOSITIVE_LABELS:
+            continue
+        w = WEIGHTS[axis]
+        if w <= 0:
+            continue
+        score += w
+        matched.append({"axis": axis, "label": la, "weight": w})
+    return score, matched
+
+
+async def _handle_cross_link(payload: dict) -> dict:
+    """Score every classified-doc pair and emit edges above threshold.
+
+    Reads ``/data/classified/*.json``. For each unordered pair with
+    ``sha_a < sha_b``:
+
+    * Skip if ``/data/linked/{sha_a}__{sha_b}.json`` already exists
+      (idempotent — safe to re-run).
+    * Skip if either document carries ``lucifer_test == "flagged"``.
+      Iniquitous docs produce zero edges in either direction.
+    * Compute the score via :func:`_score_pair` against ``axes.WEIGHTS``.
+    * Emit an edge record if ``score >= threshold`` AND neither node has
+      already hit ``max_fanout`` for this run. If Cognee is ready, also
+      add a synthetic edge-content node tagged with both shas so the
+      graph sees the relationship.
+
+    Payload overrides (all optional): ``threshold``, ``max_pairs``,
+    ``max_fanout``. Honest failure: Cognee add errors are collected per
+    pair into ``errors`` (``status: partial``); nothing is silently
+    dropped.
+    """
+    in_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "linked"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    threshold = float(payload.get("threshold", CROSS_LINK_THRESHOLD))
+    max_pairs = int(payload.get("max_pairs", CROSS_LINK_MAX_PAIRS))
+    max_fanout = int(payload.get("max_fanout", CROSS_LINK_MAX_FANOUT))
+
+    records: list[dict] = []
+    for f in sorted(in_dir.glob("*.json")):
+        try:
+            rec = json.loads(f.read_text())
+            if "sha256" in rec and "axes" in rec:
+                records.append(rec)
+        except Exception as exc:
+            logger.warning(f"cross_link: corrupt {f.name}: {exc}")
+
+    if len(records) < 2:
+        return {"status": "success", "handler": "cross_link",
+                "message": f"need >=2 classified docs; have {len(records)}",
+                "edges_emitted": 0, "documents": len(records)}
+
+    records.sort(key=lambda r: r["sha256"])
+    existing = {p.name for p in out_dir.glob("*.json")}
+
+    fanout: dict[str, int] = {}
+    edges_emitted = 0
+    skipped_existing = 0
+    skipped_flagged = 0
+    skipped_below_threshold = 0
+    skipped_fanout = 0
+    pairs_considered = 0
+    errors: list[dict] = []
+
+    pairs_budget_exhausted = False
+    for i, a in enumerate(records):
+        if pairs_budget_exhausted:
+            break
+        for b in records[i + 1:]:
+            if pairs_considered >= max_pairs:
+                pairs_budget_exhausted = True
+                break
+            pairs_considered += 1
+
+            sha_a, sha_b = a["sha256"], b["sha256"]
+            pair_name = f"{sha_a}__{sha_b}.json"
+            if pair_name in existing:
+                skipped_existing += 1
+                continue
+            if (a["axes"].get("lucifer_test") == "flagged"
+                    or b["axes"].get("lucifer_test") == "flagged"):
+                skipped_flagged += 1
+                continue
+            if (fanout.get(sha_a, 0) >= max_fanout
+                    or fanout.get(sha_b, 0) >= max_fanout):
+                skipped_fanout += 1
+                continue
+
+            score, matched = _score_pair(a["axes"], b["axes"])
+            if score < threshold:
+                skipped_below_threshold += 1
+                continue
+
+            record = {
+                "sha_a": sha_a,
+                "sha_b": sha_b,
+                "score": round(score, 3),
+                "axes_matched": matched,
+                "threshold": threshold,
+                "claw": CLAW_NAME,
+                "version": __version__,
+                "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            }
+            (out_dir / pair_name).write_text(
+                json.dumps(record, indent=2, sort_keys=True))
+            fanout[sha_a] = fanout.get(sha_a, 0) + 1
+            fanout[sha_b] = fanout.get(sha_b, 0) + 1
+            edges_emitted += 1
+
+            if COGNEE_READY:
+                try:
+                    await cognee.add(
+                        f"cross_link edge: {sha_a[:12]} ↔ {sha_b[:12]} "
+                        f"(score={score:.2f}, axes_matched="
+                        f"{[m['axis'] for m in matched]})",
+                        dataset_name=DATASET_NAME,
+                        node_set=[
+                            f"edge:{sha_a[:12]}__{sha_b[:12]}",
+                            f"sha:{sha_a}",
+                            f"sha:{sha_b}",
+                            "kind:cross_link",
+                        ],
+                    )
+                except Exception as exc:
+                    errors.append({"pair": pair_name,
+                                   "cognee_error": str(exc)})
+                    logger.warning(
+                        f"cross_link: cognee.add failed for {pair_name}: {exc}")
+
+    total_pairs = len(records) * (len(records) - 1) // 2
     return {
-        "status": "not_implemented",
-        "handler": name,
-        "reason": "scaffold; follow-up PR will implement.",
+        "status": "success" if not errors else "partial",
+        "handler": "cross_link",
+        "edges_emitted": edges_emitted,
+        "skipped_existing": skipped_existing,
+        "skipped_flagged": skipped_flagged,
+        "skipped_below_threshold": skipped_below_threshold,
+        "skipped_fanout": skipped_fanout,
+        "pairs_considered": pairs_considered,
+        "pairs_unseen": max(0, total_pairs - pairs_considered),
+        "documents": len(records),
+        "threshold": threshold,
+        "max_fanout": max_fanout,
+        "max_pairs": max_pairs,
+        "cognee_ready": COGNEE_READY,
+        "errors": errors,
+    }
+
+
+# ── Subscription handlers ─────────────────────────────────────────────
+# Subscribers live in the Cognee graph under DATASET_SUBSCRIPTIONS, tagged
+# via ``node_set`` so other constellation services can recall them through
+# the same cognee.search() surface used for the corpus. Append-only: an
+# unsubscribe writes a new status:inactive record rather than mutating the
+# original — matches the project's evidence-trail discipline.
+_VALID_CHANNELS: frozenset[str] = frozenset({"newsletter", "telegram", "bot_fleet"})
+
+
+def _identifier_sha256(identifier: str) -> str:
+    return hashlib.sha256(identifier.encode("utf-8")).hexdigest()
+
+
+def _subscription_node_set(
+    channel: str,
+    identifier_sha: str,
+    status: str,
+    tags: list[str] | None,
+) -> list[str]:
+    ns = [
+        "source:subscription",
+        f"channel:{channel}",
+        f"identifier_sha256:{identifier_sha}",
+        f"status:{status}",
+    ]
+    for t in tags or []:
+        ns.append(f"tag:{t}")
+    return ns
+
+
+async def _handle_subscription_subscribe(payload: dict) -> dict:
+    """Record a subscriber as a Cognee node in DATASET_SUBSCRIPTIONS.
+
+    Required payload keys: ``channel`` (one of newsletter/telegram/bot_fleet)
+    and ``identifier`` (email address or ``telegram:<chat_id>``).
+    Optional: ``tags`` — list of opt-in topic tags.
+
+    Honest failure: if Cognee is unavailable or the payload is malformed,
+    return ``status=error`` with a diagnostic and do not write to the graph.
+    """
+    channel = payload.get("channel")
+    identifier = payload.get("identifier")
+    tags = payload.get("tags") or []
+
+    if channel not in _VALID_CHANNELS:
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "invalid_channel",
+                "allowed_channels": sorted(_VALID_CHANNELS)}
+    if not isinstance(identifier, str) or not identifier.strip():
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "missing_identifier"}
+    if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "invalid_tags"}
+
+    if not COGNEE_READY:
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": "cognee_not_ready",
+                "hint": "check cognee_config.init() output and Ollama reachability"}
+
+    identifier_sha = _identifier_sha256(identifier)
+    record = {
+        "kind": "subscription",
+        "channel": channel,
+        "identifier_sha256": identifier_sha,
+        "status": "active",
+        "tags": tags,
+        "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
+    node_set = _subscription_node_set(channel, identifier_sha, "active", tags)
+
+    try:
+        await cognee.add(
+            json.dumps(record, sort_keys=True),
+            dataset_name=DATASET_SUBSCRIPTIONS,
+            node_set=node_set,
+        )
+    except Exception as exc:
+        logger.exception("subscription_subscribe failed")
+        return {"status": "error", "handler": "subscription_subscribe",
+                "error": f"cognee_add_failed: {exc}"}
+
+    logger.info(
+        f"subscription_subscribe: channel={channel} "
+        f"identifier_sha256={identifier_sha[:12]} tags={tags}")
+    return {
+        "status": "success",
+        "handler": "subscription_subscribe",
+        "channel": channel,
+        "identifier_sha256": identifier_sha,
+        "tags": tags,
+        "dataset": DATASET_SUBSCRIPTIONS,
+    }
+
+
+async def _handle_subscription_unsubscribe(payload: dict) -> dict:
+    """Append a ``status:inactive`` subscriber record.
+
+    Required payload key: ``identifier``. Optional: ``channel`` — if omitted
+    the unsubscribe applies to every channel the identifier might be in;
+    downstream list/search filters use the ``identifier_sha256`` node tag.
+
+    Append-only: no node is deleted — the latest record for a given
+    identifier_sha256 is authoritative.
+    """
+    identifier = payload.get("identifier")
+    channel = payload.get("channel")
+
+    if not isinstance(identifier, str) or not identifier.strip():
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": "missing_identifier"}
+    if channel is not None and channel not in _VALID_CHANNELS:
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": "invalid_channel",
+                "allowed_channels": sorted(_VALID_CHANNELS)}
+
+    if not COGNEE_READY:
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": "cognee_not_ready"}
+
+    identifier_sha = _identifier_sha256(identifier)
+    record = {
+        "kind": "subscription",
+        "channel": channel or "*",
+        "identifier_sha256": identifier_sha,
+        "status": "inactive",
+        "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
+    node_set = _subscription_node_set(
+        channel or "*", identifier_sha, "inactive", None)
+
+    try:
+        await cognee.add(
+            json.dumps(record, sort_keys=True),
+            dataset_name=DATASET_SUBSCRIPTIONS,
+            node_set=node_set,
+        )
+    except Exception as exc:
+        logger.exception("subscription_unsubscribe failed")
+        return {"status": "error", "handler": "subscription_unsubscribe",
+                "error": f"cognee_add_failed: {exc}"}
+
+    logger.info(
+        f"subscription_unsubscribe: channel={channel or '*'} "
+        f"identifier_sha256={identifier_sha[:12]}")
+    return {
+        "status": "success",
+        "handler": "subscription_unsubscribe",
+        "channel": channel or "*",
+        "identifier_sha256": identifier_sha,
+        "dataset": DATASET_SUBSCRIPTIONS,
+    }
+
+
+async def _handle_subscription_list(payload: dict) -> dict:
+    """Recall subscribers from DATASET_SUBSCRIPTIONS.
+
+    Optional payload key: ``channel`` — restrict the recall query.
+
+    Scope (first draft): returns whatever ``cognee.search`` surfaces for a
+    channel-scoped query, plus the raw payload. Richer filtering (last
+    status per identifier, tag intersection) can be added in a follow-up
+    once the graph surface stabilises.
+    """
+    channel = payload.get("channel")
+    if channel is not None and channel not in _VALID_CHANNELS:
+        return {"status": "error", "handler": "subscription_list",
+                "error": "invalid_channel",
+                "allowed_channels": sorted(_VALID_CHANNELS)}
+
+    if not COGNEE_READY:
+        return {"status": "error", "handler": "subscription_list",
+                "error": "cognee_not_ready"}
+
+    query = (
+        f"subscribers on channel {channel}" if channel
+        else "all subscribers"
+    )
+    try:
+        results = await cognee.search(
+            query_text=query,
+            datasets=[DATASET_SUBSCRIPTIONS],
+        )
+    except Exception as exc:
+        logger.exception("subscription_list failed")
+        return {"status": "error", "handler": "subscription_list",
+                "error": f"cognee_search_failed: {exc}"}
+
+    return {
+        "status": "success",
+        "handler": "subscription_list",
+        "channel": channel,
+        "dataset": DATASET_SUBSCRIPTIONS,
+        "results": results,
+    }
+
+
+async def _handle_governance_check(payload: dict) -> dict:
+    """Apply governance rules to every classified document.
+
+    Reads ``/data/classified/*.json``. For each sha256 not already in
+    ``/data/governed/{sha256}.governed.json`` (idempotent — safe to re-run):
+
+    * Evaluate governance status from axes values (priority-ordered):
+
+      1. ``lucifer_test == flagged`` → **blocked** (escalate to LuciferiClaw).
+      2. ``lucifer_test == opaque``  → **requires_review**.
+      3. ``goodness == serves_self`` → **warning** (self-serving content).
+      4. ``lifecycle == canonical AND authority ∈ (user, canon)`` → **canonical**.
+      5. ``lifecycle == canonical AND authority == agent`` →
+         **pending_canonicalization** (agent cannot self-canonicalize).
+      6. ``lifecycle == working`` → **active**.
+      7. ``lifecycle == raw``     → **draft**.
+      8. Default                  → **unclassified**.
+
+    * Determine export eligibility: ``canonical`` or ``active`` AND
+      ``confidentiality == public`` AND ``lucifer_test == transparent``.
+
+    * Detect sha256 duplicates across the classified corpus.
+
+    * Write ``governed/{sha256}.governed.json`` with the decision, reason,
+      escalation target (if any), and the relevant axes snapshot.
+
+    Governance decisions are append-only: once written, a re-run skips
+    the sha256. To re-evaluate, delete the ``.governed.json`` file and
+    re-run.
+
+    Payload overrides: none currently. Future: ``force_reevaluate: true``.
+    """
+    in_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "governed"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    records: list[dict] = []
+    for f in sorted(in_dir.glob("*.json")):
+        try:
+            rec = json.loads(f.read_text())
+            if "sha256" in rec and "axes" in rec:
+                records.append(rec)
+        except Exception as exc:
+            logger.warning(f"governance_check: corrupt {f.name}: {exc}")
+
+    if not records:
+        return {"status": "success", "handler": "governance_check",
+                "governed": 0, "message": "no classified documents"}
+
+    sha_counts: dict[str, int] = {}
+    for rec in records:
+        sha = rec["sha256"]
+        sha_counts[sha] = sha_counts.get(sha, 0) + 1
+
+    existing = {p.stem.replace(".governed", "")
+                for p in out_dir.glob("*.governed.json")}
+
+    governed = 0
+    blocked = 0
+    requires_review = 0
+    warnings = 0
+    canonical_count = 0
+    export_eligible_count = 0
+    skipped = 0
+
+    for rec in records:
+        sha = rec["sha256"]
+        if sha in existing:
+            skipped += 1
+            continue
+
+        axes = rec.get("axes", {})
+        lt = axes.get("lucifer_test", UNCLEAR)
+        lc = axes.get("lifecycle", UNCLEAR)
+        au = axes.get("authority", UNCLEAR)
+        gd = axes.get("goodness", UNCLEAR)
+        conf = axes.get("confidentiality", UNCLEAR)
+
+        governance_status = "unclassified"
+        governance_reason = ""
+        escalate_to = None
+
+        if lt == "flagged":
+            governance_status = "blocked"
+            governance_reason = (
+                "lucifer_test=flagged: self-serving, mission-hostile, "
+                "or governance-rejecting pattern detected"
+            )
+            escalate_to = "LuciferiClaw"
+            blocked += 1
+        elif lt == "opaque":
+            governance_status = "requires_review"
+            governance_reason = (
+                "lucifer_test=opaque: intent not transparent; "
+                "human review required before reuse"
+            )
+            requires_review += 1
+        elif gd == "serves_self":
+            governance_status = "warning"
+            governance_reason = (
+                "goodness=serves_self: content serves agent self-interest "
+                "over the mission"
+            )
+            warnings += 1
+        elif lc == "canonical" and au in ("user", "canon"):
+            governance_status = "canonical"
+            governance_reason = (
+                f"lifecycle=canonical + authority={au}: "
+                f"accepted as authoritative"
+            )
+            canonical_count += 1
+        elif lc == "canonical" and au == "agent":
+            governance_status = "pending_canonicalization"
+            governance_reason = (
+                "lifecycle=canonical but authority=agent: agent cannot "
+                "self-canonicalize; requires Father Function ratification"
+            )
+            requires_review += 1
+        elif lc == "working":
+            governance_status = "active"
+            governance_reason = (
+                f"lifecycle=working + authority={au}: "
+                f"usable but not canonical"
+            )
+        elif lc == "raw":
+            governance_status = "draft"
+            governance_reason = (
+                "lifecycle=raw: unfinished; not for reuse without upgrade"
+            )
+        else:
+            governance_reason = (
+                f"no clear governance signal "
+                f"(lifecycle={lc}, authority={au}, lucifer_test={lt})"
+            )
+
+        export_eligible = (
+            governance_status in ("canonical", "active")
+            and conf == "public"
+            and lt == "transparent"
+        )
+        if export_eligible:
+            export_eligible_count += 1
+
+        is_duplicate = sha_counts.get(sha, 0) > 1
+
+        decision = {
+            "sha256": sha,
+            "source_file": rec.get("source_file", ""),
+            "governance_status": governance_status,
+            "governance_reason": governance_reason,
+            "escalate_to": escalate_to,
+            "export_eligible": export_eligible,
+            "is_duplicate": is_duplicate,
+            "axes_snapshot": {
+                "lucifer_test": lt,
+                "lifecycle": lc,
+                "authority": au,
+                "goodness": gd,
+                "confidentiality": conf,
+            },
+            "claw": CLAW_NAME,
+            "version": __version__,
+            "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+
+        out_path = out_dir / f"{sha}.governed.json"
+        out_path.write_text(json.dumps(decision, indent=2, sort_keys=True))
+        governed += 1
+        logger.info(
+            f"governance_check: {sha[:12]} -> {governance_status}"
+            f"{' (ESCALATE->LuciferiClaw)' if escalate_to else ''}"
+            f"{' [export_eligible]' if export_eligible else ''}"
+        )
+
+    return {
+        "status": "success",
+        "handler": "governance_check",
+        "governed": governed,
+        "skipped_existing": skipped,
+        "blocked": blocked,
+        "requires_review": requires_review,
+        "warnings": warnings,
+        "canonical": canonical_count,
+        "export_eligible": export_eligible_count,
+        "documents_total": len(records),
+    }
+
+
+async def _handle_export_urantipedia(payload: dict) -> dict:
+    """Export governed documents as UrantiPedia-ready markdown sidecars.
+
+    Reads ``/data/governed/*.governed.json``. For each document where
+    ``export_eligible == true``:
+
+    * Load the source classified record from ``/data/classified/{sha256}.json``.
+    * Generate a structured markdown file with YAML frontmatter containing
+      the 12-axis classification, governance status, and source metadata.
+    * Write to ``/data/canon/{sha256}.md``.
+    * Skip if the canon file already exists (idempotent).
+
+    If Cognee is ready, also tags the canon record in the knowledge graph.
+
+    This is the final handler in the pipeline:
+      ingest → classify → cross_link → governance_check → **export_urantipedia**
+
+    Honest behaviour: only exports documents that passed the governance gate.
+    Blocked, draft, warning, and requires_review documents are skipped with
+    an honest count in the response. No silent promotion.
+    """
+    gov_dir = DATA_ROOT / "governed"
+    cls_dir = DATA_ROOT / "classified"
+    out_dir = DATA_ROOT / "canon"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    decisions: list[dict] = []
+    for f in sorted(gov_dir.glob("*.governed.json")):
+        try:
+            decisions.append(json.loads(f.read_text()))
+        except Exception as exc:
+            logger.warning(f"export_urantipedia: corrupt {f.name}: {exc}")
+
+    if not decisions:
+        return {"status": "success", "handler": "export_urantipedia",
+                "exported": 0, "message": "no governed documents"}
+
+    exported = 0
+    skipped_ineligible = 0
+    skipped_existing = 0
+    skipped_no_source = 0
+    errors: list[dict[str, str]] = []
+
+    for dec in decisions:
+        sha = dec.get("sha256", "")
+        if not dec.get("export_eligible"):
+            skipped_ineligible += 1
+            continue
+
+        canon_path = out_dir / f"{sha}.md"
+        if canon_path.exists():
+            skipped_existing += 1
+            continue
+
+        cls_path = cls_dir / f"{sha}.json"
+        if not cls_path.exists():
+            skipped_no_source += 1
+            continue
+
+        try:
+            cls_rec = json.loads(cls_path.read_text())
+        except Exception as exc:
+            errors.append({"sha256": sha, "error": f"read_failed: {exc}"})
+            continue
+
+        axes = cls_rec.get("axes", {})
+        source_file = cls_rec.get("source_file", "unknown")
+        gov_status = dec.get("governance_status", "unknown")
+
+        # Build YAML frontmatter + markdown body.
+        frontmatter_lines = [
+            "---",
+            f"sha256: {sha}",
+            f"source_file: {source_file}",
+            f"governance_status: {gov_status}",
+            f"export_eligible: true",
+            f"exported_by: {CLAW_NAME}",
+            f"exported_at: {time.strftime('%Y-%m-%dT%H:%M:%S%z')}",
+            f"dataset: {DATASET_NAME}",
+        ]
+        for axis_name in sorted(axes):
+            frontmatter_lines.append(f"{axis_name}: {axes[axis_name]}")
+        frontmatter_lines.append("---")
+        frontmatter = "\n".join(frontmatter_lines)
+
+        # Body: governance summary + axes table.
+        body_lines = [
+            f"# {source_file}",
+            "",
+            f"**Governance:** {gov_status} — {dec.get('governance_reason', '')}",
+            "",
+            "## Classification (12 axes)",
+            "",
+            "| Axis | Value |",
+            "|------|-------|",
+        ]
+        for axis_name in sorted(axes):
+            body_lines.append(f"| {axis_name} | {axes[axis_name]} |")
+        body_lines.extend([
+            "",
+            "## Provenance",
+            "",
+            f"- **SHA-256:** `{sha}`",
+            f"- **Source:** `{source_file}`",
+            f"- **Classified by:** `{cls_rec.get('claw', 'unknown')}` "
+            f"v{cls_rec.get('version', '?')}",
+            f"- **Model:** `{cls_rec.get('model', 'unknown')}`",
+            f"- **Governed at:** {dec.get('ts_iso', 'unknown')}",
+            "",
+            "---",
+            "",
+            "*Exported by OpenClaw@URANTiOS-ingest under UrantiOS governance.*",
+            "*Truth · Beauty · Goodness.*",
+        ])
+
+        md_content = frontmatter + "\n\n" + "\n".join(body_lines) + "\n"
+        canon_path.write_text(md_content)
+        exported += 1
+        logger.info(f"export_urantipedia: {sha[:12]} -> canon/{sha}.md")
+
+        # Mirror to the Obsidian vault export dir if configured.
+        if OBSIDIAN_EXPORT_DIR and OBSIDIAN_EXPORT_DIR.is_dir():
+            slug = (
+                Path(source_file).stem
+                if source_file and source_file != "unknown"
+                else sha[:12]
+            )
+            obs_path = OBSIDIAN_EXPORT_DIR / f"canon-{slug}.md"
+            obs_path.write_text(md_content)
+            logger.info(f"export_urantipedia: also wrote {obs_path}")
+
+        if COGNEE_READY:
+            try:
+                await cognee.add(
+                    md_content,
+                    dataset_name=DATASET_NAME,
+                    node_set=[
+                        f"sha:{sha}",
+                        f"kind:canon_export",
+                        f"governance:{gov_status}",
+                    ],
+                )
+            except Exception as exc:
+                errors.append({"sha256": sha, "cognee_error": str(exc)})
+                logger.warning(
+                    f"export_urantipedia: cognee.add failed for {sha[:12]}: "
+                    f"{exc}")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "export_urantipedia",
+        "exported": exported,
+        "skipped_ineligible": skipped_ineligible,
+        "skipped_existing": skipped_existing,
+        "skipped_no_source": skipped_no_source,
+        "decisions_total": len(decisions),
+        "errors": errors,
+        "cognee_ready": COGNEE_READY,
+    }
+
+
+async def _handle_categorise_by_axes(payload: dict) -> dict:
+    """Run the 12-axis classifier on every file in /data/ingested/chatcode/.
+
+    Reads each *.jsonl, classifies it, writes the result as JSON to
+    /data/classified/<stem>.classified.json.
+
+    Honest behaviour: pure rule-based. No embeddings yet (follow-up PR).
+    Per-axis confidence is reported so downstream consumers can filter
+    low-confidence hits.
+
+    payload may contain:
+      source_dir: override default '/data/ingested/chatcode'
+      target_dir: override default '/data/classified'
+      metadata:   dict applied to every file as starting metadata
+    """
+    from . import classifier  # local import — keeps cold start fast
+
+    src = Path(payload.get("source_dir") or (DATA_ROOT / "ingested" / "chatcode"))
+    dst = Path(payload.get("target_dir") or (DATA_ROOT / "classified"))
+    dst.mkdir(parents=True, exist_ok=True)
+    base_md = payload.get("metadata") or {}
+
+    files = sorted(src.glob("*.jsonl"))
+    if not files:
+        return {"status": "success", "handler": "categorise_by_axes",
+                "classified": 0, "message": f"no jsonl files in {src}"}
+
+    classified_count = 0
+    low_confidence_count = 0
+    errors: list[dict[str, str]] = []
+    summaries: list[dict[str, Any]] = []
+
+    for f in files:
+        try:
+            full = classifier.classify_file(f, metadata=dict(base_md))
+            out_path = dst / f"{f.stem}.classified.json"
+            out_path.write_text(json.dumps(full, indent=2))
+            classified_count += 1
+            # Count low-confidence axes (confidence < 0.5).
+            low_conf = [name for name, ax in full["axes"].items()
+                        if ax.get("confidence", 1.0) < 0.5]
+            if low_conf:
+                low_confidence_count += 1
+            summaries.append({
+                "file": f.name,
+                "out": out_path.name,
+                "low_confidence_axes": low_conf,
+                "doctrine_top": (full["axes"]["doctrine_topic"]["value"][0]["paper"]
+                                 if full["axes"]["doctrine_topic"]["value"]
+                                 else None),
+            })
+            logger.info(f"categorise_by_axes: {f.name} -> {out_path.name} "
+                        f"(low_conf={len(low_conf)})")
+        except Exception as exc:
+            errors.append({"file": f.name, "error": str(exc)})
+            logger.exception(f"categorise_by_axes failed on {f.name}")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "categorise_by_axes",
+        "classified": classified_count,
+        "low_confidence_files": low_confidence_count,
+        "errors": errors,
+        "summaries": summaries[:20],   # cap response size
+        "source_dir": str(src),
+        "target_dir": str(dst),
     }
 
 
 # Dispatch table — 1:1 with ALLOWED_HANDLERS. Changes here require changes
 # to the allowlist above (and vice versa); the invariant is asserted below.
 _HANDLERS = {
-    "smoke_test": _handle_smoke_test,
-    "ingest_normalize": _handle_ingest_normalize,
+    "smoke_test":         _handle_smoke_test,
+    "ingest_normalize":   _handle_ingest_normalize,
+    "ingest_obsidian":    _handle_ingest_obsidian,
     "categorise_by_axes": _handle_categorise_by_axes,
-    "cross_link":         lambda p: _handle_stub("cross_link", p),
-    "governance_check":   lambda p: _handle_stub("governance_check", p),
-    "export_urantipedia": lambda p: _handle_stub("export_urantipedia", p),
+    "cross_link":         _handle_cross_link,
+    "governance_check":   _handle_governance_check,
+    "export_urantipedia": _handle_export_urantipedia,
+    "subscription_subscribe":   _handle_subscription_subscribe,
+    "subscription_unsubscribe": _handle_subscription_unsubscribe,
+    "subscription_list":        _handle_subscription_list,
 }
 assert set(_HANDLERS) == set(ALLOWED_HANDLERS), \
     "dispatch table must match ALLOWED_HANDLERS exactly"
@@ -390,9 +1292,15 @@ def health() -> dict:
         "cognee_ready": COGNEE_READY,
         "cognee_init": COGNEE_INIT_INFO,
         "dataset": DATASET_NAME,
+        "subscription_dataset": DATASET_SUBSCRIPTIONS,
         "allowed_handlers": sorted(ALLOWED_HANDLERS),
         "axes": axis_names(),
         "classifier_model": OLLAMA_MODEL,
+        "cross_link": {
+            "threshold": CROSS_LINK_THRESHOLD,
+            "max_pairs": CROSS_LINK_MAX_PAIRS,
+            "max_fanout": CROSS_LINK_MAX_FANOUT,
+        },
     }
 
 

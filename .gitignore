@@ -20,3 +20,5 @@ remotion/out/
 # here.now — per-project claim tokens + staged site (never commit)
 .herenow/
 .here-now-site/
+# Cloudflare credentials (never commit)
+.cloudflare.env

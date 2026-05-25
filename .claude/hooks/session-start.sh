@@ -1,6 +1,6 @@
 #!/bin/bash
 # SessionStart hook — mircea-constellation
-# Installs static web tooling (serve, html-validate) on session start.
+# Restores dev environment and git state on every session launch.
 set -euo pipefail
 
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
@@ -8,6 +8,24 @@ if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
 fi
 
 cd "${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel)}"
+
+# ── Git: pull latest from current branch ─────────────────────────────────────
+BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+if [ -n "$BRANCH" ]; then
+  PULLED=false
+  for WAIT in 0 2 4 8 16; do
+    [ "$WAIT" -gt 0 ] && sleep "$WAIT"
+    if git fetch origin "$BRANCH" -q 2>/dev/null && \
+       git merge --ff-only "origin/$BRANCH" -q 2>/dev/null; then
+      PULLED=true
+      echo "[session-start] Git: up to date on $BRANCH"
+      break
+    fi
+  done
+  $PULLED || echo "[session-start] WARN: could not pull $BRANCH — continuing with local state"
+else
+  echo "[session-start] WARN: not on a named branch — skipping git pull"
+fi
 
 # ── serve (static file server) ───────────────────────────────────────────────
 if command -v npm &>/dev/null; then

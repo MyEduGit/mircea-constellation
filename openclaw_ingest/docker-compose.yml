@@ -25,6 +25,13 @@ services:
       # shared LanceDB + Kuzu store that already lives on URANTiOS.
       - COGNEE_DATA_ROOT=/home/openclaw/.cognee/data
       - COGNEE_MODE=local
+      # Obsidian integration (both optional).
+      # OBSIDIAN_VAULT_PATH: container-side path to a bind-mounted Obsidian
+      #   vault; used by the ingest_obsidian handler to read .md files.
+      # OBSIDIAN_EXPORT_DIR: container-side path where export_urantipedia
+      #   mirrors canon .md files so they appear in the vault automatically.
+      - OBSIDIAN_VAULT_PATH=${OBSIDIAN_VAULT_PATH:-}
+      - OBSIDIAN_EXPORT_DIR=${OBSIDIAN_EXPORT_DIR:-}
     volumes:
       # Pipeline working dirs — bind to a host path the operator controls.
       - /opt/openclaw-data:/data
@@ -32,6 +39,15 @@ services:
       # on this host already reads. Install script ensures host dir exists
       # and is owned by the invoking user.
       - ${HOME}/.cognee/data:/home/openclaw/.cognee/data
+      # Obsidian vault (read-only ingest source) — uncomment and set host path.
+      # Mount the UrantiPedia vault directory so ingest_obsidian can read it.
+      # Example: /Volumes/iMac/UrantiPedia:/obsidian/vault:ro
+      # Then set OBSIDIAN_VAULT_PATH=/obsidian/vault in .env
+      #- ${OBSIDIAN_VAULT_HOST_PATH:-/opt/obsidian/vault}:/obsidian/vault:ro
+      # Obsidian export target (write) — uncomment to mirror canon exports back.
+      # Example: /Volumes/iMac/UrantiPedia/canon:/obsidian/export
+      # Then set OBSIDIAN_EXPORT_DIR=/obsidian/export in .env
+      #- ${OBSIDIAN_EXPORT_HOST_PATH:-/opt/obsidian/export}:/obsidian/export
     extra_hosts:
       # Linux needs the explicit host-gateway mapping for host.docker.internal.
       - "host.docker.internal:host-gateway"

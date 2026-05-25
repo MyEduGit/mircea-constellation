@@ -27,11 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Stage site (index.html + status.json only)
+      - name: Stage site (index.html + status.json + vault.html)
         run: |
           mkdir -p _site
           cp index.html   _site/
           cp status.json  _site/
+          cp vault.html   _site/
           # Prevent Jekyll processing (safe default for hand-written HTML)
           touch _site/.nojekyll
           echo "Staged files:"

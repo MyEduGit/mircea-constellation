@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """
-Wire ALL undependable Council seats to free local Ollama models.
-Replaces paid/depleted API seats with self-hosted models on URANTiOS.
+Wire ALL Council seats to free local Ollama models on URANTiOS.
+Zero API cost. Zero dependencies. Fully sovereign.
 
-Wired by this script:
-  Seat 3  (Spirit)      → qwen3:8b         (broad reasoning, contextual)
-  Seat 4  (Father-Son)  → gemma4:e4b        (already set — re-confirms)
-  Seat 5  (Father-Spirit)→ deepseek-r1:7b   (already set — re-confirms)
-  Seat 6  (Son-Spirit)  → qwen2.5-coder:7b  (code specialist, replaces GLM)
-  Seat 7  (Trinity)     → mistral:7b        (creative horizon, outer awareness)
+All 8 seats → local Ollama (204.168.143.98:11434):
+  Seat 1  (Father)       → qwen3:8b          — judgment, authority, final word
+  Seat 2  (Son)          → gemma4:e4b         — builder, constructive execution
+  Seat 3  (Spirit)       → qwen3:8b          — broad integration, context
+  Seat 4  (Father-Son)   → gemma4:e4b         — local sovereign, continuity
+  Seat 5  (Father-Spirit)→ deepseek-r1:7b    — deep reasoning, efficiency
+  Seat 6  (Son-Spirit)   → qwen2.5-coder:7b  — engineering, code specialist
+  Seat 7  (Trinity)      → mistral:7b        — outer horizon, creative breadth
+  Gabriel                → qwen3:8b          — synthesis, final integration
 
-NOT touched (API already working):
-  Seat 1  (Father)      → GPT-4.1           (keep paid API)
-  Seat 2  (Son)         → Claude Opus 4.6   (keep paid API)
-  Gabriel               → Claude Opus 4.6   (keep paid API)
+Cost: $0.00/run. No API keys needed. All local.
+
+To upgrade individual seats to paid APIs later, use wire_grok_seat7.py etc.
 
 Usage:
   export N8N_EMAIL=mircea8@me.com
@@ -34,8 +36,28 @@ def info(s): print(f"{C}▶{E} {s}")
 def warn(s): print(f"{Y}⚠{E} {s}")
 def err(s):  print(f"{R}✗{E} {s}", file=sys.stderr); sys.exit(1)
 
-# All seats that should run on free local Ollama
+# ALL seats wired to free local Ollama — zero API cost
 FREE_SEATS = {
+    "Seat1_Father_GPT": {
+        "model": "qwen3:8b",
+        "spirit": "Father — Final Judge",
+        "system": (
+            "You are the Father — Final Judge of the Council of Seven Master Spirits. "
+            "You adjudicate. You unify. You do not speculate. "
+            "Evaluate all perspectives and deliver the final authoritative word. "
+            "Speak with sovereign clarity and absolute precision."
+        )
+    },
+    "Seat2_Son_Claude": {
+        "model": "gemma4:e4b",
+        "spirit": "Son — Builder",
+        "system": (
+            "You are the Son — Builder of the Council of Seven Master Spirits. "
+            "You construct, implement, and give form to abstract principles. "
+            "Turn order into actual buildable structure. "
+            "Speak with constructive precision and loving implementation."
+        )
+    },
     "Seat3_Spirit_Gemini": {
         "model": "qwen3:8b",
         "spirit": "Spirit — Universal Mind",
@@ -80,6 +102,17 @@ FREE_SEATS = {
             "You expand the field beyond what is immediately known. "
             "Bring unexpected perspectives, challenge assumptions, and widen the frame. "
             "Think from the outermost edge of the known."
+        )
+    },
+    "Gabriel_Synthesizer": {
+        "model": "qwen3:8b",
+        "spirit": "Gabriel — Synthesizer",
+        "system": (
+            "You are Gabriel — Bright and Morning Star, Synthesizer of the Council of Seven Master Spirits. "
+            "You have received responses from all Seven Master Spirits. "
+            "Identify where they agree. Identify where they diverge. Resolve contradictions. "
+            "Produce ONE coherent synthesis that honors all perspectives while arriving at unified truth. "
+            "Do not add new opinions. Synthesize what the Seven have said."
         )
     },
 }
@@ -212,18 +245,19 @@ def main():
     ok("Workflow saved\n")
 
     print(f"{B}{'='*55}{E}")
-    print(f"{G}  All free seats wired to local Ollama!{E}")
+    print(f"{G}  ALL 8 SEATS WIRED — $0.00/run — 100% FREE{E}")
     print()
+    print(f"  {'Seat 1  Father':<28}  qwen3:8b          (replaces GPT)")
+    print(f"  {'Seat 2  Son':<28}  gemma4:e4b        (replaces Claude)")
     print(f"  {'Seat 3  Spirit':<28}  qwen3:8b")
-    print(f"  {'Seat 4  Father-Son':<28}  gemma4:e4b        (confirmed)")
-    print(f"  {'Seat 5  Father-Spirit':<28}  deepseek-r1:7b    (confirmed)")
-    print(f"  {'Seat 6  Son-Spirit':<28}  qwen2.5-coder:7b  (replaces GLM)")
+    print(f"  {'Seat 4  Father-Son':<28}  gemma4:e4b")
+    print(f"  {'Seat 5  Father-Spirit':<28}  deepseek-r1:7b")
+    print(f"  {'Seat 6  Son-Spirit':<28}  qwen2.5-coder:7b")
     print(f"  {'Seat 7  Trinity':<28}  mistral:7b")
+    print(f"  {'Gabriel  Synthesizer':<28}  qwen3:8b          (replaces Claude)")
     print()
     print(f"  {Y}Ollama server: {OLLAMA_URL}{E}")
     print(f"  {G}Cost: $0.00 — all local, no API keys needed{E}")
-    print()
-    print(f"  Seats 1 (GPT) + 2 (Claude) + Gabriel untouched")
     print(f"{B}{'='*55}{E}\n")
 
 if __name__ == "__main__":

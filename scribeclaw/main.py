@@ -2,9 +2,11 @@
 """ScribeClaw — media transcription execution runtime.
 
 Canonical role: controlled execution (media-pipeline sub-role).
-Truthful label: deployable scaffold. Real handlers: media_edit,
-audio_extract, transcribe_ro, postprocess_transcript, youtube_metadata.
-Stub handler: youtube_upload (refuses; operator must supply OAuth).
+Real handlers: media_edit, audio_extract, transcribe_ro,
+transcribe_assemblyai, import_assemblyai_transcript,
+bulk_import_assemblyai_romanian, postprocess_transcript,
+openmythos_thesis, youtube_metadata.
+Stub: youtube_upload (refuses without OAuth credentials).
 
 The allowlist boundary is preserved: nothing outside ALLOWED_HANDLERS
 can run. Every call writes an evidence record.
@@ -36,6 +38,7 @@ from .assemblyai import (
 )
 from .edit import audio_extract, media_edit
 from .postprocess import postprocess_transcript
+from .thesis import openmythos_thesis
 from .transcribe import transcribe_ro
 from .youtube import youtube_metadata, youtube_upload
 
@@ -69,6 +72,7 @@ ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "import_assemblyai_transcript",
     "bulk_import_assemblyai_romanian",
     "postprocess_transcript",
+    "openmythos_thesis",
     "youtube_metadata",
     "youtube_upload",
 })
@@ -135,6 +139,7 @@ _HANDLERS: dict[str, Any] = {
     "import_assemblyai_transcript": lambda p: import_assemblyai_transcript(p, DATA_ROOT),
     "bulk_import_assemblyai_romanian": lambda p: bulk_import_assemblyai_romanian(p, DATA_ROOT),
     "postprocess_transcript":       lambda p: postprocess_transcript(p, DATA_ROOT),
+    "openmythos_thesis":            lambda p: openmythos_thesis(p, DATA_ROOT),
     "youtube_metadata":             lambda p: youtube_metadata(p, DATA_ROOT),
     "youtube_upload":               lambda p: youtube_upload(p, DATA_ROOT),
 }

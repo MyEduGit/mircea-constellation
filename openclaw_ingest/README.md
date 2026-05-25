@@ -1,8 +1,8 @@
 # OpenClaw@URANTiOS-ingest
 
-**Truthful label:** deployable scaffold with two real handlers
-(`ingest_normalize` and `categorise_by_axes`). Three of the five canonical
-handlers remain declared-but-stubbed pending follow-up PR.
+**Truthful label:** v0.2.0 — all 10 handlers real, none stubbed. Full pipeline:
+`ingest_normalize` / `ingest_obsidian` → `categorise_by_axes` → `cross_link`
+→ `governance_check` → `export_urantipedia`, plus three subscription handlers.
 
 Singular primary role: **controlled execution** (ingestion sub-role).
 Does not observe, remediate, adjudicate, explain, or bundle evidence — those
@@ -48,12 +48,16 @@ directory and reaches host Ollama via `host.docker.internal:host-gateway`.
 
 ```python
 ALLOWED_HANDLERS = {
-    "ingest_normalize",      # REAL — normalises raw files into Cognee
-    "categorise_by_axes",    # REAL — 12-axis classifier, see axes.py
-    "cross_link",            # stub
-    "governance_check",      # stub
-    "export_urantipedia",    # stub
-    "smoke_test",            # bootstrap
+    "ingest_normalize",         # normalises chatcode JSONL into Cognee
+    "ingest_obsidian",          # ingest Obsidian vault .md files into Cognee
+    "categorise_by_axes",       # 12-axis LLM classifier, see axes.py
+    "cross_link",               # pair-score edge emission, see axes.WEIGHTS
+    "governance_check",         # apply governance rules; flag iniquitous docs
+    "export_urantipedia",       # export eligible docs as Obsidian-ready markdown
+    "smoke_test",               # bootstrap / health check
+    "subscription_subscribe",   # record subscriber in Cognee
+    "subscription_unsubscribe", # append status:inactive record
+    "subscription_list",        # recall subscribers from Cognee
 }
 ```
 
@@ -105,8 +109,8 @@ curl -s -X POST http://127.0.0.1:8080/tasks \
   | python3 -m json.tool
 ```
 
-Allowlisted handlers that are stubs return `status: not_implemented` with a
-`reason` field — honest, not silent success.
+Handlers outside the allowlist return `status: rejected` with an evidence
+record — no bypass path exists.
 
 ---
 
@@ -149,6 +153,10 @@ some didn't, with a per-file error list.
 | `OLLAMA_MODEL`          | `qwen2.5:32b`                        | Classifier LLM model                       |
 | `OLLAMA_TIMEOUT`        | `120`                                | Per-classification timeout (seconds)       |
 | `CLASSIFY_MAX_CHARS`    | `8000`                               | Document truncation budget for classifier  |
+| `CROSS_LINK_THRESHOLD`  | `5.0`                                | Minimum pair score to emit an edge         |
+| `CROSS_LINK_MAX_PAIRS`  | `10000`                              | Per-invocation pair budget (O(n²) guard)   |
+| `CROSS_LINK_MAX_FANOUT` | `50`                                 | Max new edges per document per run         |
+| `SUBSCRIPTION_DATASET`  | `mircea_subscribers`                 | Cognee dataset for subscriber nodes        |
 
 ---
 
@@ -184,15 +192,155 @@ The axes themselves live in [`axes.py`](./axes.py) — first draft,
 grounded in UrantiOS Three Values + PhD Triune Monism + corpus-practical
 metadata. Edit there; the handler reads straight from that list.
 
+## Cross-link a classified batch
+
+Once documents are in `/data/classified/`, `cross_link` scores every
+unordered pair and emits edges above the threshold:
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "cross_link", "payload": {}}' \
+  | python3 -m json.tool
+
+# Override knobs per call (all optional):
+#   {"handler": "cross_link",
+#    "payload": {"threshold": 6.0, "max_pairs": 500, "max_fanout": 20}}
+```
+
+Algorithm per pair `(a, b)` with `sha_a < sha_b`:
+
+1. Skip if `/data/linked/{sha_a}__{sha_b}.json` already exists
+   (idempotent — safe to re-run).
+2. Skip if either document has `lucifer_test == "flagged"`. Iniquitous
+   docs produce **zero** edges in either direction.
+3. Compute `score = Σ WEIGHTS[axis]` over axes where labels match AND
+   the label is not in `NONPOSITIVE_LABELS` (so `serves_self ↔
+   serves_self` and `absent ↔ absent` don't reinforce). Polarity-only —
+   see [`axes.py`](./axes.py).
+4. Skip if either node has already hit `max_fanout` this run (protects
+   hub-docs from runaway fan-out).
+5. Emit `/data/linked/{sha_a}__{sha_b}.json` with `score`, `axes_matched`
+   (per-axis weight breakdown), `threshold`, timestamp.
+6. If Cognee is ready, also `cognee.add` a synthetic edge-content node
+   tagged with both shas so the graph sees the relationship. Cognee
+   failures are recorded per-pair in `errors`; they don't abort the run.
+
+`O(n²)` guard: `max_pairs` caps the per-invocation budget; the response
+includes `pairs_unseen` for honest reporting of what wasn't scored.
+
+Edge weights live in [`axes.WEIGHTS`](./axes.py). Tune there.
+
+## Manage subscribers
+
+Subscribers live in a separate Cognee dataset (`SUBSCRIPTION_DATASET`,
+default `mircea_subscribers`), tagged via `node_set` so the bot fleet,
+Urantipedia, and scribeclaw can recall them through the same
+`cognee.search()` surface used for the corpus.
+
+Append-only: an unsubscribe writes a new `status:inactive` record rather
+than deleting the original — matches the module's evidence-trail
+discipline. Identifiers are hashed to `identifier_sha256` before storage
+so the Cognee graph never holds raw email addresses or Telegram chat IDs.
+
+Subscribe:
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "subscription_subscribe",
+         "payload": {"channel": "newsletter",
+                     "identifier": "reader@example.com",
+                     "tags": ["urantia_daily", "phd_updates"]}}' \
+  | python3 -m json.tool
+```
+
+Valid `channel` values: `newsletter`, `telegram`, `bot_fleet`. `tags` is
+optional; each tag is stored as a `tag:{name}` node-set entry.
+
+List subscribers on one channel (or all when `channel` is omitted):
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "subscription_list",
+         "payload": {"channel": "newsletter"}}' \
+  | python3 -m json.tool
+```
+
+Unsubscribe (append `status:inactive`):
+
+```bash
+curl -s -X POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "subscription_unsubscribe",
+         "payload": {"identifier": "reader@example.com"}}' \
+  | python3 -m json.tool
+```
+
+Honest failures: missing/invalid payload fields return
+`status: error, error: invalid_channel|missing_identifier|invalid_tags`;
+if Cognee is down every subscription handler short-circuits with
+`error: cognee_not_ready` and leaves an evidence record.
+
+## Obsidian integration
+
+Two env vars wire the vault bidirectionally. Both are optional; unset means
+the corresponding handler skips the vault gracefully.
+
+| Env var | Direction | Purpose |
+|---------|-----------|---------|
+| `OBSIDIAN_VAULT_PATH` | Vault → Cognee | `ingest_obsidian` reads `.md` files from this path |
+| `OBSIDIAN_EXPORT_DIR` | Cognee → Vault | `export_urantipedia` mirrors canon `.md` here |
+
+Set them in `openclaw_ingest/.env` and uncomment the matching volume mounts
+in `docker-compose.yml`. The vault path must be bind-mounted into the container
+at the same path (see the commented-out volume examples in compose).
+
+### Ingest the UrantiPedia vault
+
+```bash
+# Drop .md files into the mounted vault dir, then:
+curl -sX POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "ingest_obsidian", "payload": {}}' \
+  | python3 -m json.tool
+
+# Or override the vault path for a one-off run:
+curl -sX POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "ingest_obsidian",
+         "payload": {"vault_path": "/obsidian/vault"}}' \
+  | python3 -m json.tool
+```
+
+`ingest_obsidian` is idempotent: a `.done` sentinel under
+`/data/ingested/obsidian/{sha256}.done` prevents re-ingestion. Delete the
+sentinel to force re-ingest of a specific document.
+
+### Export canon notes back to the vault
+
+After `governance_check` marks documents export-eligible, run:
+
+```bash
+curl -sX POST http://127.0.0.1:8080/tasks \
+    -H 'Content-Type: application/json' \
+    -d '{"handler": "export_urantipedia", "payload": {}}' \
+  | python3 -m json.tool
+```
+
+If `OBSIDIAN_EXPORT_DIR` is configured, each eligible document is also
+written to `{OBSIDIAN_EXPORT_DIR}/canon-{source_slug}.md` — standard
+Obsidian markdown with YAML frontmatter and a 12-axis classification table.
+
+---
+
 ## What this is **not** yet
 
-- Not a full ingestion pipeline — three handlers are still stubs.
-- Not hardened beyond what is actually proven. No Fireclaw integration
-  beyond the shared evidence directory convention.
 - Not Paperclip-integrated — this module emits evidence records; Paperclip
   will later bind, bundle, and preserve them under its own contract.
 - Not a replacement for the existing `OpenClaw@Hetzy-bots` at 46.225.51.30.
   Two instances; same class; different sub-scopes.
-
-Follow-up PR will implement `cross_link`, then `governance_check`, then
-`export_urantipedia`.
+- Obsidian vault path must be reachable inside the container (bind-mount).
+  There is no built-in rsync or Tailscale transfer — that is a host-side
+  concern (e.g., a cron job or Tailscale + sshfs mount).
