@@ -23,6 +23,10 @@ services:
       - WHISPER_CACHE_DIR=/data/models
       # AssemblyAI key is read from .env; leave blank to disable those handlers.
       - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY:-}
+      # OpenMythos thesis generator — points to the inference server on the host.
+      # On iMac M4: start with: python -m openmythos.serve --port 11435 --device mps
+      - OPENMYTHOS_ENDPOINT=${OPENMYTHOS_ENDPOINT:-http://host.docker.internal:11435/v1/chat/completions}
+      - OPENMYTHOS_THESIS_LOOPS=${OPENMYTHOS_THESIS_LOOPS:-12}
     volumes:
       - /opt/scribeclaw-data:/data
     ports:

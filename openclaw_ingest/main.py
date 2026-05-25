@@ -2,12 +2,9 @@
 """OpenClaw@URANTiOS-ingest — execution runtime, ingestion sub-role.
 
 Canonical role: controlled execution (singular).
-Truthful label:  deployable scaffold with three real handlers
-(``ingest_normalize``, ``categorise_by_axes``, ``cross_link``).
-
-Two of the five canonical handlers (governance_check, export_urantipedia)
-remain declared-but-stubbed pending follow-up PR. The allowlist
-boundary is preserved: nothing outside ALLOWED_HANDLERS can run.
+Handlers (all real): ingest_normalize, ingest_obsidian,
+categorise_by_axes, cross_link, governance_check, export_urantipedia,
+subscription_subscribe, subscription_unsubscribe, subscription_list.
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """
@@ -59,9 +56,17 @@ CROSS_LINK_THRESHOLD = float(os.getenv("CROSS_LINK_THRESHOLD", "5.0"))
 CROSS_LINK_MAX_PAIRS = int(os.getenv("CROSS_LINK_MAX_PAIRS", "10000"))
 CROSS_LINK_MAX_FANOUT = int(os.getenv("CROSS_LINK_MAX_FANOUT", "50"))
 
+# Obsidian integration — both optional. If unset the handlers skip gracefully.
+# OBSIDIAN_VAULT_PATH: directory to read .md files from (ingest_obsidian).
+# OBSIDIAN_EXPORT_DIR: directory to write canon .md into (export_urantipedia).
+_obs_vault_raw = os.getenv("OBSIDIAN_VAULT_PATH", "").strip()
+_obs_export_raw = os.getenv("OBSIDIAN_EXPORT_DIR", "").strip()
+OBSIDIAN_VAULT_PATH: Path | None = Path(_obs_vault_raw) if _obs_vault_raw else None
+OBSIDIAN_EXPORT_DIR: Path | None = Path(_obs_export_raw) if _obs_export_raw else None
+
 # Ensure directory layout on every start (idempotent).
-for _sub in ("ingest/chatcode", "ingested/chatcode", "classified", "linked",
-             "governed", "canon", "logs", "evidence"):
+for _sub in ("ingest/chatcode", "ingested/chatcode", "ingested/obsidian",
+             "classified", "linked", "governed", "canon", "logs", "evidence"):
     (DATA_ROOT / _sub).mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -95,6 +100,7 @@ except Exception as exc:  # honest failure — scaffold still runs
 # ── Allowlist — canonical boundary. Nothing bypasses this. ─────────────
 ALLOWED_HANDLERS: frozenset[str] = frozenset({
     "ingest_normalize",
+    "ingest_obsidian",
     "categorise_by_axes",
     "cross_link",
     "governance_check",
@@ -204,6 +210,118 @@ async def _handle_ingest_normalize(payload: dict) -> dict:
         "handler": "ingest_normalize",
         "normalized": processed,
         "errors": errors,
+        "dataset": DATASET_NAME,
+    }
+
+
+async def _handle_ingest_obsidian(payload: dict) -> dict:
+    """Ingest Obsidian vault markdown files into Cognee.
+
+    Reads every ``*.md`` file found under ``OBSIDIAN_VAULT_PATH`` (env var) or
+    the ``vault_path`` key in the payload. System dirs (``*.obsidian/``) are
+    skipped. Each file is deduplicated by sha256 — a sentinel file at
+    ``/data/ingested/obsidian/{sha256}.done`` prevents re-ingestion on repeat
+    runs.
+
+    Honest failure: returns ``status=error`` if the vault path is not
+    configured, the directory does not exist, or Cognee is unavailable.
+    No silent no-ops.
+    """
+    vault_override = payload.get("vault_path", "").strip()
+    vault: Path | None = Path(vault_override) if vault_override else OBSIDIAN_VAULT_PATH
+    if not vault:
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": "obsidian_vault_not_configured",
+            "hint": (
+                "Set OBSIDIAN_VAULT_PATH env var or pass vault_path in payload. "
+                "The path must be accessible inside the container (bind-mount it "
+                "in docker-compose.yml under volumes)."
+            ),
+        }
+    vault = Path(vault)
+    if not vault.is_dir():
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": f"vault_not_found: {vault}",
+        }
+
+    if not COGNEE_READY:
+        return {
+            "status": "error",
+            "handler": "ingest_obsidian",
+            "error": "cognee_not_ready",
+            "hint": "check cognee_config.init() output and Ollama reachability",
+        }
+
+    done_dir = DATA_ROOT / "ingested" / "obsidian"
+    done_dir.mkdir(parents=True, exist_ok=True)
+
+    # Collect .md files; skip Obsidian system directories.
+    md_files = [
+        f for f in sorted(vault.rglob("*.md"))
+        if ".obsidian" not in f.parts
+    ]
+    if not md_files:
+        return {
+            "status": "success",
+            "handler": "ingest_obsidian",
+            "ingested": 0,
+            "message": f"no .md files in {vault}",
+        }
+
+    ingested = 0
+    skipped = 0
+    errors: list[dict[str, str]] = []
+
+    for f in md_files:
+        try:
+            content = f.read_text(encoding="utf-8", errors="replace")
+        except Exception as exc:
+            errors.append({"file": str(f), "error": f"read_failed: {exc}"})
+            continue
+
+        sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
+        done_path = done_dir / f"{sha}.done"
+        if done_path.exists():
+            skipped += 1
+            continue
+
+        rel_path = str(f.relative_to(vault))
+        try:
+            await cognee.add(
+                content,
+                dataset_name=DATASET_NAME,
+                node_set=[
+                    "source:obsidian",
+                    f"file:{f.name}",
+                    f"vault_path:{rel_path}",
+                    f"sha256:{sha}",
+                ],
+            )
+            done_path.write_text(
+                json.dumps({
+                    "sha256": sha,
+                    "file": rel_path,
+                    "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                })
+            )
+            ingested += 1
+            logger.info(f"ingest_obsidian: {rel_path} sha256={sha[:12]}")
+        except Exception as exc:
+            errors.append({"file": rel_path, "error": str(exc)})
+            logger.exception(f"ingest_obsidian failed on {rel_path}")
+
+    return {
+        "status": "success" if not errors else "partial",
+        "handler": "ingest_obsidian",
+        "ingested": ingested,
+        "skipped_existing": skipped,
+        "total_found": len(md_files),
+        "errors": errors,
+        "vault": str(vault),
         "dataset": DATASET_NAME,
     }
 
@@ -1015,6 +1133,17 @@ async def _handle_export_urantipedia(payload: dict) -> dict:
         exported += 1
         logger.info(f"export_urantipedia: {sha[:12]} -> canon/{sha}.md")
 
+        # Mirror to the Obsidian vault export dir if configured.
+        if OBSIDIAN_EXPORT_DIR and OBSIDIAN_EXPORT_DIR.is_dir():
+            slug = (
+                Path(source_file).stem
+                if source_file and source_file != "unknown"
+                else sha[:12]
+            )
+            obs_path = OBSIDIAN_EXPORT_DIR / f"canon-{slug}.md"
+            obs_path.write_text(md_content)
+            logger.info(f"export_urantipedia: also wrote {obs_path}")
+
         if COGNEE_READY:
             try:
                 await cognee.add(
@@ -1117,8 +1246,9 @@ async def _handle_categorise_by_axes(payload: dict) -> dict:
 # Dispatch table — 1:1 with ALLOWED_HANDLERS. Changes here require changes
 # to the allowlist above (and vice versa); the invariant is asserted below.
 _HANDLERS = {
-    "smoke_test": _handle_smoke_test,
-    "ingest_normalize": _handle_ingest_normalize,
+    "smoke_test":         _handle_smoke_test,
+    "ingest_normalize":   _handle_ingest_normalize,
+    "ingest_obsidian":    _handle_ingest_obsidian,
     "categorise_by_axes": _handle_categorise_by_axes,
     "cross_link":         _handle_cross_link,
     "governance_check":   _handle_governance_check,
