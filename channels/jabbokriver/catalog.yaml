@@ -1,0 +1,64 @@
+# JabbokRiverProductions — source-video manifest.
+#
+# Operator-editable. Each entry describes ONE source video that may be
+# archived for transcription/study and referenced in editorial commentary.
+#
+# Publishing policy: catalog & link only.
+#   - source_url is the canonical, public, original upload (we DO NOT re-host).
+#   - rights_note records what we know about re-use rights.
+#   - Original full talks are NEVER re-uploaded to JabbokRiverProductions;
+#     public outputs are ORIGINAL editorial/commentary clips that link back.
+#
+# Stub entries below illustrate the schema. Operator fills source_url and
+# series, then runs:
+#   python channels/jabbokriver/tools/validate_catalog.py
+#   python channels/jabbokriver/tools/catalog_fetch.py            # dry-run
+#   python channels/jabbokriver/tools/catalog_fetch.py --execute  # archive
+
+version: 1
+channel: jabbokriver
+entries:
+  - id: geaboc-001
+    title: "(stub — fill from source video title)"
+    host: "Dr. Emanoil Geaboc"
+    source_url: ""              # https://www.youtube.com/watch?v=...
+    source_channel: ""          # name of the SDA YouTube channel that uploaded it
+    language: ro
+    duration_s: null
+    download_status: pending     # pending | downloaded | skipped
+    transcription_status: pending # pending | done | failed
+    series: religia-lui-vs-religia-despre-isus
+    tags: []
+    ingestion_date: null
+    rights_note: "public upload; for internal study + editorial commentary only; original credited"
+    commentary_episode_id: null
+
+  - id: geaboc-002
+    title: "(stub)"
+    host: "Dr. Emanoil Geaboc"
+    source_url: ""
+    source_channel: ""
+    language: ro
+    duration_s: null
+    download_status: pending
+    transcription_status: pending
+    series: credinta-lui-isus-paper196
+    tags: []
+    ingestion_date: null
+    rights_note: "public upload; for internal study + editorial commentary only; original credited"
+    commentary_episode_id: null
+
+  - id: stephanos-001
+    title: "(stub — from messagetostephanos@gmail.com archive)"
+    host: "Dr. Emanoil Geaboc"
+    source_url: ""              # leave blank for operator-supplied recordings
+    source_channel: "messagetostephanos@gmail.com (operator-held)"
+    language: ro
+    duration_s: null
+    download_status: pending
+    transcription_status: pending
+    series: religia-lui-vs-religia-despre-isus
+    tags: []
+    ingestion_date: null
+    rights_note: "operator-held archive; consent required from Dr. Geaboc before public commentary"
+    commentary_episode_id: null
