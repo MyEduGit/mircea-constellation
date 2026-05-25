@@ -19,12 +19,12 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
-from .manifesto import HEADS, Head
-
+from .manifesto import HEADS
 
 # Regex patterns are intentionally conservative. Better to under-detect
 # and let recurrence trip the trial than to over-detect and try the loyal.

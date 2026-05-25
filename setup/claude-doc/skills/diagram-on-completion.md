@@ -107,7 +107,23 @@ Append to `job.md`:
   and auto-link below.
 ```
 
-### 6. Fan-out (conditional)
+### 6. Cloud backup
+
+After writing to Obsidian, trigger the cloud backup pipeline in the background:
+
+```bash
+nohup bash "$CLAUDE_PROJECT_DIR/setup/cloud-backup/backup-all.sh" \
+  >> ~/.cloud-backup/logs/doc-triggered.log 2>&1 &
+```
+
+This pushes the newly written job files to **Google Drive**, **iCloud** (via
+rclone), and creates/updates the job as a **Google Doc**. The backup runs
+asynchronously and does not block the report step.
+
+If `$CLAUDE_PROJECT_DIR/setup/cloud-backup/backup-all.sh` is not found (setup
+not yet run), skip silently and note it in the report with a `⚠` marker.
+
+### 7. Fan-out (conditional)
 
 - **Gmail**: if the user opted in for this job OR the job is tagged
   `notify`, call `gmail_create_draft` to `mirceamatthews@gmail.com` with
@@ -117,7 +133,7 @@ Append to `job.md`:
   secret into context.)
 - **Slack**: skipped by default.
 
-### 7. Report
+### 8. Report
 
 Reply with:
 
@@ -125,11 +141,13 @@ Reply with:
 ✓ Obsidian: Jobs/<YYYY-MM-DD>/<job-slug>/
 ✓ Notion:   <url>
 ✓ GitHub:   <url>
+⟳ Cloud:    backup-all.sh launched (GDrive + iCloud + GDocs)
   diagram:  <first 10 lines of Mermaid>
 ```
 
-Replace any failed line with `✗` + one-sentence failure reason. Do not
-suppress errors.
+Replace any failed line with `✗` + one-sentence failure reason. Replace the
+cloud line with `⚠ Cloud: setup/cloud-backup not found — run install.sh` if
+the backup script is absent. Do not suppress errors.
 
 ## When to refuse to archive
 

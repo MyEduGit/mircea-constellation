@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mircea-constellation/channels/jabbokriver/schema/catalog.schema.json",
+  "title": "JabbokRiver source-video manifest",
+  "type": "object",
+  "required": ["version", "channel", "entries"],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "channel": { "type": "string", "const": "jabbokriver" },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "id", "title", "host", "source_url", "source_channel",
+        "language", "download_status", "transcription_status",
+        "series", "tags", "rights_note"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{2,}$"
+        },
+        "title": { "type": "string" },
+        "host": { "type": "string" },
+        "source_url": { "type": "string" },
+        "source_channel": { "type": "string" },
+        "language": {
+          "type": "string",
+          "enum": ["ro", "en"]
+        },
+        "duration_s": { "type": ["number", "null"], "minimum": 0 },
+        "download_status": {
+          "type": "string",
+          "enum": ["pending", "downloaded", "skipped"]
+        },
+        "transcription_status": {
+          "type": "string",
+          "enum": ["pending", "done", "failed"]
+        },
+        "series": {
+          "type": "string",
+          "enum": [
+            "religia-lui-vs-religia-despre-isus",
+            "jabbok-wrestle-shorts",
+            "credinta-lui-isus-paper196"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "ingestion_date": { "type": ["string", "null"] },
+        "rights_note": { "type": "string", "minLength": 1 },
+        "commentary_episode_id": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}

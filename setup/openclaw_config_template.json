@@ -1,0 +1,103 @@
+{
+  "_instructions": [
+    "Copy this to ~/.openclaw/config.json on the VPS.",
+    "Replace every REPLACE_WITH_* value before deploying.",
+    "Generate gateway token: openssl rand -hex 32",
+    "Generate Wife's Telegram ID: ask her to send /start to @userinfobot"
+  ],
+  "gateway": {
+    "mode": "local",
+    "bind": "127.0.0.1",
+    "port": 18789,
+    "auth": {
+      "mode": "token",
+      "token": "REPLACE_WITH_SECURE_RANDOM_TOKEN"
+    }
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "model": {
+    "provider": "anthropic",
+    "apiKey": "REPLACE_WITH_ANTHROPIC_API_KEY",
+    "model": "claude-sonnet-4-6",
+    "fallback": "claude-haiku-4-5-20251001"
+  },
+  "agent": {
+    "name": "MissionBot",
+    "systemPromptFile": "~/.openclaw/workspace/SOUL.md",
+    "identityMap": {
+      "828807562": "Mircea",
+      "REPLACE_WITH_WIFE_TELEGRAM_ID": "Wife"
+    },
+    "sharedMemory": true
+  },
+  "sandbox": {
+    "enabled": true,
+    "containerRuntime": "docker",
+    "networkPolicy": "restricted",
+    "readOnlyRoot": true,
+    "tmpSizeLimit": "256m"
+  },
+  "tools": {
+    "profile": "messaging",
+    "allow": [
+      "group:messaging",
+      "group:memory",
+      "group:calendar",
+      "group:search",
+      "group:knowledge"
+    ],
+    "deny": [
+      "group:automation",
+      "group:runtime",
+      "group:fs",
+      "sessions_spawn",
+      "sessions_send",
+      "shell_exec",
+      "code_exec",
+      "browser_navigate",
+      "file_write_system",
+      "process_spawn"
+    ],
+    "fs": {
+      "workspaceOnly": true,
+      "allowPaths": ["~/.openclaw/workspace/"],
+      "denyPaths": ["/etc", "/root", "/var", "/usr", "/bin", "/sbin"]
+    },
+    "exec": {
+      "security": "deny",
+      "ask": "always"
+    },
+    "elevated": {
+      "enabled": false
+    }
+  },
+  "channels": {
+    "telegram": {
+      "botToken": "REPLACE_WITH_TELEGRAM_BOT_TOKEN",
+      "dmPolicy": "pairing",
+      "allowlist": [
+        "828807562",
+        "REPLACE_WITH_WIFE_TELEGRAM_ID"
+      ],
+      "groups": {
+        "*": { "requireMention": true }
+      }
+    }
+  },
+  "memory": {
+    "enabled": true,
+    "backend": "local",
+    "maxEntries": 10000,
+    "summarizeAfter": 50
+  },
+  "security": {
+    "auditLog": true,
+    "promptInjectionDefense": true,
+    "rateLimiting": {
+      "enabled": true,
+      "maxRequestsPerMinute": 30
+    }
+  }
+}

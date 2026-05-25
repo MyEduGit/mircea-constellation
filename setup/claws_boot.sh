@@ -140,6 +140,22 @@ if $URANTIOS_OK; then
   ssh $URANTIOS 'docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"' || true
 fi
 
+# Paperclip health check — runs locally (same host as claws_boot.sh invocation).
+echo ""
+echo "--- Paperclip (local :8083) ---"
+if curl -fsS http://127.0.0.1:8083/health >/dev/null 2>&1; then
+  ok "Paperclip — healthy at http://127.0.0.1:8083"
+  curl -s http://127.0.0.1:8083/health | python3 -c "
+import sys, json
+h = json.load(sys.stdin)
+dirs = h.get('evidence_dirs', [])
+for d in dirs:
+    print(f'  evidence dir: {d}')
+" 2>/dev/null || true
+else
+  warn "Paperclip not responding — run: bash setup/paperclip_install.sh"
+fi
+
 # ── 6. Open n8n ──────────────────────────────────────────────────
 info "[6/6] Opening NemoClaw in browser..."
 sleep 2

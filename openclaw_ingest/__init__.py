@@ -6,11 +6,16 @@ not explain (VisualUrantiClaw), does not bundle evidence (Paperclip —
 this module emits evidence records, but Paperclip owns the bundling
 contract once it ships).
 
-Truthful label: deployable scaffold with first real handler (ingest_normalize).
-Four of the five canonical handlers are declared but stubbed pending
-follow-up PR.
+Handlers (all real, none stubbed):
+  ingest_normalize     — normalise chatcode JSONL into Cognee
+  ingest_obsidian      — ingest Obsidian vault .md files into Cognee
+  categorise_by_axes   — 12-axis LLM classifier (Ollama)
+  cross_link           — pair-score edge emission
+  governance_check     — apply governance rules, flag iniquitous docs
+  export_urantipedia   — export eligible docs as Obsidian-ready markdown
+  subscription_*       — subscribe / unsubscribe / list (3 handlers)
 
 UrantiOS governed — Truth, Beauty, Goodness.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

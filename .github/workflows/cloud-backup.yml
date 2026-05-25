@@ -1,0 +1,181 @@
+name: Cloud Backup — Anthropic Data to GDrive & iCloud
+
+on:
+  schedule:
+    # Daily at 03:00 UTC
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_gdocs:
+        description: "Skip Google Docs upload (true/false)"
+        default: "false"
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    name: Export & sync Anthropic + Obsidian data
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: |
+          pip install --quiet \
+            google-auth \
+            google-auth-httplib2 \
+            google-api-python-client
+
+      - name: Install rclone
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          rclone version
+
+      - name: Configure rclone — Google Drive (service account)
+        env:
+          GDRIVE_SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
+        run: |
+          if [ -n "${GDRIVE_SA_JSON:-}" ]; then
+            mkdir -p ~/.cloud-backup
+            echo "$GDRIVE_SA_JSON" > ~/.cloud-backup/gdrive-service-account.json
+            chmod 600 ~/.cloud-backup/gdrive-service-account.json
+            rclone config create gdrive drive \
+              scope=drive \
+              service_account_file=~/.cloud-backup/gdrive-service-account.json \
+              --non-interactive
+            echo "gdrive remote configured"
+          else
+            echo "::warning::GDRIVE_SA_JSON secret not set — Google Drive sync skipped"
+          fi
+
+      - name: Configure rclone — iCloud WebDAV
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          ICLOUD_DAV_URL: ${{ secrets.ICLOUD_DAV_URL }}
+        run: |
+          if [ -n "${APPLE_ID:-}" ] && [ -n "${APPLE_APP_PASSWORD:-}" ]; then
+            OBSCURED="$(rclone obscure "$APPLE_APP_PASSWORD")"
+            rclone config create icloud webdav \
+              url="${ICLOUD_DAV_URL:-https://p62-dav.icloud.com}" \
+              vendor=other \
+              user="$APPLE_ID" \
+              pass="$OBSCURED" \
+              --non-interactive
+            echo "icloud remote configured"
+          else
+            echo "::warning::APPLE_ID/APPLE_APP_PASSWORD secrets not set — iCloud sync skipped"
+          fi
+
+      - name: Write credentials env file
+        env:
+          GDRIVE_SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
+          GDOCS_JOBS_FOLDER_ID: ${{ secrets.GDOCS_JOBS_FOLDER_ID }}
+        run: |
+          mkdir -p ~/.cloud-backup
+          cat > ~/.cloud-backup/.env <<EOF
+          GDRIVE_SA_FILE=~/.cloud-backup/gdrive-service-account.json
+          GDOCS_JOBS_FOLDER_ID=${GDOCS_JOBS_FOLDER_ID:-}
+          OBSIDIAN_JOBS_VAULT=${HOME}/Documents/Obsidian/Jobs
+          OBSIDIAN_ANTHROPIC_VAULT=${HOME}/Documents/Obsidian/Anthropic-Data
+          ICLOUD_OBSIDIAN_PATH=Documents/Obsidian/Jobs
+          ICLOUD_ANTHROPIC_PATH=Documents/Obsidian/Anthropic-Data
+          EOF
+          chmod 600 ~/.cloud-backup/.env
+
+      - name: Restore Obsidian vault cache
+        uses: actions/cache@v4
+        with:
+          path: ~/Documents/Obsidian
+          key: obsidian-vault-${{ github.run_id }}
+          restore-keys: |
+            obsidian-vault-
+
+      - name: Step 1 — Export Anthropic/Claude data to Obsidian vault
+        run: python3 setup/cloud-backup/export-anthropic.py
+
+      - name: Step 2 — Sync Obsidian vaults to Google Drive + iCloud
+        run: bash setup/cloud-backup/sync-obsidian.sh
+
+      - name: Step 3 — Upload job archives as Google Docs
+        if: ${{ github.event.inputs.skip_gdocs != 'true' }}
+        run: python3 setup/cloud-backup/upload-to-gdocs.py
+
+      - name: Save Obsidian vault cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/Documents/Obsidian
+          key: obsidian-vault-${{ github.run_id }}
+
+      - name: Step 4 — Update vault/DASHBOARD.md stats in repo
+        run: |
+          set -euo pipefail
+          VAULT_DIR="$GITHUB_WORKSPACE/vault"
+          DASH="$VAULT_DIR/DASHBOARD.md"
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          TOTAL_MD="$(find ~/Documents/Obsidian -name '*.md' 2>/dev/null | wc -l | tr -d ' ')"
+          HOST="GitHub-Actions"
+          # Update AUTO-STATUS section
+          python3 - <<PYEOF
+          import re, pathlib, datetime
+
+          dash = pathlib.Path("$DASH")
+          if not dash.exists():
+              raise SystemExit("vault/DASHBOARD.md not found")
+
+          text = dash.read_text()
+          status_block = (
+              f"| Last capture run | \`$NOW\` |\n"
+              f"| Total .md files | $TOTAL_MD |\n"
+              f"| Vault size | CI run (no local vault) |\n"
+              f"| Sync: Google Drive | run attempted |\n"
+              f"| Sync: iCloud | run attempted |\n"
+              f"| Sync: External SSD | n/a (CI) |\n"
+              f"| Host device | \`$HOST\` |"
+          )
+
+          def replace_section(content, tag, replacement):
+              start = f"<!-- {tag}-START -->"
+              end   = f"<!-- {tag}-END -->"
+              if start not in content or end not in content:
+                  return content
+              before = content[:content.index(start) + len(start)]
+              after  = content[content.index(end):]
+              return before + "\n" + replacement + "\n" + after
+
+          text = replace_section(text, "AUTO-STATUS", status_block)
+          text = re.sub(r"^updated_at:.*$", f"updated_at: $NOW", text, flags=re.MULTILINE)
+          dash.write_text(text)
+          print(f"DASHBOARD.md updated — {$TOTAL_MD} total .md files")
+          PYEOF
+
+      - name: Commit updated dashboard to repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vault/DASHBOARD.md vault/01_System/SYSTEM_MAP.md 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No dashboard changes to commit"
+          else
+            git commit -m "chore: auto-update vault/DASHBOARD.md stats [skip ci]"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+
+      - name: Upload backup log as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-backup-log-${{ github.run_id }}
+          path: ~/.cloud-backup/logs/
+          retention-days: 30
