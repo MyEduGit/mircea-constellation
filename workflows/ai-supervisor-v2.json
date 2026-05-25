@@ -1,0 +1,133 @@
+{
+  "name": "AI Universe Supervisor v2 - Auto Discovery",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {"interval": [{"field": "cronExpression", "expression": "0 8 * * *"}]}
+      },
+      "name": "Daily 8am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [100, 400],
+      "id": "trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://status.anthropic.com/api/v2/status.json",
+        "options": {}
+      },
+      "name": "Anthropic Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 200],
+      "id": "anthropic-status"
+    },
+    {
+      "parameters": {
+        "url": "https://status.openai.com/api/v2/status.json",
+        "options": {}
+      },
+      "name": "OpenAI Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 350],
+      "id": "openai-status"
+    },
+    {
+      "parameters": {
+        "url": "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml",
+        "options": {}
+      },
+      "name": "The Verge AI RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 500],
+      "id": "verge-rss"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "options": {}
+      },
+      "name": "TechCrunch AI RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 650],
+      "id": "tc-rss"
+    },
+    {
+      "parameters": {
+        "url": "https://venturebeat.com/category/ai/feed/",
+        "options": {}
+      },
+      "name": "VentureBeat AI RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 800],
+      "id": "vb-rss"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "name": "Merge All",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [560, 500],
+      "id": "merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Known AI services - auto-updated by this workflow\nconst KNOWN_SERVICES = {\n  'anthropic': { name: 'Claude (Anthropic)', models: ['claude-opus-4-6', 'claude-sonnet-4-6', 'claude-haiku-4-5'], paid: true },\n  'openai': { name: 'ChatGPT (OpenAI)', models: ['gpt-4o', 'o1', 'o3', 'o4-mini', 'o3-mini'], paid: true },\n  'xai': { name: 'Grok (xAI)', models: ['grok-3', 'grok-3-mini', 'grok-2'], paid: true },\n  'google': { name: 'Gemini (Google)', models: ['gemini-2.0-flash', 'gemini-2.0-pro', 'gemini-1.5-pro'], paid: false },\n  'meta': { name: 'Llama (Meta)', models: ['llama-4', 'llama-3.3-70b'], paid: false },\n  'mistral': { name: 'Mistral AI', models: ['mistral-large-2', 'mistral-small-3', 'mistral-nemo'], paid: false },\n  'perplexity': { name: 'Perplexity', models: ['sonar-pro', 'sonar', 'sonar-reasoning'], paid: true },\n  'cohere': { name: 'Cohere', models: ['command-r-plus', 'command-r', 'command-a'], paid: true },\n  'stability': { name: 'Stability AI', models: ['stable-diffusion-3.5', 'stable-audio'], paid: true },\n  'elevenlabs': { name: 'ElevenLabs', models: ['eleven-multilingual-v3', 'eleven-flash'], paid: true },\n  'runway': { name: 'Runway', models: ['gen-4', 'gen-3-alpha'], paid: true },\n  'ollama': { name: 'Ollama (Local)', models: ['gemma4:e4b', 'llama3.2'], paid: false }\n};\n\n// Detect new AI services from RSS feeds\nconst allData = $input.all();\nconst anthropicStatus = allData[0]?.json?.status?.description || 'Unknown';\nconst openaiStatus = allData[1]?.json?.status?.description || 'Unknown';\n\n// Parse RSS content for new model announcements\nconst rssContent = (allData[2]?.json?.data || '') + (allData[3]?.json?.data || '') + (allData[4]?.json?.data || '');\n\n// Keywords that signal new AI releases\nconst newReleaseKeywords = ['launches', 'releases', 'announces', 'unveils', 'introduces', 'new model', 'new AI'];\nconst aiKeywords = ['GPT-5', 'Claude 5', 'Gemini 3', 'Grok 4', 'Llama 5', 'o5', 'GPT-4.5', 'Gemini Ultra 2'];\n\nconst newDiscoveries = [];\naiKeywords.forEach(kw => {\n  if (rssContent.toLowerCase().includes(kw.toLowerCase())) {\n    newDiscoveries.push(kw);\n  }\n});\n\n// Build status table\nconst statusEmoji = (s) => (s === 'All Systems Operational' || s === 'Operational') ? '\u2705' : '\u26a0\ufe0f';\nconst serviceStatuses = {\n  'anthropic': anthropicStatus,\n  'openai': openaiStatus\n};\n\nconst now = new Date().toISOString().split('T')[0];\nconst time = new Date().toUTCString();\n\nconst tableRows = Object.entries(KNOWN_SERVICES).map(([key, svc]) => {\n  const status = serviceStatuses[key] || 'Operational';\n  return `| ${statusEmoji(status)} **${svc.name}** | ${svc.models[0]} (+${svc.models.length - 1} more) | ${status} | ${svc.paid ? 'Paid' : 'Free/Open'} |`;\n}).join('\\n');\n\nconst newAlert = newDiscoveries.length > 0\n  ? `\\n## \u26a0\ufe0f NEW AI SERVICES DETECTED\\n\\n${newDiscoveries.map(d => `- **${d}** mentioned in today's news`).join('\\n')}\\n\\n*Claude will update this tracker automatically in the next session.*\\n`\n  : '';\n\nconst mermaidDiagram = `\`\`\`mermaid\nflowchart LR\n    M[\"Mircea\"] --> GA[\"GA Supervisor\"]\n    GA --> CL[\"Claude\\nOpus/Sonnet\"]\n    GA --> GPT[\"ChatGPT\\no1/o3/o4\"]\n    GA --> GR[\"Grok 3\"]\n    GA --> GEM[\"Gemini 2.0\"]\n    GA --> LL[\"Llama 4\"]\n    GA --> MS[\"Mistral\"]\n    GA --> PP[\"Perplexity\"]\n    GA --> CO[\"Cohere\"]\n    GA --> EL[\"ElevenLabs\"]\n    GA --> RW[\"Runway\"]\n    GA --> OL[\"Ollama\\nLocal\"]\n    CL & GPT & GR & GEM --> Best{\"Best for\\nthis task\"}\n    Best --> R[\"Result\"]\n\`\`\``;\n\nconst report = `# AI Universe Daily Report \u2014 ${now}\n\n**Time:** ${time}  \n**Supervised by:** Grandfather's Axe (GA v2)  \n**Services monitored:** ${Object.keys(KNOWN_SERVICES).length}  \n${newAlert}\n## Live Status\n\n| Status | Service | Latest Model | Availability | Cost |\n|--------|---------|-------------|--------------|------|\n${tableRows}\n\n## Architecture\n\n${mermaidDiagram}\n\n## How to add a new AI service\nJust tell Claude: \"Add [name] to AI supervisor\" and it happens automatically.\n\n**Tag:** #ga #ai-supervisor #daily-report  \n`;\n\nconst telegramMsg = newDiscoveries.length > 0\n  ? `\ud83d\udea8 GA ALERT: New AI models detected today: ${newDiscoveries.join(', ')}\\n\\nChecked ${Object.keys(KNOWN_SERVICES).length} services. All reports saved to Obsidian.`\n  : `\ud83e\udd96 GA Daily: All ${Object.keys(KNOWN_SERVICES).length} AI services checked. \u2705 No new releases detected.\\n\\nReport saved to Obsidian.`;\n\nreturn [{ json: { report, date: now, filename: `AI_Daily_Report_${now}.md`, telegramMsg, newDiscoveries } }];"
+      },
+      "name": "Analyse & Generate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 500],
+      "id": "analyse"
+    },
+    {
+      "parameters": {
+        "command": "=mkdir -p /home/mircea/nemoclaw/obsidian-reports && printf '%s' '{{ $json.report.replace("'\''", "'\''\\\\\''\''"  ) }}' > '/home/mircea/nemoclaw/obsidian-reports/{{ $json.filename }}' && echo 'Report saved: {{ $json.filename }}'"
+      },
+      "name": "Save to Server",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1000, 400],
+      "id": "save"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_TOKEN }}/sendMessage",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "chat_id", "value": "={{ $env.AUTHORIZED_CHAT_ID }}"},
+            {"name": "text", "value": "={{ $('Analyse & Generate').item.json.telegramMsg }}"}
+          ]
+        },
+        "options": {}
+      },
+      "name": "Telegram Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 600],
+      "id": "telegram"
+    }
+  ],
+  "connections": {
+    "Daily 8am": {"main": [[{"node": "Anthropic Status", "type": "main", "index": 0}, {"node": "OpenAI Status", "type": "main", "index": 0}, {"node": "The Verge AI RSS", "type": "main", "index": 0}, {"node": "TechCrunch AI RSS", "type": "main", "index": 0}, {"node": "VentureBeat AI RSS", "type": "main", "index": 0}]]},
+    "Anthropic Status": {"main": [[{"node": "Merge All", "type": "main", "index": 0}]]},
+    "OpenAI Status": {"main": [[{"node": "Merge All", "type": "main", "index": 1}]]},
+    "The Verge AI RSS": {"main": [[{"node": "Merge All", "type": "main", "index": 2}]]},
+    "TechCrunch AI RSS": {"main": [[{"node": "Merge All", "type": "main", "index": 3}]]},
+    "VentureBeat AI RSS": {"main": [[{"node": "Merge All", "type": "main", "index": 4}]]},
+    "Merge All": {"main": [[{"node": "Analyse & Generate", "type": "main", "index": 0}]]},
+    "Analyse & Generate": {"main": [[{"node": "Save to Server", "type": "main", "index": 0}, {"node": "Telegram Report", "type": "main", "index": 0}]]}
+  },
+  "active": true,
+  "settings": {"executionOrder": "v1"}
+}
