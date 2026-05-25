@@ -1,0 +1,42 @@
+{
+  "pipeline": "daily-book-publishing",
+  "version": "1.0.0",
+  "status": "deployed",
+  "schedule": "0 6 * * *",
+  "schedule_tz": "UTC",
+  "engine": {
+    "repo": "myedugit/URANTiOS",
+    "branch": "claude/daily-book-publishing-zeI2A",
+    "module": "bookwriter",
+    "command": "python -m bookwriter daily",
+    "model_outline": "claude-opus-4-6",
+    "model_chapters": "claude-sonnet-4-6"
+  },
+  "output": {
+    "repo": "myedugit/PhD-Triune-Monism",
+    "branch": "claude/daily-book-publishing-zeI2A",
+    "path": "07_Generated_Books/Books/"
+  },
+  "notifications": {
+    "telegram": {
+      "enabled": true,
+      "bot": "lobsterbot",
+      "secret_token": "TELEGRAM_BOT_TOKEN",
+      "secret_chat_id": "TELEGRAM_CHAT_ID"
+    },
+    "notion": {
+      "enabled": true,
+      "secret_api_key": "NOTION_API_KEY",
+      "secret_db_id": "NOTION_DAILY_DB_ID"
+    }
+  },
+  "themes": {
+    "source": "URANTiOS/bookwriter/daily_themes.json",
+    "count": 52,
+    "cycle_days": 52
+  },
+  "governance": {
+    "values": ["Truth", "Beauty", "Goodness"],
+    "lucifer_test": true
+  }
+}
