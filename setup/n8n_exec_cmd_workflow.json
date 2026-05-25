@@ -1,0 +1,64 @@
+{
+  "name": "NemoClaw — Obsidian Write via Execute Command",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "command": "echo \"Hello from NemoClaw\" > /files/obsidian/test.md && echo \"WRITE_OK\" && cat /files/obsidian/test.md"
+      },
+      "id": "exec-1",
+      "name": "Write test.md via shell",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "command": "cat /files/obsidian/test.md"
+      },
+      "id": "exec-2",
+      "name": "Verify file contents",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Write test.md via shell",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write test.md via shell": {
+      "main": [
+        [
+          {
+            "node": "Verify file contents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}
