@@ -1,0 +1,25 @@
+{
+  "_comment": "Merge these keys into ~/.claude/settings.json. The installer does this for you. Do not copy the _comment field.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/doc-reminder.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/doc-verify.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

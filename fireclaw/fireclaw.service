@@ -1,0 +1,25 @@
+[Unit]
+Description=Fireclaw — remediation & incident-response loop
+Documentation=file:///opt/mircea-constellation/fireclaw/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Edit ExecStart to match your install path. Defaults assume venv at
+# /opt/mircea-constellation/.fireclaw-env and repo at /opt/mircea-constellation.
+WorkingDirectory=/opt/mircea-constellation
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/etc/fireclaw.env
+ExecStart=/opt/mircea-constellation/.fireclaw-env/bin/python -m fireclaw.fireclaw --execute --loop --interval 60
+Restart=on-failure
+RestartSec=15s
+# Lockdown
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/log/fireclaw /var/lib/fireclaw
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

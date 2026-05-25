@@ -1,20 +1,65 @@
 {
   "fleet":        { "status": "ok",   "bots": "10/11 active" },
   "nanoclaw":     { "status": "ok",   "version": "1.2.17" },
+  "fireclaw":     { "status": "new",  "version": "0.1.0", "incidents_24h": 0 },
+  "lucifericlaw": { "status": "new",  "version": "0.1.1", "open_cases": 0, "iniquitous_24h": 0 },
+  "openclaw_ingest": { "status": "ok", "version": "0.2.0", "dataset": "mircea_corpus", "cognee_ready": false, "handlers_implemented": 10, "handlers_stubbed": 0, "classifier_axes": 12, "cross_link_threshold": 5.0, "obsidian_ingest": true, "obsidian_export": true },
   "ollama":       { "status": "warn", "model": "qwen2.5:32b" },
+  "cognee":       { "status": "ok",   "version": "1.0.0" },
   "disk_openclaw": "46% used",
   "disk_urantios": "38% used",
   "obsidian":     { "docs": 477 },
 
   "iphone":       { "status": "ok" },
   "imac":         { "status": "ok" },
+  "tailscale":    { "status": "ok" },
   "openclaw":     { "status": "ok" },
   "urantios":     { "status": "ok" },
-  "botfleet":     { "status": "ok" },
+  "nanoclaw_node":{ "status": "ok" },
+  "claude":       { "status": "ok" },
+  "chatgpt":      { "status": "ok" },
   "hetzy":        { "status": "ok" },
+  "gabriel":      { "status": "ok" },
+  "uragent":      { "status": "ok" },
+  "botfleet":     { "status": "ok" },
+  "ncbot":        { "status": "ok" },
+  "lobster":      { "status": "new" },
   "urantipedia":  { "status": "ok" },
   "amep":         { "status": "ok" },
-  "gabriel":      { "status": "ok" },
+  "phd":          { "status": "ok" },
+  "urantios_os":  { "status": "ok" },
 
-  "updated": "2026-04-11T18:00:00.000Z"
+  "operating_agent": {
+    "name": "Claude",
+    "model": "claude-sonnet-4-6",
+    "council_seat": 2,
+    "council_role": "Son — Builder / Coder",
+    "branch": "claude/openmythos-planning-BLSxB",
+    "current_task": "OpenMythos integration planning",
+    "status": "active"
+  },
+
+  "openmythos": {
+    "status": "wip",
+    "version": "0.0.1",
+    "architecture": "Recurrent-Depth Transformer (RDT)",
+    "max_loop_iters": 16,
+    "param_count": "770M",
+    "equivalent_dense": "1.3B",
+    "constellation_role": "deep reasoning — Foreword synthesis, Council Seat 4 fallback, Cognee scorer"
+  },
+
+  "jabbokriver": {
+    "status": "new",
+    "host": "Dr. Emanoil Geaboc",
+    "consent_status": "pending",
+    "publishing_policy": "catalog_and_link",
+    "language": "ro+en-subs",
+    "videos_cataloged": 0,
+    "videos_transcribed": 0,
+    "public_launch_blocked_until": "host_consent_confirmed",
+    "covenant_ref": "Urantia Book Paper 196"
+  },
+
+  "updated": "2026-05-14T00:00:00.000Z"
 }
