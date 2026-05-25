@@ -7,4 +7,4 @@ Canonical claw map:
 UrantiOS governed — Truth, Beauty, Goodness.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

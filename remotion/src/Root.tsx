@@ -10,6 +10,7 @@ import type {
 } from "./compositions/shorts/types";
 import { DEFAULT_ACCENT } from "./compositions/shorts/types";
 import { HelloWorld } from "./HelloWorld";
+<<<<<<< HEAD
 import sampleClip from "../fixtures/sample-clip.json";
 import sampleClipEn from "../fixtures/sample-clip-en.json";
 import sampleSequence from "../fixtures/sample-sequence.json";
@@ -57,6 +58,20 @@ const calcClipSequenceMetadata: CalculateMetadataFunction<
     height: props.height || SHORT_CLIP_HEIGHT,
   };
 };
+=======
+import { JabbokIntro } from "./jabbok/JabbokIntro";
+import { JabbokOutro } from "./jabbok/JabbokOutro";
+import {
+  HostLowerThird,
+  hostLowerThirdDefaultProps,
+} from "./jabbok/HostLowerThird";
+import {
+  ThesisTitleCard,
+  thesisTitleCardDefaultProps,
+} from "./jabbok/ThesisTitleCard";
+import { ChannelBanner } from "./jabbok/ChannelBanner";
+import { ChannelAvatar } from "./jabbok/ChannelAvatar";
+>>>>>>> main
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -70,6 +85,7 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
       />
       <Composition
+<<<<<<< HEAD
         id="ShortClip"
         component={ShortClip}
         calculateMetadata={calcShortClipMetadata}
@@ -98,6 +114,56 @@ export const RemotionRoot: React.FC = () => {
         width={SHORT_CLIP_WIDTH}
         height={SHORT_CLIP_HEIGHT}
         defaultProps={sampleSequence as unknown as ClipSequenceProps}
+=======
+        id="JabbokIntro"
+        component={JabbokIntro}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="JabbokOutro"
+        component={JabbokOutro}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="HostLowerThird"
+        component={HostLowerThird}
+        durationInFrames={120}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={hostLowerThirdDefaultProps}
+      />
+      <Composition
+        id="ThesisTitleCard"
+        component={ThesisTitleCard}
+        durationInFrames={180}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={thesisTitleCardDefaultProps}
+      />
+      <Composition
+        id="ChannelBanner"
+        component={ChannelBanner}
+        durationInFrames={1}
+        fps={30}
+        width={2560}
+        height={1440}
+      />
+      <Composition
+        id="ChannelAvatar"
+        component={ChannelAvatar}
+        durationInFrames={1}
+        fps={30}
+        width={1080}
+        height={1080}
+>>>>>>> main
       />
     </>
   );

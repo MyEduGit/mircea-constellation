@@ -1,0 +1,62 @@
+{
+  "slug": "johnmark",
+  "name": "John Mark",
+  "handle": "@JohnMark-8",
+  "tagline": "A weekly spiritual transmission for those who believe without seeing.",
+  "owner": {
+    "name": "Mircea Matthews",
+    "google_account": "mirceamatthews@gmail.com",
+    "pen_name": "YourThought Adjuster"
+  },
+  "upload_account": "mirceamatthews@gmail.com",
+  "youtube_channel_status": "live",
+  "website": "https://johnmark.io",
+  "subscribers": 3,
+  "videos_published": 1,
+  "content_focus": "The Urantia Book — agondonter faith, the hidden teachings of Jesus, the Melchizedek Truth",
+  "primary_language": "en",
+  "cadence": "weekly",
+  "series": {
+    "agondonter": {
+      "title": "The Hidden Ones: Agondonter Series",
+      "tagline": "For those who believe without seeing.",
+      "characters": {
+        "machiventa": {
+          "role": "Machiventa Melchizedek — the Salem teacher, 4,000 years ago",
+          "appearance": "older man, warm robes, ancient wisdom, gentle authority"
+        },
+        "brother_thomas": {
+          "role": "Brother Thomas — trained theologian, wrestling with inherited doctrine",
+          "appearance": "man in priest collar, intellectual, sincere doubt"
+        },
+        "sister_amara": {
+          "role": "Sister Amara — the seeker, voice of lived experience and honest questions",
+          "appearance": "woman, present and grounded, speaks from the heart"
+        }
+      },
+      "books": [
+        "God Never Said That: The Truth That Sets 8 Billion Humans Free (ASIN: B0FBL427RX)",
+        "Divine Partnership: Sacred Union with your Inner God Fragment (ASIN: B0F8JHS4D2)"
+      ]
+    }
+  },
+  "footer": "John Mark · JohnMark.io · Part of Mircea's Constellation · YourThought Adjuster",
+  "tags": [
+    "Urantia Book",
+    "agondonter",
+    "Machiventa Melchizedek",
+    "hidden teachings of Jesus",
+    "spiritual awakening",
+    "God Never Said That",
+    "Thought Adjuster",
+    "religion of Jesus",
+    "faith without seeing",
+    "The Hidden Ones"
+  ],
+  "publishing_policy": "direct_upload",
+  "dashboard": {
+    "node_id": "johnmark",
+    "icon": "📖",
+    "tier": "service"
+  }
+}

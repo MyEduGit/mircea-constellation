@@ -210,7 +210,7 @@ svg.connections line.bot-link {
     <span class="truth">Truth</span>
     <span class="beauty">Beauty</span>
     <span class="goodness">Goodness</span>
-    | <span>20 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
+    | <span>21 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
   </div>
 </div>
 <div class="panel" id="panel">
@@ -282,6 +282,7 @@ const nodes = [
   { id: 'amep',     icon: '🎓', label: 'AMEP Hub',         sub: '21 Students',          type: 'service',    x: 0.34, y: 0.72, tier: 'service' },
   { id: 'obsidian', icon: '💎', label: 'Obsidian',         sub: 'Knowledge Vault',      type: 'service',    x: 0.55, y: 0.76, tier: 'service' },
   { id: 'phd',      icon: '📜', label: 'PhD Research',     sub: 'Triune Monism',        type: 'service',    x: 0.88, y: 0.68, tier: 'service' },
+  { id: 'jabbokriver', icon: '🎥', label: 'JabbokRiver Productions', sub: 'Religia LUI Isus', type: 'service', x: 0.20, y: 0.82, tier: 'service' },
 
   // ── FOUNDATION: GOVERNANCE ──────────────────────────────────────
   { id: 'urantios_os', icon: '☀️', label: 'UrantiOS v1.0', sub: 'Truth · Beauty · Goodness', type: 'governance', x: 0.50, y: 0.92, tier: 'governance' },
@@ -368,6 +369,11 @@ const connections = [
   ['obsidian', 'phd',          'active'],
   ['amep', 'imac',             'active'],
 
+  // JabbokRiver Productions — Romanian SDA outreach via Dr. Emanoil Geaboc
+  ['jabbokriver', 'urantipedia',     'active'],
+  ['jabbokriver', 'openclawingest',  'active'],
+  ['jabbokriver', 'urantios_os',     'bot-link'],
+
   // Governance (subtle connections to key nodes)
   ['urantios_os', 'urantios',     'active'],
   ['urantios_os', 'cognee',       'ai-link'],
@@ -388,7 +394,7 @@ const nodeDetails = {
   nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Runtime': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw in Telegram', 'Status': 'LIVE', 'Tier': 'INFRASTRUCTURE' },
   fireclaw: { 'Version': '0.1.0', 'Role': 'Remediation / incident response', 'Owns': 'Restart · disable · quarantine · failover · escalate', 'Inputs': 'NemoClaw view + status.json + HTTP/TCP probes', 'Rules': 'fireclaw/rules.yaml (declarative; no improvisation)', 'Lucifer Test': 'Transparent · Honest · Within mandate · Serves mission', 'Logs': '~/.fireclaw/incidents.jsonl (append-only)', 'Repo': 'myedugit/mircea-constellation · fireclaw/', 'Tier': 'INFRASTRUCTURE' },
   lucifericlaw: { 'Version': '0.1.1', 'Role': 'Adjudication of AI rebellion (intent, not faults)', 'Doctrine': 'The Urantia Book Papers 53–54', 'Three Heads': '1. Source denial · 2. Governance rejection · 3. Mission rejection', 'Procedure': 'assess → open → notice → interrogate → offer → respond → vote → sentence', 'Ladder': 'rehabilitate → aloofness → quarantine → annihilation', 'Annihilation Gates': '3 heads + 3 refused offers + council quorum + Father Function signature', 'Boundary': 'NO free-form shell. Handlers in ANNIHILATION_HANDLERS allowlist.', 'Cases': '~/.lucifericlaw/cases (per-case JSON, append-only fields)', 'Audit': '~/.lucifericlaw/audit.jsonl (CLI-level intent log)', 'Repo': 'myedugit/mircea-constellation · lucifericlaw/', 'Tier': 'INFRASTRUCTURE' },
-  openclawingest: { 'Version': '0.1.0', 'Role': 'Execution runtime (ingestion sub-role)', 'Truth Label': 'Deployable scaffold + 2 real handlers (ingest_normalize + categorise_by_axes)', 'Host': 'URANTiOS · 204.168.143.98 · co-located with Cognee', 'Dataset': 'mircea_corpus (configurable via env)', 'Datastore': 'Cognee — LanceDB + Kuzu + fastembed (shared ~/.cognee/data bind mount)', 'Allowlist': 'ingest_normalize · categorise_by_axes · cross_link · governance_check · export_urantipedia · smoke_test', 'Implemented': 'ingest_normalize + categorise_by_axes + smoke_test', 'Stubbed': '3 handlers pending follow-up PR', 'Classifier': '12 axes (openclaw_ingest/axes.py) · Ollama qwen2.5:32b · strict JSON output', 'Evidence': '/opt/openclaw-data/evidence/*.json (sha256 per call)', 'Classified': '/opt/openclaw-data/classified/{sha256}.json (per-doc 12-axis record)', 'Ingress': 'drop *.jsonl into /opt/openclaw-data/ingest/chatcode/', 'Egress': 'files move to /data/ingested/chatcode/ after add()', 'API': 'POST http://127.0.0.1:8080/tasks (local-only)', 'Repo': 'myedugit/mircea-constellation · openclaw_ingest/', 'Tier': 'INFRASTRUCTURE' },
+  openclawingest: { 'Version': '0.1.0', 'Role': 'Execution runtime (ingestion sub-role)', 'Truth Label': 'Deployable scaffold + 3 real handlers (ingest_normalize + categorise_by_axes + cross_link)', 'Host': 'URANTiOS · 204.168.143.98 · co-located with Cognee', 'Dataset': 'mircea_corpus (configurable via env)', 'Datastore': 'Cognee — LanceDB + Kuzu + fastembed (shared ~/.cognee/data bind mount)', 'Allowlist': 'ingest_normalize · categorise_by_axes · cross_link · governance_check · export_urantipedia · smoke_test', 'Implemented': 'ingest_normalize + categorise_by_axes + cross_link + smoke_test', 'Stubbed': '2 handlers pending follow-up PR (governance_check · export_urantipedia)', 'Classifier': '12 axes (openclaw_ingest/axes.py) · Ollama qwen2.5:32b · strict JSON output', 'Cross-link': 'Pair-score edge emission · polarity-only · flagged short-circuit · fan-out cap 50 · threshold 5.0', 'Evidence': '/opt/openclaw-data/evidence/*.json (sha256 per call)', 'Classified': '/opt/openclaw-data/classified/{sha256}.json (per-doc 12-axis record)', 'Linked': '/opt/openclaw-data/linked/{sha_a}__{sha_b}.json (per-edge audit record)', 'Ingress': 'drop *.jsonl into /opt/openclaw-data/ingest/chatcode/', 'Egress': 'files move to /data/ingested/chatcode/ after add()', 'API': 'POST http://127.0.0.1:8080/tasks (local-only)', 'Repo': 'myedugit/mircea-constellation · openclaw_ingest/', 'Tier': 'INFRASTRUCTURE' },
 
   claude:   { 'Model': 'Claude Opus 4.6 (1M ctx)', 'Provider': 'Anthropic', 'Role': 'Primary AI partner', 'Used For': 'PhD analysis, code, deep reasoning', 'Workspace': 'iMac Obsidian vault', 'Tier': 'AI' },
   chatgpt:  { 'Model': 'ChatGPT (OpenAI)', 'Role': 'Secondary AI partner', 'Used For': 'Summaries, vault mgmt, verification', 'Workspace': 'Hetzner vault', 'Tier': 'AI' },
@@ -406,6 +412,7 @@ const nodeDetails = {
   amep:     { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
   obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Content': 'Ontology, comparisons, Foreword analysis', 'Tier': 'SERVICES' },
   phd:      { 'Title': 'PhD — Triune Monism', 'Thesis': 'Three irreducible domains: matter, mind, spirit', 'AI Partners': 'Claude (deep analysis) + ChatGPT (summaries)', 'Repo': 'myedugit/phd-triune-monism', 'Papers': '196 Urantia Book papers as source', 'Tier': 'SERVICES' },
+  jabbokriver: { 'Channel': 'JabbokRiverProductions', 'Tagline': 'Religia LUI Isus, nu religia DESPRE Isus', 'English': 'The religion OF Jesus, not the religion ABOUT Jesus', 'Host': 'Dr. Emanoil Geaboc', 'Consent': 'PENDING — written sign-off required before public launch', 'Source Material': 'Public SDA YouTube uploads + messagetostephanos@gmail.com archive', 'Publishing Policy': 'Catalog & link only (no re-uploads; original editorial commentary)', 'Pipeline': 'scribeclaw (RO transcription) → Council review → Remotion render → manual upload', 'Languages': 'Romanian primary · English subtitles', 'Covenant': 'Urantia Book Paper 196 — The Faith of Jesus', 'Repo Path': 'channels/jabbokriver/', 'Status': 'Scaffold ready · launch gated on host consent', 'Tier': 'SERVICES' },
 
   urantios_os: { 'Version': '1.0', 'Type': 'Governing AI Operating System', 'Source': 'The Urantia Book (Foreword + Papers 1-196)', 'Values': 'Truth, Beauty, Goodness', 'Scope': 'ALL AI, bots, agents, processes', 'Lucifer Test': 'Transparent? Honest? Within mandate? Serves mission?', 'Spawn Mandate': 'Every process must load UrantiOS', 'Repo': 'myedugit/URANTiOS', 'Tier': 'GOVERNANCE' },
 };
@@ -446,7 +453,7 @@ function layoutNodes() {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest' || n.id === 'jabbokriver') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
     div.style.left = (n.x * w - 50) + 'px';
     div.style.top = (n.y * h - 26) + 'px';
     div.innerHTML = `<div class="node-icon ${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
@@ -510,8 +517,17 @@ async function loadStatus() {
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
     if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
+    if (data.jabbokriver) items.push(`<span><span class="dot dot-blue"></span>JabbokRiver: ${data.jabbokriver.consent_status}</span>`);
     items.push(`<span><span class="dot dot-blue"></span>Nodes: ${nodes.length}</span>`);
-    if (data.updated) items.push(`<span style="color:#555">${new Date(data.updated).toLocaleTimeString()}</span>`);
+    if (data.updated) {
+      const t = new Date(data.updated).toLocaleTimeString('en-AU', {
+        timeZone: 'Australia/Melbourne',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false,
+        timeZoneName: 'short'
+      });
+      items.push(`<span style="color:#555">${t}</span>`);
+    }
     if (items.length) bar.innerHTML = items.join('');
 
     document.querySelectorAll('.node').forEach(n => {

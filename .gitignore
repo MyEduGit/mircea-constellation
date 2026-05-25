@@ -16,5 +16,11 @@ __pycache__/
 # Remotion (Node tooling under remotion/)
 remotion/node_modules/
 remotion/out/
+<<<<<<< HEAD
 remotion/build/
 remotion/shorts-queue/
+=======
+
+# Cloudflare credentials (never commit)
+.cloudflare.env
+>>>>>>> main

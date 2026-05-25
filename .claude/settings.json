@@ -9,6 +9,31 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-tool-use.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"
+          },
+          {
+            "type": "command",
+            "command": "nohup bash \"$CLAUDE_PROJECT_DIR/setup/cloud-backup/backup-all.sh\" >> \"${HOME}/.cloud-backup/logs/stop-hook.log\" 2>&1 &"
+          }
+        ]
+      }
     ]
   }
 }
