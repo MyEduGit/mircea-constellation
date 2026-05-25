@@ -7,39 +7,46 @@
     "ro": "Adventismul Zilei a Șaptea contemporan se confruntă cu o întrebare străveche: cultivăm religia LUI Isus (credință experiențială, ascultare a voii Tatălui) sau religia DESPRE Isus (sistem doctrinar despre persoana Lui)?",
     "en": "Contemporary Seventh-day Adventism faces an ancient question: do we cultivate the religion OF Jesus (experiential faith, doing the Father's will) or the religion ABOUT Jesus (a doctrinal system concerning his person)?"
   },
-  "host": {
-    "name": "Dr. Emanoil Geaboc",
-    "credential": "Theologian",
-    "bio_ro": "Teolog de origine română, predicator în comunitatea Adventistă de Ziua a Șaptea.",
-    "bio_en": "Romanian-born theologian and preacher within the Seventh-day Adventist community.",
-    "consent_status": "pending",
-    "consent_evidence_path": "channels/jabbokriver/consent/",
-    "first_contacted": null,
-    "consent_confirmed_at": null
+  "owner": {
+    "name": "Mircea Matthews",
+    "google_account": "jabbokriverproductions@gmail.com",
+    "notes": "This is Mircea's personal production company and channel. Primary subject: The Urantia Book. May include edited work from other creators (e.g. Dr. Geaboc) but is not their channel — it is Mircea's own creative and theological work."
+  },
+  "upload_account": "jabbokriverproductions@gmail.com",
+  "youtube_channel_status": "not_created",
+  "youtube_channel_setup_note": "Log into YouTube as jabbokriverproductions@gmail.com and create the channel. Handle: @JabbokRiverProductions",
+  "related_channels": {
+    "geaboc": {
+      "account": "messagestostephanos@gmail.com",
+      "channel_name": "Dr. Emanoil Geaboc",
+      "subscribers": 300,
+      "relationship": "Mircea manages this channel on behalf of Dr. Geaboc. Raw video delivered weekly (20GB+), edited in Final Cut Pro, transcribed, diacritics corrected, branded with JabbokRiver Productions intro/outro, then uploaded here. Separate from the JabbokRiver Productions channel."
+    }
   },
   "languages": ["ro", "en"],
   "primary_language": "ro",
   "subtitles": "en",
   "cadence": "weekly",
+  "content_focus": "The Urantia Book — Paper 196 and the religion of Jesus",
   "covenant": {
     "constellation": "Mircea's Constellation",
     "paper_ref": "The Urantia Book — Paper 196: The Faith of Jesus",
     "alignment_quote": "The religion of Jesus is the most dynamic influence ever to activate the human race."
   },
-  "publishing_policy": "catalog_and_link",
-  "public_launch_blocked_until": "host_consent_confirmed",
+  "publishing_policy": "direct_upload",
+  "public_launch_blocked_until": "youtube_channel_created_and_oauth_configured",
   "footer": "JabbokRiver Productions · Religia LUI Isus, nu religia DESPRE Isus / The religion OF Jesus, not the religion ABOUT Jesus · Part of Mircea's Constellation · Inspired by The Urantia Book, Paper 196.",
   "tags": [
     "JabbokRiver",
-    "Emanoil Geaboc",
+    "Urantia Book",
+    "Paper 196",
     "religia lui Isus",
     "religia despre Isus",
-    "adventism",
-    "Seventh-day Adventist",
-    "Urantia",
-    "Paper 196",
+    "faith of Jesus",
     "credinta lui Isus",
-    "faith of Jesus"
+    "Emanoil Geaboc",
+    "adventism",
+    "Seventh-day Adventist"
   ],
   "series_title_prefix": "JabbokRiver — ",
   "dashboard": {

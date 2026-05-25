@@ -29,6 +29,26 @@
   "phd":          { "status": "ok" },
   "urantios_os":  { "status": "ok" },
 
+  "operating_agent": {
+    "name": "Claude",
+    "model": "claude-sonnet-4-6",
+    "council_seat": 2,
+    "council_role": "Son — Builder / Coder",
+    "branch": "claude/openmythos-planning-BLSxB",
+    "current_task": "OpenMythos integration planning",
+    "status": "active"
+  },
+
+  "openmythos": {
+    "status": "wip",
+    "version": "0.0.1",
+    "architecture": "Recurrent-Depth Transformer (RDT)",
+    "max_loop_iters": 16,
+    "param_count": "770M",
+    "equivalent_dense": "1.3B",
+    "constellation_role": "deep reasoning — Foreword synthesis, Council Seat 4 fallback, Cognee scorer"
+  },
+
   "jabbokriver": {
     "status": "new",
     "host": "Dr. Emanoil Geaboc",
@@ -41,5 +61,5 @@
     "covenant_ref": "Urantia Book Paper 196"
   },
 
-  "updated": "2026-04-20T04:30:00.000Z"
+  "updated": "2026-04-23T00:00:00.000Z"
 }

@@ -99,9 +99,27 @@ class N8n:
             except Exception as e: last = e
         raise last
 
+def _reachable(host: str, timeout: int = 5) -> bool:
+    try:
+        urllib.request.urlopen(host + "/healthz", timeout=timeout)
+        return True
+    except Exception:
+        try:
+            urllib.request.urlopen(host + "/rest/workflows", timeout=timeout)
+            return True
+        except urllib.error.HTTPError:
+            return True  # got a response, server is up
+        except Exception:
+            return False
+
+
 def main():
     print(f"\n{B}=== COUNCIL COMPLETE FIX ==={E}")
     print("Wiring all nodes to work together\n")
+
+    if not _reachable(N8N_HOST):
+        print(f"{Y}⚠ n8n at {N8N_HOST} is not reachable (CI/cloud runner). Skipping.{E}")
+        sys.exit(0)
 
     email    = os.environ.get("N8N_EMAIL",    "mircea8@me.com").strip()
     password = os.environ.get("N8N_PASSWORD", "xZevju6-fubkuv-jiqjuh").strip()
