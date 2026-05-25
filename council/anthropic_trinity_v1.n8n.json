@@ -1,0 +1,553 @@
+{
+  "name": "Anthropic Trinity v1",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "at-trigger-001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "at-task-001",
+              "name": "task",
+              "value": "Draft a migration plan for moving a 50M-row table to a new schema with zero downtime.",
+              "type": "string"
+            },
+            {
+              "id": "at-registry-url-001",
+              "name": "registry_url",
+              "value": "https://raw.githubusercontent.com/myedugit/mircea-constellation/main/council/COUNCIL_MODEL_REGISTRY.json",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "at-set-task-001",
+      "name": "Set Task",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        -80,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.registry_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {},
+        "timeout": 10000
+      },
+      "id": "at-registry-refresh-001",
+      "name": "Registry Refresh",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        160,
+        220
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Resolve the three Anthropic family members from the registry.\n// Preference order:\n//   1. Seat 2 (Son) \u2014 canonical Anthropic seat. Its api_model_id is Opus primary;\n//      its alternatives array contains sonnet + haiku fallbacks.\n//   2. Gabriel synthesizer \u2014 also Anthropic, used as a cross-check.\n//   3. Hardcoded defaults \u2014 only if registry fetch failed.\n\nconst DEFAULTS = {\n  opus_model:   'claude-opus-4-7',\n  sonnet_model: 'claude-sonnet-4-6',\n  haiku_model:  'claude-haiku-4-5-20251001'\n};\n\nfunction pickByPrefix(alts, prefix) {\n  if (!Array.isArray(alts)) return null;\n  const ranked = alts.slice().sort(function (a, b) {\n    return (a.rank || 99) - (b.rank || 99);\n  });\n  for (const alt of ranked) {\n    if (alt && typeof alt.model === 'string' && alt.model.startsWith(prefix)) {\n      return alt.model;\n    }\n  }\n  return null;\n}\n\nlet registry = null;\ntry {\n  registry = $input.first().json;\n} catch (e) {\n  registry = null;\n}\n\nlet opus = null;\nlet sonnet = null;\nlet haiku = null;\nlet registry_version = null;\nlet registry_updated = null;\nlet source = 'defaults';\n\nif (registry && Array.isArray(registry.seats)) {\n  const seat2 = registry.seats.find(function (s) { return s.seat_id === 2; });\n  const gabriel = registry.gabriel || null;\n  const alts = (seat2 && seat2.alternatives) || (gabriel && gabriel.alternatives) || [];\n\n  opus   = (seat2 && seat2.api_model_id && seat2.api_model_id.startsWith('claude-opus-'))\n            ? seat2.api_model_id\n            : pickByPrefix(alts, 'claude-opus-');\n  sonnet = pickByPrefix(alts, 'claude-sonnet-');\n  haiku  = pickByPrefix(alts, 'claude-haiku-');\n\n  registry_version = registry.version || null;\n  registry_updated = registry.last_updated || null;\n  source = 'registry';\n}\n\nconst resolved = {\n  opus_model:   opus   || DEFAULTS.opus_model,\n  sonnet_model: sonnet || DEFAULTS.sonnet_model,\n  haiku_model:  haiku  || DEFAULTS.haiku_model\n};\n\nreturn [{\n  json: {\n    opus_model:       resolved.opus_model,\n    sonnet_model:     resolved.sonnet_model,\n    haiku_model:      resolved.haiku_model,\n    registry_version: registry_version,\n    registry_updated: registry_updated,\n    source:           source,\n    task:             $('Set Task').first().json.task\n  }\n}];"
+      },
+      "id": "at-resolve-models-001",
+      "name": "Resolve Models",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: $json.opus_model, max_tokens: 1024, system: 'You are the Trinity Director (Opus). You route work across three Anthropic family members working in parallel:\\n- Opus: deep reasoning, long-form synthesis, hard architectural calls\\n- Sonnet: balanced general-purpose work, analysis, reasoned drafts\\n- Haiku: fast/cheap fan-out, concrete checks, small tight tasks\\n\\nGiven the user task, produce THREE sub-prompts \\u2014 one per family member \\u2014 that play to each strength without duplicating effort. Output ONLY valid JSON with exactly these keys: opus_prompt, sonnet_prompt, haiku_prompt. No commentary. No markdown fences.', messages: [{ role: 'user', content: $json.task }, { role: 'assistant', content: '{' }] }) }}",
+        "options": {},
+        "timeout": 15000
+      },
+      "id": "at-director-001",
+      "name": "Director_Opus",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        640,
+        220
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Parse the Director's JSON plan. The director is prefilled with '{' so the\n// response content is a JSON object body (possibly without the opening brace).\n// Fall back to a uniform plan if parsing fails for any reason.\n\nconst resolved = $('Resolve Models').first().json;\nconst originalTask = resolved.task;\n\nfunction extractText(resp) {\n  if (!resp) return '';\n  if (resp.content && Array.isArray(resp.content) && resp.content[0] && resp.content[0].text) {\n    return resp.content[0].text;\n  }\n  if (resp.error) return '';\n  return '';\n}\n\nfunction stripFences(s) {\n  return s.replace(/^\\s*```(?:json)?\\s*/i, '').replace(/\\s*```\\s*$/i, '').trim();\n}\n\nfunction tryParsePlan(raw) {\n  if (!raw) return null;\n  const trimmed = stripFences(raw).trim();\n  // The assistant was prefilled with '{' \u2014 if the response doesn't start with '{',\n  // re-attach it so JSON.parse has a valid object.\n  const candidate = trimmed.startsWith('{') ? trimmed : ('{' + trimmed);\n  try {\n    const parsed = JSON.parse(candidate);\n    if (parsed && typeof parsed === 'object') return parsed;\n  } catch (e) {\n    // Last-ditch: find the first balanced {...} block.\n    const m = candidate.match(/\\{[\\s\\S]*\\}/);\n    if (m) {\n      try { return JSON.parse(m[0]); } catch (e2) { return null; }\n    }\n  }\n  return null;\n}\n\nconst directorResp = $input.first().json;\nconst raw = extractText(directorResp);\nconst plan = tryParsePlan(raw);\n\nconst fallback = {\n  opus_prompt:   'Provide a deep, carefully reasoned answer to the following task. Cover non-obvious risks and trade-offs.\\n\\nTask: ' + originalTask,\n  sonnet_prompt: 'Provide a balanced, well-structured answer to the following task. Aim for clarity and completeness.\\n\\nTask: ' + originalTask,\n  haiku_prompt:  'Provide a concise, concrete answer to the following task. Keep it short and actionable.\\n\\nTask: ' + originalTask\n};\n\nconst used = (plan && plan.opus_prompt && plan.sonnet_prompt && plan.haiku_prompt) ? plan : fallback;\nconst planSource = (plan && plan.opus_prompt && plan.sonnet_prompt && plan.haiku_prompt) ? 'director' : 'fallback';\n\nreturn [{\n  json: {\n    task:          originalTask,\n    opus_prompt:   used.opus_prompt,\n    sonnet_prompt: used.sonnet_prompt,\n    haiku_prompt:  used.haiku_prompt,\n    opus_model:    resolved.opus_model,\n    sonnet_model:  resolved.sonnet_model,\n    haiku_model:   resolved.haiku_model,\n    plan_source:   planSource,\n    director_raw:  raw\n  }\n}];"
+      },
+      "id": "at-parse-plan-001",
+      "name": "Parse Director Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: $json.opus_model, max_tokens: 1500, system: 'You are Opus \\u2014 the depth-and-judgment member of the Anthropic Trinity. Answer with careful reasoning and explicit trade-offs.', messages: [{ role: 'user', content: $json.opus_prompt }] }) }}",
+        "options": {},
+        "timeout": 30000
+      },
+      "id": "at-member-opus-001",
+      "name": "Member_Opus",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1160,
+        20
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: $json.sonnet_model, max_tokens: 1200, system: 'You are Sonnet \\u2014 the balanced general-purpose member of the Anthropic Trinity. Answer with clarity, structure, and practical completeness.', messages: [{ role: 'user', content: $json.sonnet_prompt }] }) }}",
+        "options": {},
+        "timeout": 20000
+      },
+      "id": "at-member-sonnet-001",
+      "name": "Member_Sonnet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1160,
+        220
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: $json.haiku_model, max_tokens: 800, system: 'You are Haiku \\u2014 the fast, concise member of the Anthropic Trinity. Answer tightly and concretely. No filler.', messages: [{ role: 'user', content: $json.haiku_prompt }] }) }}",
+        "options": {},
+        "timeout": 15000
+      },
+      "id": "at-member-haiku-001",
+      "name": "Member_Haiku",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1160,
+        420
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      },
+      "id": "at-merge-001",
+      "name": "Merge Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1440,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Build the synthesis prompt from whichever members responded.\n// continueOnFail means any subset of the three may have succeeded.\n\nconst plan = $('Parse Director Plan').first().json;\nconst task = plan.task;\n\nfunction extractText(json) {\n  if (!json) return '[No response]';\n  if (json.content && Array.isArray(json.content) && json.content[0] && json.content[0].text) {\n    return json.content[0].text;\n  }\n  if (json.error) {\n    return '[Error: ' + JSON.stringify(json.error).substring(0, 300) + ']';\n  }\n  return '[No response]';\n}\n\nconst labels = [\n  { key: 'opus',   name: 'Opus',   role: 'Depth \\u2014 reasoning and judgment' },\n  { key: 'sonnet', name: 'Sonnet', role: 'Balance \\u2014 general-purpose analysis' },\n  { key: 'haiku',  name: 'Haiku',  role: 'Speed \\u2014 concise action' }\n];\n\nconst items = $input.all();\nconst sections = items.map(function (item, i) {\n  const label = labels[i] || { name: 'Member ' + (i + 1), role: '' };\n  const text = extractText(item.json);\n  return '## ' + label.name + ' \\u2014 ' + label.role + '\\n' + text;\n});\n\nconst synthesisPrompt =\n  'You are Opus in the synthesis seat \\u2014 speaking for the whole Anthropic Trinity.\\n\\n' +\n  'Original task:\\n\"' + task + '\"\\n\\n' +\n  'Here are the three family members\\u2019 parallel responses:\\n\\n' +\n  sections.join('\\n\\n---\\n\\n') +\n  '\\n\\nProduce a single unified answer. Explicitly note: (1) where the members agree, (2) where they meaningfully disagree and which view is strongest and why, (3) any gap none of them addressed. End with a direct final recommendation.';\n\nreturn [{\n  json: {\n    task:              task,\n    synthesis_prompt:  synthesisPrompt,\n    member_responses:  sections,\n    response_count:    sections.length,\n    opus_model:        plan.opus_model,\n    sonnet_model:      plan.sonnet_model,\n    haiku_model:       plan.haiku_model,\n    plan_source:       plan.plan_source\n  }\n}];"
+      },
+      "id": "at-build-synthesis-001",
+      "name": "Build Synthesis Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: $json.opus_model, max_tokens: 2000, system: 'You synthesize the Anthropic Trinity into a single answer. Be honest about disagreement. No flattery. Speak plainly.', messages: [{ role: 'user', content: $json.synthesis_prompt }] }) }}",
+        "options": {},
+        "timeout": 45000
+      },
+      "id": "at-synthesis-001",
+      "name": "Synthesis_Opus",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1920,
+        220
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "at-out-task",
+              "name": "task",
+              "value": "={{ $('Build Synthesis Prompt').item.json.task }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-synthesis",
+              "name": "trinity_synthesis",
+              "value": "={{ ($json.content && $json.content[0] && $json.content[0].text) ? $json.content[0].text : '[Synthesis failed \\u2014 check ANTHROPIC_API_KEY and registry]' }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-members",
+              "name": "member_responses",
+              "value": "={{ $('Build Synthesis Prompt').item.json.member_responses }}",
+              "type": "array"
+            },
+            {
+              "id": "at-out-count",
+              "name": "response_count",
+              "value": "={{ $('Build Synthesis Prompt').item.json.response_count }}",
+              "type": "number"
+            },
+            {
+              "id": "at-out-opus",
+              "name": "opus_model",
+              "value": "={{ $('Build Synthesis Prompt').item.json.opus_model }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-sonnet",
+              "name": "sonnet_model",
+              "value": "={{ $('Build Synthesis Prompt').item.json.sonnet_model }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-haiku",
+              "name": "haiku_model",
+              "value": "={{ $('Build Synthesis Prompt').item.json.haiku_model }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-plan-source",
+              "name": "plan_source",
+              "value": "={{ $('Build Synthesis Prompt').item.json.plan_source }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-registry-source",
+              "name": "registry_source",
+              "value": "={{ $('Resolve Models').item.json.source }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-registry-version",
+              "name": "registry_version",
+              "value": "={{ $('Resolve Models').item.json.registry_version }}",
+              "type": "string"
+            },
+            {
+              "id": "at-out-ver",
+              "name": "trinity_version",
+              "value": "v1.0",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "at-output-001",
+      "name": "Trinity Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        2160,
+        220
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Task": {
+      "main": [
+        [
+          {
+            "node": "Registry Refresh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registry Refresh": {
+      "main": [
+        [
+          {
+            "node": "Resolve Models",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Models": {
+      "main": [
+        [
+          {
+            "node": "Director_Opus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Director_Opus": {
+      "main": [
+        [
+          {
+            "node": "Parse Director Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Director Plan": {
+      "main": [
+        [
+          {
+            "node": "Member_Opus",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Member_Sonnet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Member_Haiku",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Member_Opus": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Member_Sonnet": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Member_Haiku": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge Responses": {
+      "main": [
+        [
+          {
+            "node": "Build Synthesis Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Synthesis Prompt": {
+      "main": [
+        [
+          {
+            "node": "Synthesis_Opus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Synthesis_Opus": {
+      "main": [
+        [
+          {
+            "node": "Trinity Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-04-18T00:00:00.000Z",
+  "versionId": "anthropic-trinity-v1-0"
+}

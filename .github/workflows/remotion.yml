@@ -1,0 +1,36 @@
+name: Remotion typecheck
+
+on:
+  pull_request:
+    paths:
+      - "remotion/**"
+      - "channels/**"
+      - ".github/workflows/remotion.yml"
+  push:
+    branches: [main]
+    paths:
+      - "remotion/**"
+      - "channels/**"
+      - ".github/workflows/remotion.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: tsc --noEmit
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Remotion deps
+        working-directory: remotion
+        run: npm ci || npm install
+
+      - name: TypeScript typecheck
+        working-directory: remotion
+        run: npx tsc --noEmit

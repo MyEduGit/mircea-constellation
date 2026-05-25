@@ -1,7 +1,7 @@
 {
   "registry_name": "Council of Seven — Model Registry",
-  "version": "v1.1",
-  "last_updated": "2026-04-16T00:00:00Z",
+  "version": "v1.2",
+  "last_updated": "2026-04-23T00:00:00Z",
   "description": "Canonical model assignments for all 7 seats + Gabriel synthesizer. Used by update_council_models.py for auto-update. PROVISIONAL — all assignments subject to revision.",
   "philosophy": "function-before-model. free-before-paid. local-before-cloud. dependable-before-prestigious.",
   "seats": [
@@ -105,18 +105,27 @@
       "provider": "ollama",
       "current_model": "gemma4:e4b",
       "api_model_id": "gemma4:e4b",
-      "next_model": null,
-      "next_model_status": null,
+      "next_model": "openmythos-urantia-770m",
+      "next_model_status": "planned — see openmythos/PLAN.md Phase 1",
       "api_endpoint": "http://204.168.143.98:11434/api/chat",
       "model_check_endpoint": "http://204.168.143.98:11434/api/tags",
       "model_check_auth": null,
       "key_env_var": null,
       "n8n_node_name": "Seat4_FatherSon_Ollama",
+      "openmythos_upgrade": {
+        "model": "openmythos-urantia-770m",
+        "endpoint": "http://localhost:11435/v1/chat/completions",
+        "server": "openmythos/serve.py",
+        "loops": 8,
+        "rationale": "770M RDT ≈ 1.3B dense. Fine-tuned on mircea_corpus + Urantia Book. Local, no cloud dep, ACT-adaptive depth.",
+        "status": "planned — Phase 1 of openmythos/PLAN.md"
+      },
       "alternatives": [
-        {"rank": 1, "model": "gemma4:e4b",    "reason": "Current primary — efficient 4-bit"},
-        {"rank": 2, "model": "qwen3:8b",      "reason": "Strong local fallback"},
-        {"rank": 3, "model": "gemma3:12b",    "reason": "Mid-size fallback"},
-        {"rank": 4, "model": "llama3.2:3b",   "reason": "Emergency ultra-light fallback"}
+        {"rank": 1, "model": "gemma4:e4b",                "reason": "Current primary — efficient 4-bit"},
+        {"rank": 2, "model": "openmythos-urantia-770m",   "reason": "Planned upgrade — RDT latent reasoning, 8-16 loops"},
+        {"rank": 3, "model": "qwen3:8b",                  "reason": "Strong local fallback"},
+        {"rank": 4, "model": "gemma3:12b",                "reason": "Mid-size fallback"},
+        {"rank": 5, "model": "llama3.2:3b",               "reason": "Emergency ultra-light fallback"}
       ],
       "cost_per_1m_tokens": {"input": 0.00, "output": 0.00, "currency": "USD", "note": "FREE — local"},
       "context_window_tokens": 8192,
