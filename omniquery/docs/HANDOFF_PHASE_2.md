@@ -103,7 +103,7 @@ Error codes: `provider_unavailable`, `timeout`, `invalid_response`, `synthesis_u
   "seat_responses": [
     { "seat": "Father", "model": "gpt-4o",        "provider": "openai",    "response": "string", "status": "ok|error", "error": "null|<code>" },
     { "seat": "Son",    "model": "claude-opus-4-7", "provider": "anthropic", "response": "string", "status": "ok|error", "error": "null|<code>" },
-    { "seat": "Spirit", "model": "grok-3",         "provider": "xai",       "response": "string", "status": "ok|error", "error": "null|<code>" }
+    { "seat": "Spirit", "model": "grok-4.3",       "provider": "xai",       "response": "string", "status": "ok|error", "error": "null|<code>" }
   ],
   "response_count": 3,
   "council": "Force-of-Three (Father/GPT · Son/Claude · Spirit/Grok)",
