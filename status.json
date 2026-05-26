@@ -64,5 +64,17 @@
     "covenant_ref": "Urantia Book Paper 196"
   },
 
-  "updated": "2026-05-14T00:00:00.000Z"
+  "omniquery": {
+    "phase1": "closed",
+    "phase1_pr": 75,
+    "phase1_branch": "claude/wizardly-thompson-8Idfi",
+    "phase2": "complete",
+    "phase2_status": "local-only, not deployed",
+    "phase3": "locked",
+    "phase4": "locked",
+    "model_id_claude": "provisional — verify before live n8n test",
+    "next_trigger": "PHASE 3 GO"
+  },
+
+  "updated": "2026-05-26T00:00:00.000Z"
 }
