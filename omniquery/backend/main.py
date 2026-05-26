@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from config import HOST, PORT
 from models import QueryRequest, QueryResponse, HealthResponse
 from council import run_council
 
@@ -32,7 +33,12 @@ async def health() -> HealthResponse:
 
 @app.post("/query", response_model=QueryResponse)
 async def query(request: QueryRequest) -> QueryResponse:
-    if not request.query.strip():
-        raise HTTPException(status_code=400, detail="query must not be empty")
     result = await run_council(request.query)
     return QueryResponse(**result)
+
+
+if __name__ == "__main__":
+    # Entry point binds to the validated localhost-only HOST from config.
+    import uvicorn
+
+    uvicorn.run(app, host=HOST, port=PORT)
