@@ -70,11 +70,16 @@ Manual Trigger
 
 ### 1. Import into n8n
 
+`HISTORICAL ONLY — Hetzy / Hetzner is OFFLINE_NOT_SUBSCRIBED. Do not use
+46.225.51.30.`
+
+n8n import is `LOCKED` and must not assume Hetzner, `n8n.urantipedia.org`,
+`46.225.51.30`, or any remote VPS.
+
+Future n8n use requires a separately approved local or future non-Hetzner host.
+
 ```
-http://46.225.51.30
-Workflows → New → ... → Import from JSON
-Paste: omniquery/n8n_workflows/omniquery_phase1_council_workflow.json
-Save.
+Import deferred.
 ```
 
 ### 2. Configure API keys

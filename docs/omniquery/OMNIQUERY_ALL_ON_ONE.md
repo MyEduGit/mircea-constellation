@@ -105,13 +105,13 @@ Intelligent routing: direct to single seat for speed, or full council for weight
 
 ## 6. n8n Import Instructions
 
-1. Open n8n at `http://46.225.51.30`
-2. Menu → **Workflows** → **New** → `...` → **Import from JSON**
-3. Paste the full contents of:
-   `omniquery/n8n_workflows/omniquery_phase1_council_workflow.json`
-4. Save workflow.
-5. Configure API keys (see Section 7).
-6. Click **Execute Workflow** to test.
+`HISTORICAL ONLY — Hetzy / Hetzner is OFFLINE_NOT_SUBSCRIBED. Do not use
+46.225.51.30.`
+
+n8n import is `LOCKED` and must not assume Hetzner, `n8n.urantipedia.org`,
+`46.225.51.30`, or any remote VPS.
+
+Future n8n use requires a separately approved local or future non-Hetzner host.
 
 ---
 
