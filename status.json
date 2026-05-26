@@ -76,8 +76,10 @@
     "phase4": "LOCKED",
     "model_id_claude": "verified — claude-opus-4-7 confirmed (account-check before live use)",
     "model_id_watchdog": "CONFIGURED",
+    "model_id_patch": "COMPLETE",
     "next_model_id_check": "DAILY",
-    "next_trigger": "PHASE 3 VERIFY"
+    "n8n_import": "LOCKED",
+    "next_trigger": "MODEL ID PATCH AUDIT GO"
   },
 
   "updated": "2026-05-26T00:00:00.000Z"
