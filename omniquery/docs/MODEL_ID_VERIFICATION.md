@@ -9,6 +9,13 @@
 
 ---
 
+> **Resolution update (2026-05-26):** The Spirit-seat patch recommended below
+> has been applied — `grok-3` → `grok-4.3` across all OmniQuery artifacts, and
+> the stale `claude-opus-4-5-20251001` reference corrected to `claude-opus-4-7`
+> in the doctrine and notion-export. The findings below are preserved as the
+> original point-in-time record. Account access for `claude-opus-4-7` must
+> still be verified before any live use.
+
 ## Verdict Summary
 
 | Seat | Role | Model ID in use | Status | Action required |
