@@ -2,7 +2,29 @@
 
 > Date: 2026-05-26
 > Phase: 2 — Backend API
-> Status: COMPLETE — local-only, not deployed
+> Status: FIXED_PENDING_REAUDIT — Codex findings resolved, local-only, not deployed
+
+---
+
+## Codex Findings Resolved (2026-05-26)
+
+Codex audit returned 5 issues. All resolved:
+
+| # | Finding | Resolution |
+|---|---------|------------|
+| 1 | Host could be overridden to 0.0.0.0 | `config._resolve_host()` rejects any non-localhost `OMNIQUERY_HOST` (allows only `127.0.0.1`/`localhost`/`::1`) and raises at startup. `main.py` entry point binds via validated `HOST`. |
+| 2 | `.env` ignore coverage unproven | Added `omniquery/.gitignore` with `backend/.env`. Verified: `git check-ignore` confirms `.env` ignored, `.env.example` stays tracked. |
+| 3 | Request schema too loose | `QueryRequest` now uses `extra="forbid"` (rejects unknown fields), trims input, rejects whitespace-only at schema level, enforces `max_length=4000`. |
+| 4 | Raw provider exceptions leaked to callers | Responses now return sanitized codes only: `provider_unavailable`, `timeout`, `invalid_response`, `synthesis_unavailable`. Raw detail logged internally via `logging` only. |
+| 5 | `python-dotenv==1.0.1` vulnerable | Upgraded to `python-dotenv==1.2.2`, resolving CVE-2026-28684 / GHSA-mf9w-mj56-hr94. |
+
+### Validation performed
+- `python -m py_compile` on all backend modules — pass
+- venv import of `main`, `council`, `models`, `config` — pass
+- Schema tests: unknown-field reject, whitespace reject, trim, over-length reject — pass
+- `OMNIQUERY_HOST=0.0.0.0` rejected at import — pass
+- `git check-ignore` for `.env` (ignored) and `.env.example` (tracked) — pass
+- Full `run_council` with no keys: only sanitized error codes returned, no raw text leak — pass
 
 ---
 
