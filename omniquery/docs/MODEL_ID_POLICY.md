@@ -105,6 +105,20 @@ The watchdog runs **daily**, **never auto-patches**, and **notifies Mircea**
 only when the verdict is `NEEDS_REVIEW` or `BLOCKED`. A `PASS` may run silently.
 Any resulting model-ID change is applied **only after explicit Mircea approval**.
 
+## Infrastructure Availability — 2026-05-26
+
+### Hetzy / Hetzner
+
+- Status: `OFFLINE / NOT SUBSCRIBED`
+- Allowed use: none
+- Replacement: local iMac / NemoClaw / local launchd / ChatGPT scheduled check / manually approved future host
+- Action: remove from active routing and scheduling assumptions
+
+Historical references to cron on hetzy/urantios are now **disabled /
+deprecated**. No daily check may assume Hetzner access, remote cron, or remote
+deploy capability. Future n8n scheduling is allowed only if n8n is available on
+some other approved host.
+
 Pick one runner. All are key-free and call only the public docs.
 
 ### macOS — launchd (recommended on the iMac)
@@ -133,7 +147,17 @@ Pick one runner. All are key-free and call only the public docs.
 
 Load: `launchctl load ~/Library/LaunchAgents/com.omniquery.modelid.plist`
 
-### Linux — cron (e.g. on hetzy/urantios)
+### ChatGPT scheduled reminder (allowed alternative)
+
+Use a daily reminder to run the local watchdog and review the dated report.
+
+- Frequency: daily
+- Action: run the local checker on the iMac
+- Auto-patching: forbidden
+- Escalation: Mircea reviews any `NEEDS_REVIEW` / `BLOCKED` result before any
+  import, live test, or deployment
+
+### Linux — cron (historical reference only; disabled on hetzy/urantios)
 
 ```cron
 # Daily 09:00 — detect only, never patch. Exit 1=NEEDS_REVIEW, 2=BLOCKED.
@@ -141,6 +165,9 @@ Load: `launchctl load ~/Library/LaunchAgents/com.omniquery.modelid.plist`
   printf 'OmniQuery model-ID check needs attention (exit %s)\n' "$?" | \
   mail -s "OmniQuery model-ID: NEEDS_REVIEW/BLOCKED" mircea8@me.com
 ```
+
+> Deprecated for current use. Hetzy / Hetzner is offline and not subscribed.
+> Do not assume cron on hetzy/urantios exists or will run.
 
 ### n8n (Schedule Trigger → Execute Command → IF → notify)
 
@@ -152,6 +179,9 @@ Load: `launchctl load ~/Library/LaunchAgents/com.omniquery.modelid.plist`
 
 > Notify-only by design. A `NEEDS_REVIEW`/`BLOCKED` result must never trigger
 > an automatic edit to config, workflow JSON, frontend, or docs.
+>
+> This path is future-only. Do not assume `n8n.urantipedia.org` or any Hetzner
+> host is available unless separately reactivated and approved.
 
 ---
 

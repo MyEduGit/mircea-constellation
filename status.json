@@ -20,7 +20,14 @@
   "claude":       { "status": "ok" },
   "chatgpt":      { "status": "ok" },
   "grok":         { "status": "new",  "model": "grok-4", "seat": "Seat7_Trinity_Grok", "signed_in": true },
-  "hetzy":        { "status": "ok" },
+  "hetzy":        {
+    "status": "OFFLINE_NOT_SUBSCRIBED",
+    "allowed_use": "none",
+    "replacement": "local iMac / NemoClaw / local launchd / ChatGPT scheduled check / manually approved future host",
+    "action": "remove from active routing and scheduling assumptions"
+  },
+  "remote_cron":  "DISABLED",
+  "remote_deploy":"BLOCKED",
   "gabriel":      { "status": "ok" },
   "uragent":      { "status": "ok" },
   "botfleet":     { "status": "ok" },
@@ -74,6 +81,7 @@
     "phase3_status": "local-only React/Vite UI built; talks to backend at 127.0.0.1 via dev-server proxy; not deployed, not audited",
     "phase3_branch": "claude/wizardly-thompson-8Idfi",
     "phase4": "LOCKED",
+    "n8n_import": "LOCKED",
     "model_id_claude": "verified — claude-opus-4-7 confirmed (account-check before live use)",
     "model_id_watchdog": "CONFIGURED",
     "model_id_patch": "COMPLETE",

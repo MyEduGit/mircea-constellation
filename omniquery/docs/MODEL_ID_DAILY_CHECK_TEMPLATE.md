@@ -11,6 +11,18 @@
 > Checked by: <script | name>
 > Sources config version: <n>
 
+## Infrastructure Availability — 2026-05-26
+
+### Hetzy / Hetzner
+
+- Status: `OFFLINE / NOT SUBSCRIBED`
+- Allowed use: none
+- Replacement: local iMac / NemoClaw / local launchd / ChatGPT scheduled check / manually approved future host
+- Action: remove from active routing and scheduling assumptions
+
+Historical cron-on-hetzy/urantios references are disabled/deprecated. This
+daily check must not assume Hetzner, remote cron, or remote deploy capability.
+
 Lineages are doctrine; exact model IDs are mutable configuration. This check
 detects only — it never patches and never calls a provider API.
 

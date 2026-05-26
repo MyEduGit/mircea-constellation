@@ -36,6 +36,21 @@ Verified from the JSON:
 
 ---
 
+## Infrastructure Availability — 2026-05-26
+
+### Hetzy / Hetzner
+
+- Status: `OFFLINE / NOT SUBSCRIBED`
+- Allowed use: none
+- Replacement: local iMac / NemoClaw / local launchd / ChatGPT scheduled check / manually approved future host
+- Action: remove from active routing and scheduling assumptions
+
+Import prep must not assume `n8n.urantipedia.org`, Hetzner, or any remote VPS is
+available. Historical Hetzner-linked n8n references are inactive unless
+separately reactivated and approved.
+
+---
+
 ## Credential Checklist
 
 Required before any live manual run:
@@ -98,12 +113,14 @@ Recommended pre-import verification:
 2. Import `omniquery/n8n_workflows/omniquery_phase1_council_workflow.json`.
 3. Confirm the imported workflow is still manual-trigger only.
 4. Confirm the workflow is not active after import.
-5. Replace placeholder auth headers with n8n-managed credentials.
-6. Re-check all four model IDs before any run.
-7. Re-check that Gemini is not present anywhere in the imported workflow.
-8. Re-check that the council structure is still Father / Son / Spirit plus Gabriel synthesis.
-9. Use a single harmless short prompt for the first live manual test.
-10. Do not activate the workflow for background or production execution.
+5. Do not assume `n8n.urantipedia.org` or Hetzner is the import target; use
+   only a separately approved local or future non-Hetzner host.
+6. Replace placeholder auth headers with n8n-managed credentials.
+7. Re-check all four model IDs before any run.
+8. Re-check that Gemini is not present anywhere in the imported workflow.
+9. Re-check that the council structure is still Father / Son / Spirit plus Gabriel synthesis.
+10. Use a single harmless short prompt for the first live manual test.
+11. Do not activate the workflow for background or production execution.
 
 ---
 
@@ -146,6 +163,7 @@ Why:
 - Those placeholders are inside HTTP header fields, so live credentials must not
   be pasted into version-controlled JSON and re-committed.
 - Import into a non-production n8n workspace only.
+- Do not assume any Hetzner-backed n8n host is available.
 - Keep the workflow manual-trigger only.
 - Do not add webhooks, schedules, or auto-activation during import prep.
 - Do not admit Gemini.
@@ -182,4 +200,3 @@ Without explicit Mircea approval, stop at prep only.
 - Import performed: **no**
 - Activation performed: **no**
 - Deployment performed: **no**
-
