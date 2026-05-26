@@ -74,7 +74,9 @@
     "phase3_status": "local-only React/Vite UI built; talks to backend at 127.0.0.1 via dev-server proxy; not deployed, not audited",
     "phase3_branch": "claude/wizardly-thompson-8Idfi",
     "phase4": "LOCKED",
-    "model_id_claude": "provisional — verify before live n8n test",
+    "model_id_claude": "verified — claude-opus-4-7 confirmed (account-check before live use)",
+    "model_id_watchdog": "CONFIGURED",
+    "next_model_id_check": "DAILY",
     "next_trigger": "PHASE 3 VERIFY"
   },
 
