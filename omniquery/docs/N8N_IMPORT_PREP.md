@@ -26,7 +26,7 @@ Verified from the JSON:
 - Force-of-Three is preserved:
   - Father = OpenAI / `gpt-4o`
   - Son = Anthropic / `claude-opus-4-7`
-  - Spirit = xAI / `grok-3`
+  - Spirit = xAI / `grok-4.3`
   - Gabriel synthesis = OpenAI / `gpt-4o`
 - Gemini is **not** admitted
 - No real secrets are present in the JSON; only placeholders are present:
