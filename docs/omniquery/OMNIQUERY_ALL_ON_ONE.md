@@ -27,8 +27,8 @@ Trinity of Urantia doctrine:
 | Seat | Name    | Role                      | Model       | Provider  | Key env var        |
 |------|---------|---------------------------|-------------|-----------|--------------------|
 | 1    | Father  | Final Judge               | gpt-4o      | OpenAI    | OPENAI_API_KEY     |
-| 2    | Son     | Builder / Coder           | claude-opus-4-5-20251001 | Anthropic | ANTHROPIC_API_KEY |
-| 3    | Spirit  | Live Context / Truth      | grok-3      | xAI       | XAI_API_KEY        |
+| 2    | Son     | Builder / Coder           | claude-opus-4-7 | Anthropic | ANTHROPIC_API_KEY |
+| 3    | Spirit  | Live Context / Truth      | grok-4.3    | xAI       | XAI_API_KEY        |
 
 **Gemini is not admitted.** The Spirit seat uses Grok (xAI Seat 7 "Trinity")
 because Grok embodies real-time awareness, which aligns with Spirit of Truth.
