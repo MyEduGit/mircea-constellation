@@ -75,7 +75,7 @@ The following are locked and cannot be changed without mircea8 approval:
 
 | Lock | Value |
 |------|-------|
-| Spirit seat model | Grok (xAI grok-3) |
+| Spirit seat model | Grok (xAI grok-4.3) |
 | Synthesizer | Gabriel (OpenAI gpt-4o) |
 | Seat count | 3 (Force-of-Three) |
 | Merge mode | append |
