@@ -59,7 +59,7 @@ _SEATS = [
     },
     {
         "seat": "Spirit",
-        "model": "grok-3",
+        "model": "grok-4.3",
         "provider": "xai",
         "url": "https://api.x.ai/v1/chat/completions",
         "headers": lambda: {
@@ -67,7 +67,7 @@ _SEATS = [
             "Content-Type": "application/json",
         },
         "body": lambda q: {
-            "model": "grok-3",
+            "model": "grok-4.3",
             "messages": [
                 {
                     "role": "system",
