@@ -84,7 +84,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ model: 'claude-opus-4-5-20251001', max_tokens: 400, system: 'You are Son — Builder and Coder of the OmniQuery Force-of-Three. Speak with creative precision and technical mastery.', messages: [{ role: 'user', content: $('Set Query').item.json.query }] }) }}",
+        "body": "={{ JSON.stringify({ model: 'claude-opus-4-7', max_tokens: 400, system: 'You are Son — Builder and Coder of the OmniQuery Force-of-Three. Speak with creative precision and technical mastery.', messages: [{ role: 'user', content: $('Set Query').item.json.query }] }) }}",
         "options": {},
         "timeout": 15000
       },
