@@ -62,6 +62,8 @@ curl -X POST http://127.0.0.1:8741/query \
 - No deployment to production (requires explicit Mircea approval)
 - All API keys via `.env` only — never in code
 - `continueOnFail` equivalent: failed seats return `status: "error"` and do not abort the request
+- Provider errors are sanitized to stable codes (`provider_unavailable`, `timeout`, `invalid_response`, `synthesis_unavailable`); raw exception text is logged internally only, never returned to callers
+- Request schema is strict: unknown fields rejected, query trimmed, whitespace-only rejected, max 4000 chars
 
 ## Model ID Note
 
