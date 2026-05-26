@@ -52,3 +52,4 @@ checker.
 | Date | Change |
 |------|--------|
 | 2026-05-26 | Registry created. Spirit recorded as `grok-4.3` (retired `grok-3` moved to forbidden). Son provisional flag cleared to "account-check before live use". |
+| 2026-05-26 | Model-ID patch applied: `grok-3` → `grok-4.3` across n8n JSON, backend `council.py`/README, doctrine, notion-export, and handoff docs. Stale `claude-opus-4-5-20251001` corrected to `claude-opus-4-7` in doctrine + notion-export. |
