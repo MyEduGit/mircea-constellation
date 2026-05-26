@@ -1,0 +1,5 @@
+# OmniQuery frontend — local build artifacts, never committed.
+node_modules/
+dist/
+.vite/
+*.local
