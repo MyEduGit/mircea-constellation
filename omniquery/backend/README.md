@@ -39,9 +39,12 @@ pip install -r requirements.txt
 
 ## Run
 
+Binding is **localhost-only and enforced in code**. Use the entry point —
+do not pass `--host`. A non-localhost `OMNIQUERY_HOST` is rejected at startup.
+
 ```bash
 cd omniquery/backend
-uvicorn main:app --host 127.0.0.1 --port 8741
+python main.py
 ```
 
 Verify:
