@@ -1,9 +1,26 @@
-from typing import Literal
-from pydantic import BaseModel
+from typing import Literal, Optional
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+ErrorCode = Literal[
+    "provider_unavailable",
+    "timeout",
+    "invalid_response",
+    "synthesis_unavailable",
+]
 
 
 class QueryRequest(BaseModel):
-    query: str
+    model_config = ConfigDict(extra="forbid")
+
+    query: str = Field(..., max_length=4000)
+
+    @field_validator("query")
+    @classmethod
+    def _validate_query(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("query must not be empty or whitespace-only")
+        return value
 
 
 class SeatResponse(BaseModel):
@@ -12,11 +29,14 @@ class SeatResponse(BaseModel):
     provider: str
     response: str
     status: Literal["ok", "error"]
+    error: Optional[ErrorCode] = None
 
 
 class QueryResponse(BaseModel):
     query: str
-    gabriel_synthesis: str
+    gabriel_synthesis: Optional[str]
+    synthesis_status: Literal["ok", "error"]
+    synthesis_error: Optional[ErrorCode] = None
     seat_responses: list[SeatResponse]
     response_count: int
     council: str = "Force-of-Three (Father/GPT · Son/Claude · Spirit/Grok)"
