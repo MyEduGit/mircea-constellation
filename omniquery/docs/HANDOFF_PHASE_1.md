@@ -2,7 +2,31 @@
 
 > Date: 2026-05-26  
 > Phase: 1 — Force-of-Three Council Workflow  
-> Status: COMPLETE — ready for n8n import and key configuration
+> Status: COMPLETE — Antigravity audit PASS. Deployment approval: pending Mircea.
+
+---
+
+## Phase 1 Closeout (2026-05-26)
+
+| Item | Status |
+|------|--------|
+| Antigravity audit | PASS — all 7 checks |
+| Deployment approval | Pending — Mircea explicit go required |
+| Model ID verification | Required before n8n live test (see below) |
+| Phase 2 | BLOCKED — waiting for Mircea "PHASE 2 GO" signal |
+
+### Claude Model ID — Provisional
+
+The Son seat workflow currently targets `claude-opus-4-7`.
+
+**This is provisional.** It has not been verified against official Anthropic API documentation or confirmed by a live API response. The source was internal context, not an official Anthropic model list.
+
+**Required before n8n live test:**
+- Verify `claude-opus-4-7` against [Anthropic API docs](https://docs.anthropic.com) or a live `/v1/models` response
+- If unconfirmed, replace with a known-good model string (e.g. `claude-3-5-sonnet-latest`) in the n8n node at deployment time
+- Do not treat the current string as production-confirmed doctrine
+
+**Do not hard-code uncertain model IDs as doctrine.**
 
 ---
 
