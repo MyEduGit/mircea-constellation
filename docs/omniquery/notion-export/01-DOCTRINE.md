@@ -21,8 +21,8 @@ The Force-of-Three is the core triad of OmniQuery. It maps to the Paradise Trini
 | Seat | Name | Role | Model | Provider | Key |
 |------|------|------|-------|----------|-----|
 | 1 | Father | Final Judge | gpt-4o | OpenAI | OPENAI_API_KEY |
-| 2 | Son | Builder / Coder | claude-opus-4-5-20251001 | Anthropic | ANTHROPIC_API_KEY |
-| 3 | Spirit | Live Context / Truth | grok-3 | xAI | XAI_API_KEY |
+| 2 | Son | Builder / Coder | claude-opus-4-7 | Anthropic | ANTHROPIC_API_KEY |
+| 3 | Spirit | Live Context / Truth | grok-4.3 | xAI | XAI_API_KEY |
 
 **Gemini is not admitted.** Spirit = Grok (xAI Seat 7 "Trinity").
 
