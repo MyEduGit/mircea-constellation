@@ -1,0 +1,3 @@
+# OmniQuery backend secrets — never commit real keys.
+# .env.example stays tracked; only the real .env is ignored.
+backend/.env
