@@ -54,6 +54,7 @@ Codex audit returned 5 issues. All resolved:
 | `omniquery/backend/requirements.txt` | Python dependencies |
 | `omniquery/backend/.env.example` | Key template (no real values) |
 | `omniquery/backend/README.md` | Setup and run instructions |
+| `omniquery/.gitignore` | Ignores `backend/.env`; keeps `.env.example` tracked |
 
 ---
 
