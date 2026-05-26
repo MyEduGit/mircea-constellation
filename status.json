@@ -73,7 +73,7 @@
     "phase3": "LOCKED",
     "phase4": "LOCKED",
     "model_id_claude": "provisional — verify before live n8n test",
-    "next_trigger": "PHASE 2 RE-AUDIT GO"
+    "next_trigger": "PHASE 3 GO"
   },
 
   "updated": "2026-05-26T00:00:00.000Z"
