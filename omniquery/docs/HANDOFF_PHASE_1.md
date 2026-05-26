@@ -54,7 +54,7 @@ Manual Trigger
     └─► Set Query
             ├─► Seat1_Father_GPT       (OpenAI gpt-4o)          ─┐
             ├─► Seat2_Son_Claude       (Anthropic claude-opus)   ─┤─► Merge
-            └─► Seat3_Spirit_Grok      (xAI grok-3)             ─┘       └─► Build Synthesis Prompt
+            └─► Seat3_Spirit_Grok      (xAI grok-4.3)           ─┘       └─► Build Synthesis Prompt
                                                                                  └─► Gabriel_Synthesizer (OpenAI gpt-4o)
                                                                                            └─► OmniQuery Output
 ```
