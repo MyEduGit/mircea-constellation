@@ -17,7 +17,7 @@ checker.
 |------|----------|------------------|--------|------------|---------------|-------------|-----------------------|---------------|
 | Father | OpenAI | `gpt-4o` | valid (API) | https://developers.openai.com/api/docs/models | 2026-05-26 | 2026-06-25 | `gpt-4.1` (future) | None — monitor API deprecation schedule |
 | Son | Anthropic | `claude-opus-4-7` | valid — account-check before live use | https://docs.anthropic.com/en/docs/about-claude/models | 2026-05-26 | 2026-06-25 | `claude-opus-4-6` (fallback) | Confirm account has Opus 4.7 access before first live call |
-| Spirit | xAI | `grok-4.3` | valid — replacement for retired `grok-3` | https://docs.x.ai/developers/models/grok-4.3 | 2026-05-26 | 2026-06-25 | `grok-4-0709` (fallback) | Patch `grok-3` → `grok-4.3` in config/workflow once Mircea approves |
+| Spirit | xAI | `grok-4.3` | valid — replacement for retired `grok-3` | https://docs.x.ai/developers/models/grok-4.3 | 2026-05-26 | 2026-06-25 | `grok-4-0709` (fallback) | Done — `grok-3` → `grok-4.3` patched across OmniQuery (2026-05-26) |
 | Gabriel | OpenAI | `gpt-4o` | valid (API) | https://developers.openai.com/api/docs/models | 2026-05-26 | 2026-06-25 | `gpt-4.1` (future) | None — monitor API deprecation schedule |
 
 ---
