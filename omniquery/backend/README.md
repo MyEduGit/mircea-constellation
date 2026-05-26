@@ -20,7 +20,7 @@ Response: {
   "seat_responses": [
     { "seat": "Father", "model": "gpt-4o",      "provider": "openai",    "response": "...", "status": "ok" },
     { "seat": "Son",    "model": "claude-opus-4-7", "provider": "anthropic", "response": "...", "status": "ok" },
-    { "seat": "Spirit", "model": "grok-3",       "provider": "xai",       "response": "...", "status": "ok" }
+    { "seat": "Spirit", "model": "grok-4.3",     "provider": "xai",       "response": "...", "status": "ok" }
   ],
   "response_count": 3,
   "council": "Force-of-Three (Father/GPT · Son/Claude · Spirit/Grok)",
