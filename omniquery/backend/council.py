@@ -1,8 +1,12 @@
 import asyncio
+import logging
+
 import httpx
 
 from config import OPENAI_API_KEY, ANTHROPIC_API_KEY, XAI_API_KEY, CLAUDE_MODEL
 from models import SeatResponse
+
+logger = logging.getLogger("omniquery.council")
 
 
 _SEATS = [
@@ -80,6 +84,14 @@ _SEATS = [
 ]
 
 
+def _classify_error(exc: Exception) -> str:
+    if isinstance(exc, httpx.TimeoutException):
+        return "timeout"
+    if isinstance(exc, (KeyError, IndexError, TypeError, ValueError)):
+        return "invalid_response"
+    return "provider_unavailable"
+
+
 async def _call_seat(client: httpx.AsyncClient, seat: dict, query: str) -> SeatResponse:
     try:
         resp = await client.post(
@@ -98,18 +110,21 @@ async def _call_seat(client: httpx.AsyncClient, seat: dict, query: str) -> SeatR
             status="ok",
         )
     except Exception as exc:
+        code = _classify_error(exc)
+        logger.warning("seat %s failed (%s): %s", seat["seat"], code, exc)
         return SeatResponse(
             seat=seat["seat"],
             model=seat["model"],
             provider=seat["provider"],
-            response=f"[Error: {exc}]",
+            response="",
             status="error",
+            error=code,
         )
 
 
 def _build_synthesis_prompt(query: str, responses: list[SeatResponse]) -> str:
     parts = [
-        f"## {r.seat} ({r.model})\n{r.response}"
+        f"## {r.seat} ({r.model})\n{r.response if r.status == 'ok' else '[No response]'}"
         for r in responses
     ]
     return (
@@ -124,7 +139,7 @@ def _build_synthesis_prompt(query: str, responses: list[SeatResponse]) -> str:
     )
 
 
-async def _call_gabriel(client: httpx.AsyncClient, synthesis_prompt: str) -> str:
+async def _call_gabriel(client: httpx.AsyncClient, synthesis_prompt: str) -> Optional[str]:
     try:
         resp = await client.post(
             "https://api.openai.com/v1/chat/completions",
@@ -142,7 +157,8 @@ async def _call_gabriel(client: httpx.AsyncClient, synthesis_prompt: str) -> str
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"]
     except Exception as exc:
-        return f"[Gabriel could not synthesize — check OPENAI_API_KEY: {exc}]"
+        logger.warning("gabriel synthesis failed: %s", exc)
+        return None
 
 
 async def run_council(query: str) -> dict:
@@ -153,9 +169,12 @@ async def run_council(query: str) -> dict:
         synthesis_prompt = _build_synthesis_prompt(query, list(seat_responses))
         gabriel_synthesis = await _call_gabriel(client, synthesis_prompt)
 
+    synthesis_ok = gabriel_synthesis is not None
     return {
         "query": query,
         "gabriel_synthesis": gabriel_synthesis,
+        "synthesis_status": "ok" if synthesis_ok else "error",
+        "synthesis_error": None if synthesis_ok else "synthesis_unavailable",
         "seat_responses": list(seat_responses),
         "response_count": sum(1 for r in seat_responses if r.status == "ok"),
         "council": "Force-of-Three (Father/GPT · Son/Claude · Spirit/Grok)",
