@@ -37,7 +37,8 @@ Codex audit returned 5 issues. All resolved:
 | No frontend served | Yes — Phase 3 only |
 | No deployment | Yes — local run only |
 | No secrets in code | Yes — all keys via .env |
-| .env excluded from git | Yes — omniquery/backend/.env in .gitignore |
+| .env excluded from git | Yes — rule `backend/.env` in `omniquery/.gitignore` (verified via git check-ignore) |
+| Localhost-only binding | Enforced — non-127.0.0.1 OMNIQUERY_HOST rejected at startup |
 | Phase 3 | BLOCKED — waiting for Mircea "PHASE 3 GO" |
 
 ---
