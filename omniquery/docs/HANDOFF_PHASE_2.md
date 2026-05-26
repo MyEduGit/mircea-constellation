@@ -67,16 +67,29 @@ Codex audit returned 5 issues. All resolved:
 
 ---
 
+## Request Schema (POST /query)
+
+Strict — unknown fields rejected, query trimmed, whitespace-only rejected, max 4000 chars.
+
+```json
+{ "query": "string (1–4000 chars after trim)" }
+```
+
 ## Response Schema (POST /query)
+
+Errors are sanitized to stable codes only — no raw exception text is returned.
+Error codes: `provider_unavailable`, `timeout`, `invalid_response`, `synthesis_unavailable`.
 
 ```json
 {
   "query": "string",
-  "gabriel_synthesis": "string",
+  "gabriel_synthesis": "string | null",
+  "synthesis_status": "ok | error",
+  "synthesis_error": "null | synthesis_unavailable",
   "seat_responses": [
-    { "seat": "Father", "model": "gpt-4o",       "provider": "openai",    "response": "string", "status": "ok|error" },
-    { "seat": "Son",    "model": "claude-opus-4-7", "provider": "anthropic", "response": "string", "status": "ok|error" },
-    { "seat": "Spirit", "model": "grok-3",        "provider": "xai",       "response": "string", "status": "ok|error" }
+    { "seat": "Father", "model": "gpt-4o",        "provider": "openai",    "response": "string", "status": "ok|error", "error": "null|<code>" },
+    { "seat": "Son",    "model": "claude-opus-4-7", "provider": "anthropic", "response": "string", "status": "ok|error", "error": "null|<code>" },
+    { "seat": "Spirit", "model": "grok-3",         "provider": "xai",       "response": "string", "status": "ok|error", "error": "null|<code>" }
   ],
   "response_count": 3,
   "council": "Force-of-Three (Father/GPT · Son/Claude · Spirit/Grok)",
@@ -88,13 +101,16 @@ Codex audit returned 5 issues. All resolved:
 
 ## Setup & Run
 
+Binding is localhost-only and enforced in code. Run via the entry point below
+(do not pass `--host`; the validated host comes from config).
+
 ```bash
 cd omniquery/backend
 cp .env.example .env
 # Edit .env — fill OPENAI_API_KEY, ANTHROPIC_API_KEY, XAI_API_KEY
 # Verify CLAUDE_MODEL is a valid Anthropic model ID before running
 pip install -r requirements.txt
-uvicorn main:app --host 127.0.0.1 --port 8741
+python main.py
 ```
 
 Test:
