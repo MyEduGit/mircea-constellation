@@ -71,7 +71,7 @@ Verify these model IDs before any live manual test:
 
 - OpenAI Father seat: `gpt-4o`
 - Anthropic Son seat: `claude-opus-4-7`
-- xAI Spirit seat: `grok-3`
+- xAI Spirit seat: `grok-4.3`
 - OpenAI Gabriel synthesis: `gpt-4o`
 
 Specific caution:
