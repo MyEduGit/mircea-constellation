@@ -48,3 +48,6 @@ evening read — a bonus, not the target.
 | 6 | What Happens When We Die (mansion worlds / survival) | Written |
 | 7 | If God Is Good, Why Is the World Broken? (free will / evil) | Written |
 | 8 | Prayer Without a Shopping List (prayer vs worship) | Written |
+| 9 | The Angels Are Not What You Think (seraphim / guardians) | Written |
+| 10 | Three Words I'd Build a Life On (truth, beauty, goodness) | Written |
+| 11 | "Doing the Will of God" — Without the Robes (ordinary right choosing) | Written |
