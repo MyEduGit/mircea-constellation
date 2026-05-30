@@ -45,3 +45,6 @@ evening read — a bonus, not the target.
 | 3 | When the Universe Got a Lot Bigger (cosmology / scale) | Written |
 | 4 | The Man Who Walked Through Galilee (Jesus / Part IV) | Written |
 | 5 | What "Light and Life" Actually Means (the goal) | Written |
+| 6 | What Happens When We Die (mansion worlds / survival) | Written |
+| 7 | If God Is Good, Why Is the World Broken? (free will / evil) | Written |
+| 8 | Prayer Without a Shopping List (prayer vs worship) | Written |
