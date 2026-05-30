@@ -54,7 +54,7 @@ These letters are my own reading and reflection — not official teaching from a
 Welcome — here's where to start
 ```
 
-**Body** (replace [LINK] with your post-1 URL — see Step 5):
+**Body** (replace https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came with your post-1 URL — see Step 5):
 ```
 Thank you for subscribing to A Third Story. It means more than you know to have you here.
 
@@ -62,7 +62,7 @@ I'll keep this short, because that's the promise of this newsletter: brief, hone
 
 If you'd like somewhere to begin, start with the first letter, "A Third Story." It explains what brought me here and what I'm hoping to share:
 
-[LINK]
+https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 A few honest words about what to expect:
 
@@ -96,8 +96,8 @@ from the browser bar). It looks like:
 mirceamatthews.substack.com/p/a-third-story-about-where-we-came-from
 ```
 Use this link to:
-- fill the [LINK] in the welcome email (Step 3)
-- fill the [LINK] in your community share messages (Step 6)
+- fill the https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came in the welcome email (Step 3)
+- fill the https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came in your community share messages (Step 6)
 
 ---
 
@@ -111,14 +111,14 @@ clean.
 
 ## ☐ STEP 7 — Send your first share (THIS is the one that gets readers)
 
-Paste this into ANZURA (Australia/NZ Urantia Association), replacing [LINK]:
+Paste this into ANZURA (Australia/NZ Urantia Association), replacing https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came:
 
 ```
 Hello friends,
 
 I'm Mircea (writing as M. G. Matthews), a long-time reader based in Melbourne. I've started a small Substack writing short, plain-language pieces about the Urantia teachings — aimed at people who've never heard of the book and feel the gap between science and religion.
 
-The first piece, "A Third Story," is here: [LINK]
+The first piece, "A Third Story," is here: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 It's free, no agenda — just an invitation written for a curious stranger. If it might help someone you know who's searching, please pass it on. And I'd genuinely value feedback from fellow readers.
 

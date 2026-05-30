@@ -26,7 +26,7 @@ believe anything.
 If you'd like somewhere to begin, start with the first letter, "A Third
 Story." It explains what brought me here and what I'm hoping to share:
 
-👉 [PASTE THE LINK TO POST 1 HERE]
+https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 A few honest words about what to expect:
 

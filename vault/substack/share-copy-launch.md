@@ -1,7 +1,7 @@
 # Share copy — A Third Story launch
 
 Ready-to-paste messages for sharing the first post into communities.
-Post URL: https://mirceamatthews.substack.com (replace with the direct /p/ post link once you copy it from the published post).
+Post URL: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 ---
 
@@ -17,7 +17,7 @@ Subject / opening line:
 > pieces about the Urantia teachings — aimed at people who've never heard
 > of the book and feel the gap between science and religion.
 >
-> The first piece, "A Third Story," is here: [LINK]
+> The first piece, "A Third Story," is here: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 >
 > It's free, no agenda — just an invitation written for a curious stranger.
 > If it might help someone you know who's searching, please pass it on. And
@@ -37,7 +37,7 @@ Subject / opening line:
 > religion fully satisfying. It leads with curiosity rather than doctrine,
 > and points readers to the free text at urantia.org.
 >
-> "A Third Story": [LINK]
+> "A Third Story": https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 >
 > My hope is to offer a gentle on-ramp for the genuinely curious. Sharing
 > here in case it's useful for newcomers, and welcoming any feedback.
@@ -50,14 +50,14 @@ Subject / opening line:
 > science, one from religion. I spent a long time feeling both left
 > something out. So I wrote about the third story I found.
 >
-> Free to read, no agenda: [LINK]
+> Free to read, no agenda: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 ---
 
 ## 4. One-line personal share (for messages to individuals)
 
 > I finally wrote down the thing I've been trying to say for years — short,
-> free, no pressure. Would love to know what you think: [LINK]
+> free, no pressure. Would love to know what you think: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 ---
 
@@ -65,4 +65,4 @@ Subject / opening line:
 1. Open the published post on your Substack.
 2. Copy the URL in the browser bar (it looks like
    `mirceamatthews.substack.com/p/a-third-story-about-where-we-came-from`).
-3. Replace every `[LINK]` above with that URL before sending.
+3. Replace every `https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came` above with that URL before sending.
