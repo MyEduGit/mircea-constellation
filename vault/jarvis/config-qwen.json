@@ -1,0 +1,9 @@
+{
+  "chat_model": "qwen2.5:14b",
+  "stt_model": "base",
+  "tts_engine": "piper",
+  "ollama_base_url": "http://localhost:11434",
+  "wake_word": "jarvis",
+  "obsidian_vault_path": "~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Mircea",
+  "language": "en"
+}
