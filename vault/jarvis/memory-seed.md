@@ -34,6 +34,11 @@ Priority order:
 - Google Drive: documents and assets
 - GitHub repos: mircea-constellation (Substack), URANTiOS, others
 
+## My tasks for Jarvis
+- Draft replies to Substack comments in my voice — see `answering-comments.md`
+- Search and summarise my Obsidian notes when I ask
+- Help write and polish newsletter posts and book chapters
+
 ## Urgent reminders
 - consciousnessos.io domain expires ~June 4 2026 — RENEW NOW
 - Rotate exposed OpenAI API key at platform.openai.com/api-keys
