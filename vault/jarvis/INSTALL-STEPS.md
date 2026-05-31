@@ -1,4 +1,4 @@
-# Jarvis — one-time setup on NemoClaw
+# Jarvis — one-time setup on your iMac M4
 
 ## Step 1 — Smarter brain (qwen2.5:14b)
 
