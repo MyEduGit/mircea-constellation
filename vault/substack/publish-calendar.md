@@ -67,9 +67,9 @@ Rotate through these (do not hit the same place twice in a row):
 
 ---
 
-## When you run out (after Post 21, ~17 Jul 2026)
+## When you run out (after Post 31, ~9 Aug 2026)
 
-Post 22 onward needs to be written. Use the prompt in `vault/substack/AGENT-PROMPT-new-post.md`
+Post 32 onward needs to be written. Use the prompt in `vault/substack/AGENT-PROMPT-new-post.md`
 to generate the next batch with Claude.
 
 Suggested next topics (based on reader interest patterns for Urantia content):
