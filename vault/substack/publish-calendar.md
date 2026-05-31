@@ -31,6 +31,16 @@ All times: **US Eastern (ET)**. Set Substack timezone to US Eastern once, then j
 | 19 | The Real Cost of Free Will | **Sun 12 Jul 2026** | Sunday | 9:00am ET | Schedule |
 | 20 | The Long Journey Home | **Tue 14 Jul 2026** | Tuesday | 10:30am ET | Schedule |
 | 21 | How to Worship When You Don't Know How | **Thu 16 Jul 2026** | Thursday | 10:30am ET | Schedule |
+| 22 | The Centre of All Things (Paradise) | **Sun 19 Jul 2026** | Sunday | 9:00am ET | Schedule |
+| 23 | Belief vs Faith | **Tue 21 Jul 2026** | Tuesday | 10:30am ET | Schedule |
+| 24 | The Master Seraphim & History | **Thu 23 Jul 2026** | Thursday | 10:30am ET | Schedule |
+| 25 | What Adam and Eve Were Really For | **Sun 26 Jul 2026** | Sunday | 9:00am ET | Schedule |
+| 26 | The Lost Years of Jesus | **Tue 28 Jul 2026** | Tuesday | 10:30am ET | Schedule |
+| 27 | Fatherhood of God, Brotherhood of Man | **Thu 30 Jul 2026** | Thursday | 10:30am ET | Schedule |
+| 28 | What the Book Says About Other Worlds | **Sun 2 Aug 2026** | Sunday | 9:00am ET | Schedule |
+| 29 | The Soul Is Something You Build | **Tue 4 Aug 2026** | Tuesday | 10:30am ET | Schedule |
+| 30 | Why Love Is the Whole of It | **Thu 6 Aug 2026** | Thursday | 10:30am ET | Schedule |
+| 31 | The Courage to Choose the Higher Thing | **Sun 9 Aug 2026** | Sunday | 9:00am ET | Schedule |
 
 ---
 
