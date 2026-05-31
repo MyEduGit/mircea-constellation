@@ -21,6 +21,16 @@ All times: **US Eastern (ET)**. Set Substack timezone to US Eastern once, then j
 | 9 | The Angels Are Not What You Think | **Thu 18 Jun 2026** | Thursday | 10:30am ET | Schedule |
 | 10 | Three Words I'd Build a Life On | **Sun 21 Jun 2026** | Sunday | 9:00am ET | Schedule |
 | 11 | Doing the Will of God in Ordinary Life | **Tue 23 Jun 2026** | Tuesday | 10:30am ET | Schedule |
+| 12 | The God Who Grows With Us (the Supreme) | **Thu 25 Jun 2026** | Thursday | 10:30am ET | Schedule |
+| 13 | Religion vs Revelation | **Sun 28 Jun 2026** | Sunday | 9:00am ET | Schedule |
+| 14 | Who Jesus Really Is (Michael of Nebadon) | **Tue 30 Jun 2026** | Tuesday | 10:30am ET | Schedule |
+| 15 | What the Thought Adjuster Feels Like | **Thu 2 Jul 2026** | Thursday | 10:30am ET | Schedule |
+| 16 | Why There Are No Prophets | **Sun 5 Jul 2026** | Sunday | 9:00am ET | Schedule |
+| 17 | Is the Universe Friendly? | **Tue 7 Jul 2026** | Tuesday | 10:30am ET | Schedule |
+| 18 | The Place We Go Next (mansion worlds) | **Thu 9 Jul 2026** | Thursday | 10:30am ET | Schedule |
+| 19 | The Real Cost of Free Will | **Sun 12 Jul 2026** | Sunday | 9:00am ET | Schedule |
+| 20 | The Long Journey Home | **Tue 14 Jul 2026** | Tuesday | 10:30am ET | Schedule |
+| 21 | How to Worship When You Don't Know How | **Thu 16 Jul 2026** | Thursday | 10:30am ET | Schedule |
 
 ---
 
