@@ -1,7 +1,7 @@
 # Publish Calendar — A Third Story
 
 Today: **31 May 2026 (Saturday)**  
-Post 1 is live. Posts 2–21 scheduled below.  
+Post 1 is live. Posts 2–31 scheduled below.  
 All times: **US Eastern (ET)**. Set Substack timezone to US Eastern once, then just pick the slot.
 
 ---
