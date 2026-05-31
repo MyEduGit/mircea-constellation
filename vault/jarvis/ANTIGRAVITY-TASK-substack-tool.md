@@ -1,4 +1,4 @@
-# Antigravity Task — Build the Substack comment-reply tool for Jarvis
+# Antigravity Task: Build the Substack comment-reply tool for Jarvis
 
 Mircea wants Jarvis to handle Substack comments automatically:
 **Jarvis fetches comments → Claude drafts the reply → Mircea approves → Jarvis posts.**
@@ -29,7 +29,7 @@ existing `obsidian.py`) with three tools, and register them in `registry.py`:
    - `POST .../api/v1/post/<post_id>/comment` with `{body, parent_id}`
    - Only callable AFTER Mircea approves (see permissions).
 
-## Permission rules (from permissions.md — enforce in code)
+## Permission rules (from permissions.md, enforce in code)
 - `fetchSubstackComments`, `draftCommentReply` → run freely
 - `postSubstackReply` → require explicit approval flag; never auto-post
 - Never delete comments. Never store the API key in the repo or logs.

@@ -1,7 +1,7 @@
-# Antigravity Task — Build the Notion tool for Jarvis
+# Antigravity Task: Build the Notion tool for Jarvis
 
-Goal: let Jarvis read Mircea's Notion workspace — especially the 90-Day
-Income Plan — so it can answer questions and turn plans into action lists.
+Goal: let Jarvis read Mircea's Notion workspace: especially the 90-Day
+Income Plan: so it can answer questions and turn plans into action lists.
 Follow `permissions.md` exactly (read freely; ASK before writing/changing).
 
 ## What to build
@@ -9,11 +9,11 @@ Follow `permissions.md` exactly (read freely; ASK before writing/changing).
 Create `src/jarvis/tools/builtin/notion.py` (mirror `obsidian.py`), register
 in `registry.py`:
 
-1. **`searchNotion(query)`** — search pages/databases via the Notion API
+1. **`searchNotion(query)`**: search pages/databases via the Notion API
    (`POST https://api.notion.com/v1/search`). Return titles + page ids.
-2. **`readNotionPage(page_id)`** — fetch a page's blocks
+2. **`readNotionPage(page_id)`**: fetch a page's blocks
    (`GET /v1/blocks/{id}/children`), return readable text.
-3. **`appendNotionBlock(page_id, text)`** — ASK-FIRST. Append a paragraph.
+3. **`appendNotionBlock(page_id, text)`**: ASK-FIRST. Append a paragraph.
    Never delete or overwrite existing blocks.
 
 ## Auth

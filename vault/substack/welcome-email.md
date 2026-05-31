@@ -1,4 +1,4 @@
-# Welcome email — paste-ready
+# Welcome email: paste-ready
 
 Where to put it: Substack → Settings → Welcome emails → "Welcome email to
 new subscribers." This sends automatically the moment someone subscribes.
@@ -11,7 +11,7 @@ Goal: thank them, set the tone, and point them at ONE thing to read next
 ---
 
 ## Subject line
-Welcome — here's where to start
+Welcome: here's where to start
 
 ## Body
 
@@ -19,7 +19,7 @@ Thank you for subscribing to A Third Story. It means more than you know to
 have you here.
 
 I'll keep this short, because that's the promise of this newsletter: brief,
-honest letters about the teachings of The Urantia Book — a few a week, two
+honest letters about the teachings of The Urantia Book, a few a week, two
 minutes each, one idea at a time. No jargon I don't explain. No pressure to
 believe anything.
 
@@ -33,10 +33,10 @@ A few honest words about what to expect:
 - I'm not trying to convert you. I'm sharing something that changed how I
   see everything, and inviting you to look.
 - The book itself is free to read at urantia.org. I'm just a way in.
-- I'll always tell you the truth — when an idea is hard, when the book's
+- I'll always tell you the truth, when an idea is hard, when the book's
   science is shaky, when I don't know. You can trust that.
 
-That's it. The next letter will arrive in your inbox soon. Until then —
+That's it. The next letter will arrive in your inbox soon. Until then ,
 thank you for your curiosity. It's the most important thing you brought.
 
 Warmly,

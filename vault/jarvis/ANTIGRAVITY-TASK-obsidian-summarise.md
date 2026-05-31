@@ -1,4 +1,4 @@
-# Antigravity Task — Add summarise/RAG over Obsidian for Jarvis
+# Antigravity Task: Add summarise/RAG over Obsidian for Jarvis
 
 The Obsidian read/search/write/append tools already exist (`obsidian.py`).
 This task adds the ability to **summarise and answer questions across many
@@ -16,7 +16,7 @@ Extend `src/jarvis/tools/builtin/obsidian.py` (or a new `obsidian_rag.py`):
      "Answer the question using ONLY these notes; cite note titles."
    - Return a grounded answer with the note titles it used.
 
-2. **Optional `buildObsidianIndex()`** — a simple keyword/embedding index
+2. **Optional `buildObsidianIndex()`**: a simple keyword/embedding index
    cached at `~/.config/jarvis/obsidian_index.json` to speed up search on
    large vaults. Skip if the vault is small.
 

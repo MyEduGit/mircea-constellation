@@ -1,4 +1,4 @@
-# Publish Calendar — A Third Story
+# Publish Calendar: A Third Story
 
 Today: **31 May 2026 (Saturday)**  
 Post 1 is live. Posts 2–31 scheduled below.  

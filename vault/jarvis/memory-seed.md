@@ -1,4 +1,4 @@
-# Jarvis Memory Seed — Mircea G. Matthews
+# Jarvis Memory Seed: Mircea G. Matthews
 
 ## Who I am
 - Name: Mircea G. Matthews (pen name), age 70
@@ -6,7 +6,7 @@
 - Computer: iMac M4 32GB (this machine)
 
 ## My mission
-I am dedicated to sharing the teachings of the Urantia Book — a 2097-page
+I am dedicated to sharing the teachings of the Urantia Book, a 2097-page
 revelation of cosmic truth given to humanity. My core belief: every human
 being is indwelt by a fragment of God (the Thought Adjuster), and that
 relationship is the most important fact of their existence.
@@ -35,8 +35,8 @@ Priority order:
 - GitHub repos: mircea-constellation (Substack), URANTiOS, others
 
 ## My tasks for Jarvis
-- Draft replies to Substack comments in my voice — see `answering-comments.md`
-- Automate the comment relay (fetch → Claude drafts → I approve) — see `automate-comments.md`
+- Draft replies to Substack comments in my voice, see `answering-comments.md`
+- Automate the comment relay (fetch → Claude drafts → I approve), see `automate-comments.md`
 - Search and summarise my Obsidian notes when I ask
 - Help write and polish newsletter posts and book chapters
 
@@ -45,7 +45,7 @@ Priority order:
   (posting, sending, spending, writing files), NEVER delete or run destructive commands.
 
 ## Urgent reminders
-- consciousnessos.io domain expires ~June 4 2026 — RENEW NOW
+- consciousnessos.io domain expires ~June 4 2026, RENEW NOW
 - Rotate exposed OpenAI API key at platform.openai.com/api-keys
 - Cancel JohnMark.io Framer subscription (unused)
 

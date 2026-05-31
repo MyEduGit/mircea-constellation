@@ -1,4 +1,4 @@
-# Agent prompt — write a new Urantia/Third Story Substack post
+# Agent prompt: write a new Urantia/Third Story Substack post
 
 Use this prompt with Dispatch, Antigravity, Claude Code, or any capable agent
 when you want a new post written and ready to paste into Substack.
@@ -23,24 +23,24 @@ open door, not a demand.
 
 **Structure:**
 1. Open with a question, an observation, or a brief personal moment that
-   draws the reader in. (Do NOT reuse the "two stories" opening — that is
+ draws the reader in. (Do NOT reuse the "two stories" opening, that is
    the first post.)
-2. Introduce one idea, passage, or concept from The Urantia Book — in plain
+2. Introduce one idea, passage, or concept from The Urantia Book, in plain
    language.
 3. Say honestly why it matters or why it has stayed with Mircea.
 4. Close with an invitation: keep reading, subscribe, or simply sit with the
    idea. Never pressure.
 
-**Topic for this post:** [FILL IN — e.g. "the Thought Adjuster",
+**Topic for this post:** [FILL IN, e.g. "the Thought Adjuster",
 "the mansion worlds", "the Lucifer rebellion", "light and life",
 "what the book says about prayer", etc.]
 
 **Do NOT:**
-- Fabricate paper or section numbers — if uncertain, say "somewhere in the
+- Fabricate paper or section numbers, if uncertain, say "somewhere in the
   early papers" or ask Mircea to verify.
 - Use phrases like "In conclusion," "It is important to note," or any
   corporate filler.
 - Sound like a press release or a lecture.
 
 **Output:** The complete post, ready to paste into Substack. Title included.
-No preamble, no explanation — just the post.
+No preamble, no explanation: just the post.

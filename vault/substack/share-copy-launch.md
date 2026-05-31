@@ -1,11 +1,11 @@
-# Share copy — A Third Story launch
+# Share copy: A Third Story launch
 
 Ready-to-paste messages for sharing the first post into communities.
 Post URL: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 ---
 
-## 1. ANZURA (Australia/NZ Urantia Association) — for finding readers near you
+## 1. ANZURA (Australia/NZ Urantia Association), for finding readers near you
 
 Subject / opening line:
 **A new short-form Substack for newcomers to the teachings**
@@ -14,12 +14,12 @@ Subject / opening line:
 >
 > I'm Mircea (writing as M. G. Matthews), a long-time reader based in
 > Melbourne. I've started a small Substack writing short, plain-language
-> pieces about the Urantia teachings — aimed at people who've never heard
+> pieces about the Urantia teachings, aimed at people who've never heard
 > of the book and feel the gap between science and religion.
 >
 > The first piece, "A Third Story," is here: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 >
-> It's free, no agenda — just an invitation written for a curious stranger.
+> It's free, no agenda, just an invitation written for a curious stranger.
 > If it might help someone you know who's searching, please pass it on. And
 > I'd genuinely value feedback from fellow readers.
 >
@@ -46,7 +46,7 @@ Subject / opening line:
 
 ## 3. Short social version (Notes / X / Facebook groups)
 
-> Most of us got handed two stories about where we came from — one from
+> Most of us got handed two stories about where we came from, one from
 > science, one from religion. I spent a long time feeling both left
 > something out. So I wrote about the third story I found.
 >
@@ -56,7 +56,7 @@ Subject / opening line:
 
 ## 4. One-line personal share (for messages to individuals)
 
-> I finally wrote down the thing I've been trying to say for years — short,
+> I finally wrote down the thing I've been trying to say for years, short,
 > free, no pressure. Would love to know what you think: https://mirceamatthews.substack.com/p/a-third-story-about-where-we-came
 
 ---

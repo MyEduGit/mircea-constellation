@@ -1,9 +1,9 @@
-# Jarvis — Automating Substack Comment Replies (the relay)
+# Jarvis: Automating Substack Comment Replies (the relay)
 
 ## Why this design
 Claude in the cloud is the best writer, but Substack **bot-blocks** cloud
 servers (HTTP 999). Jarvis runs on Mircea's iMac, logged into Substack with
-his own browser session — so Jarvis CAN read comments that cloud Claude can't.
+his own browser session: so Jarvis CAN read comments that cloud Claude can't.
 
 So the labour is split:
 
@@ -19,7 +19,7 @@ final say. Nothing is published without Mircea's yes.
 
 ---
 
-## Step 1 — Jarvis fetches comments
+## Step 1: Jarvis fetches comments
 
 Substack exposes a JSON comments API that works WHEN called from Mircea's
 logged-in machine (cookies present). For a post with slug `a-third-story`:
@@ -35,7 +35,7 @@ Jarvis should send the browser cookie jar (Safari/Chrome) with the request.
 Store the highest `comment id` already handled in
 `~/.config/jarvis/substack_seen.json` so only NEW comments are processed.
 
-## Step 2 — Claude drafts the reply (Anthropic API)
+## Step 2: Claude drafts the reply (Anthropic API)
 
 For each new comment, Jarvis calls the Anthropic API with:
 - The comment text
@@ -59,7 +59,7 @@ POST https://api.anthropic.com/v1/messages
 }
 ```
 
-## Step 3 — Mircea approves
+## Step 3: Mircea approves
 
 Jarvis presents each draft out loud / in the face window:
 > "Jane wrote: '<comment>'. I'd reply: '<draft>'. Post it, edit, or skip?"
@@ -86,7 +86,7 @@ registered in `registry.py` (same pattern as `obsidian.py`):
 3. `postSubstackReply(post_id, parent_id, body)` → posts after approval
 
 Keep the Anthropic API key in `~/.config/jarvis/secrets.json` (NOT in the
-repo, NOT in chat — the last key got exposed and must be rotated).
+repo, NOT in chat: the last key got exposed and must be rotated).
 
 ## Safety rules (non-negotiable)
 - **Never auto-post.** Always require Mircea's explicit "post it".
@@ -96,7 +96,7 @@ repo, NOT in chat — the last key got exposed and must be rotated).
 
 ---
 
-## Until this is built — the manual relay (works today)
+## Until this is built, the manual relay (works today)
 Mircea pastes a comment into the Claude session; Claude drafts the reply;
 Mircea posts it. Same quality, just hand-carried instead of automated.
 This is the fallback whenever the tool isn't running.

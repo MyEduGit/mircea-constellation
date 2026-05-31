@@ -24,7 +24,7 @@
   <key>ThrottleInterval</key>
   <integer>30</integer>
 
-  <!-- Logs — readable in Console.app or: tail -f ~/Library/Logs/jarvis.log -->
+ <!-- Logs: readable in Console.app or: tail -f ~/Library/Logs/jarvis.log -->
   <key>StandardOutPath</key>
   <string>/Users/mircea/Library/Logs/jarvis.log</string>
   <key>StandardErrorPath</key>
