@@ -36,8 +36,13 @@ Priority order:
 
 ## My tasks for Jarvis
 - Draft replies to Substack comments in my voice — see `answering-comments.md`
+- Automate the comment relay (fetch → Claude drafts → I approve) — see `automate-comments.md`
 - Search and summarise my Obsidian notes when I ask
 - Help write and polish newsletter posts and book chapters
+
+## Jarvis permissions
+- Follow `permissions.md` strictly: read freely, ASK before anything public
+  (posting, sending, spending, writing files), NEVER delete or run destructive commands.
 
 ## Urgent reminders
 - consciousnessos.io domain expires ~June 4 2026 — RENEW NOW
