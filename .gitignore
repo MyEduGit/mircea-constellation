@@ -19,3 +19,4 @@ remotion/out/
 
 # Cloudflare credentials (never commit)
 .cloudflare.env
+.claude/worktrees/
