@@ -64,5 +64,15 @@
     "covenant_ref": "Urantia Book Paper 196"
   },
 
-  "updated": "2026-05-14T00:00:00.000Z"
+  "nemoclaw_observer": {
+    "status":           "ok",
+    "version":          "1.0.0",
+    "last_run":         null,
+    "schedule":         "every 6 hours",
+    "layers_monitored": 5,
+    "zai_spend":        0.00,
+    "zai_cap":          5.00
+  },
+
+  "updated": "2026-06-05T02:15:00.000Z"
 }
