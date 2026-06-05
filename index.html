@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mircea's Constellation — Mission Control</title>
+<title>Mircea's Constellation</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   background: #0a0a1a;
   color: #e0e0e0;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  overflow: hidden;
   height: 100vh;
   width: 100vw;
+  overflow: hidden;
 }
 canvas#stars { position: fixed; top: 0; left: 0; z-index: 0; }
 .container {
@@ -36,13 +36,56 @@ header h1 {
   -webkit-text-fill-color: transparent;
   letter-spacing: 2px;
 }
-header .subtitle {
+header .subtitle { font-size: 0.7em; color: #888; margin-top: 2px; }
+
+/* ── Tab nav ─────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: rgba(10,10,26,0.85);
+  border-bottom: 1px solid rgba(100,149,237,0.15);
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: rgba(100,149,237,0.08);
+  border: 1px solid rgba(100,149,237,0.25);
+  color: #ccc;
+  padding: 6px 14px;
+  font-size: 0.8em;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.tab-btn:hover { background: rgba(100,149,237,0.18); color: #fff; }
+.tab-btn.active {
+  background: linear-gradient(90deg, rgba(100,149,237,0.35), rgba(221,160,221,0.35));
+  color: #fff;
+  border-color: rgba(255,255,255,0.4);
+  box-shadow: 0 0 10px rgba(100,149,237,0.3);
+}
+.tab-btn.toggle {
+  margin-left: auto;
+  background: transparent;
+  border-color: rgba(255,255,255,0.1);
   font-size: 0.7em;
   color: #888;
-  margin-top: 2px;
 }
+.tab-btn.toggle.active { color: #FFD700; border-color: rgba(255,215,0,0.5); }
+
+.tab-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.tab-pane { display: none; height: 100%; overflow-y: auto; }
+.tab-pane.active { display: block; }
+
+/* ── Status bar (only in advanced view) ──────────────────────────── */
 .status-bar {
-  display: flex;
+  display: none;
   justify-content: center;
   flex-wrap: wrap;
   gap: 14px;
@@ -51,15 +94,207 @@ header .subtitle {
   font-size: 0.65em;
   color: #aaa;
 }
+body.advanced .status-bar { display: flex; }
 .status-bar .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
 .dot-green { background: #4CAF50; box-shadow: 0 0 6px #4CAF50; }
 .dot-yellow { background: #FFC107; box-shadow: 0 0 6px #FFC107; }
 .dot-red { background: #f44336; box-shadow: 0 0 6px #f44336; }
 .dot-blue { background: #6495ED; box-shadow: 0 0 6px #6495ED; }
-.map {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
+
+/* ── Tab 1: Meet the Team ────────────────────────────────────────── */
+.team {
+  padding: 18px 20px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.team-intro {
+  text-align: center;
+  font-size: 0.95em;
+  color: #bbb;
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+.team-intro b { color: #FFD700; }
+.team-tier { margin-bottom: 26px; }
+.team-tier-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.team-tier-header h2 {
+  font-size: 0.85em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.team-tier.command  .team-tier-header h2 { color: #6495ED; }
+.team-tier.infra    .team-tier-header h2 { color: #4CAF50; }
+.team-tier.ai       .team-tier-header h2 { color: #BB86FC; }
+.team-tier.bot      .team-tier-header h2 { color: #DDA0DD; }
+.team-tier.service  .team-tier-header h2 { color: #FFD700; }
+.team-tier.governance .team-tier-header h2 { color: #FFB300; }
+.team-tier-hint { font-size: 0.7em; color: #777; font-style: italic; }
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.team-card {
+  background: rgba(20,20,40,0.6);
+  border: 1px solid rgba(100,149,237,0.18);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.team-card:hover {
+  background: rgba(30,30,55,0.8);
+  border-color: rgba(100,149,237,0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(100,149,237,0.15);
+}
+.team-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.team-card-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 2px solid rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
+.team-card-name { font-size: 0.95em; font-weight: 600; color: #fff; }
+.team-card-analogy { font-size: 0.85em; color: #FFD700; font-style: italic; margin-bottom: 6px; }
+.team-card-job { font-size: 0.78em; color: #ccc; line-height: 1.4; margin-bottom: 8px; }
+.team-card-tech {
+  font-size: 0.65em;
+  color: #666;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 6px;
+}
+body:not(.advanced) .team-card-tech { display: none; }
+
+/* Icon variants — shared by team cards, map nodes, walkthrough boxes */
+.icon-controller { background: linear-gradient(135deg, #1a1a3e, #2a2a5e); border-color: #6495ED; }
+.icon-server     { background: linear-gradient(135deg, #1a3a1a, #2a5a2a); border-color: #4CAF50; }
+.icon-claw       { background: linear-gradient(135deg, #3a1a0a, #5a2a1a); border-color: #FF6B35; }
+.icon-ai         { background: linear-gradient(135deg, #2a1a3a, #4a2a5a); border-color: #BB86FC; }
+.icon-bot        { background: linear-gradient(135deg, #3a1a3a, #5a2a5a); border-color: #DDA0DD; }
+.icon-service    { background: linear-gradient(135deg, #3a3a1a, #5a5a2a); border-color: #FFD700; }
+.icon-network    { background: linear-gradient(135deg, #1a3a3a, #2a5a5a); border-color: #00BCD4; }
+.icon-governance { background: linear-gradient(135deg, #3a2a0a, #5a4a1a); border-color: #FFB300; }
+.icon-person     { background: linear-gradient(135deg, #3a2a1a, #5a4a2a); border-color: #FFD700; }
+
+/* ── Tab 2: How It Works (animated walkthrough) ──────────────────── */
+.howitworks {
+  padding: 18px 20px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.howitworks h2 {
+  text-align: center;
+  font-size: 1em;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.howitworks .hint { text-align: center; font-size: 0.75em; color: #888; margin-bottom: 14px; }
+.flow-controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.flow-btn {
+  background: rgba(100,149,237,0.15);
+  border: 1px solid rgba(100,149,237,0.35);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85em;
+}
+.flow-btn:hover { background: rgba(100,149,237,0.3); }
+.flow-btn.primary { background: rgba(76,175,80,0.25); border-color: rgba(76,175,80,0.5); }
+.flow-btn.primary:hover { background: rgba(76,175,80,0.4); }
+
+.flow-svg-wrap {
+  background: rgba(15,15,35,0.5);
+  border: 1px solid rgba(100,149,237,0.15);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 14px;
+}
+.flow-svg { width: 100%; height: auto; display: block; }
+.flow-box { fill: rgba(25,25,45,0.95); stroke: rgba(255,255,255,0.25); stroke-width: 1.5; }
+.flow-box.active { stroke: #FFD700; stroke-width: 2.5; filter: drop-shadow(0 0 8px rgba(255,215,0,0.6)); }
+.flow-box-label { fill: #fff; font-size: 14px; font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 600; text-anchor: middle; }
+.flow-box-emoji { font-size: 22px; text-anchor: middle; dominant-baseline: middle; }
+.flow-arrow { fill: none; stroke-width: 2; }
+.flow-arrow.command  { stroke: #6495ED; }
+.flow-arrow.data     { stroke: #4CAF50; }
+.flow-arrow.fault    { stroke: #FF9800; }
+.flow-arrow.judge    { stroke: #f44336; }
+.flow-arrow.observer { stroke: #BB86FC; stroke-dasharray: 4 4; }
+.flow-arrow.active   { stroke-width: 3.5; filter: drop-shadow(0 0 6px currentColor); }
+.flow-dot { fill: #FFD700; filter: drop-shadow(0 0 8px #FFD700); }
+
+.flow-caption {
+  background: rgba(15,15,35,0.85);
+  border-left: 3px solid #FFD700;
+  padding: 14px 18px;
+  border-radius: 4px;
+  min-height: 70px;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+.flow-caption .step-num { color: #FFD700; font-weight: bold; margin-right: 6px; }
+.flow-caption .step-body { color: #ddd; }
+
+.flow-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+  font-size: 0.7em;
+  color: #aaa;
+}
+.flow-legend .swatch {
+  display: inline-block;
+  width: 22px; height: 3px;
+  margin-right: 5px;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+
+/* ── Tab 3: Map ──────────────────────────────────────────────────── */
+.map { position: relative; width: 100%; height: 100%; min-height: 700px; }
+.tier-row-label {
+  position: absolute;
+  left: 6px;
+  font-size: 0.55em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-weight: 700;
+  z-index: 0;
+  pointer-events: none;
+  background: rgba(10,10,26,0.6);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.tier-row-divider {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(255,255,255,0.04);
+  z-index: 0;
+  pointer-events: none;
 }
 .node {
   position: absolute;
@@ -69,7 +304,7 @@ header .subtitle {
   transition: transform 0.3s, filter 0.3s;
   z-index: 2;
 }
-.node:hover { transform: scale(1.18); filter: brightness(1.3); }
+.node:hover { transform: scale(1.15); filter: brightness(1.3); }
 .node-icon {
   width: 44px; height: 44px;
   border-radius: 50%;
@@ -90,64 +325,14 @@ header .subtitle {
   bottom: -2px; right: -2px;
   border: 2px solid #0a0a1a;
 }
-.node[data-status="ok"] .node-icon::after { background: #4CAF50; box-shadow: 0 0 8px #4CAF50; }
+.node[data-status="ok"]   .node-icon::after { background: #4CAF50; box-shadow: 0 0 8px #4CAF50; }
 .node[data-status="warn"] .node-icon::after { background: #FFC107; box-shadow: 0 0 8px #FFC107; }
 .node[data-status="down"] .node-icon::after { background: #f44336; box-shadow: 0 0 8px #f44336; }
-.node[data-status="new"] .node-icon::after { background: #6495ED; box-shadow: 0 0 8px #6495ED; }
-.node-icon.controller { background: linear-gradient(135deg, #1a1a3e, #2a2a5e); border-color: #6495ED; }
-.node-icon.server { background: linear-gradient(135deg, #1a3a1a, #2a5a2a); border-color: #4CAF50; }
-/* OpenClaw live-pulse ring */
-.node[data-id="openclaw"] .node-icon {
-  border-color: #4eff91;
-  box-shadow: 0 0 0 0 rgba(78,255,145,0.7);
-  animation: openclaw-pulse 2s infinite;
-}
-.node[data-id="openclawingest"] .node-icon {
-  border-color: #4dd2ff;
-  box-shadow: 0 0 0 0 rgba(77,210,255,0.7);
-  animation: openclaw-ingest-pulse 2.4s infinite;
-}
-@keyframes openclaw-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(78,255,145,0.7); }
-  50%  { box-shadow: 0 0 0 8px rgba(78,255,145,0); }
-  100% { box-shadow: 0 0 0 0 rgba(78,255,145,0); }
-}
-@keyframes openclaw-ingest-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(77,210,255,0.7); }
-  50%  { box-shadow: 0 0 0 8px rgba(77,210,255,0); }
-  100% { box-shadow: 0 0 0 0 rgba(77,210,255,0); }
-}
-/* OpenClaw LIVE badge */
-.openclaw-live-badge {
-  position: absolute;
-  top: -8px; left: 50%; transform: translateX(-50%);
-  font-size: 0.38em;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #4eff91;
-  text-shadow: 0 0 6px #4eff91;
-  pointer-events: none;
-  white-space: nowrap;
-}
-.openclawingest-live-badge {
-  position: absolute;
-  top: -8px; left: 50%; transform: translateX(-50%);
-  font-size: 0.38em;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #4dd2ff;
-  text-shadow: 0 0 6px #4dd2ff;
-  pointer-events: none;
-  white-space: nowrap;
-}
-.node-icon.claw { background: linear-gradient(135deg, #3a1a0a, #5a2a1a); border-color: #FF6B35; }
-.node-icon.ai { background: linear-gradient(135deg, #2a1a3a, #4a2a5a); border-color: #BB86FC; }
-.node-icon.bot { background: linear-gradient(135deg, #3a1a3a, #5a2a5a); border-color: #DDA0DD; }
-.node-icon.service { background: linear-gradient(135deg, #3a3a1a, #5a5a2a); border-color: #FFD700; }
-.node-icon.network { background: linear-gradient(135deg, #1a3a3a, #2a5a5a); border-color: #00BCD4; }
-.node-icon.governance { background: linear-gradient(135deg, #3a2a0a, #5a4a1a); border-color: #FFB300; box-shadow: 0 0 20px rgba(255,179,0,0.4); }
+.node[data-status="new"]  .node-icon::after { background: #6495ED; box-shadow: 0 0 8px #6495ED; }
 .node-label { font-size: 0.6em; color: #ccc; line-height: 1.2; }
 .node-sublabel { font-size: 0.5em; color: #666; }
+body:not(.advanced) .node-sublabel { display: none; }
+
 svg.connections {
   position: absolute;
   top: 0; left: 0;
@@ -155,59 +340,70 @@ svg.connections {
   z-index: 1;
   pointer-events: none;
 }
-svg.connections line {
-  stroke: rgba(100,149,237,0.12);
-  stroke-width: 1;
-  stroke-dasharray: 4 4;
+svg.connections path.edge { fill: none; stroke-width: 1.4; }
+svg.connections path.command  { stroke: rgba(100,149,237,0.55); }
+svg.connections path.data     { stroke: rgba(76,175,80,0.45); }
+svg.connections path.fault    { stroke: rgba(255,152,0,0.55); }
+svg.connections path.judge    { stroke: rgba(244,67,54,0.55); }
+svg.connections path.observer { stroke: rgba(187,134,252,0.5); stroke-dasharray: 4 4; }
+
+.map-legend {
+  position: absolute;
+  bottom: 8px; right: 12px;
+  background: rgba(15,15,35,0.85);
+  border: 1px solid rgba(100,149,237,0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.65em;
+  color: #aaa;
+  z-index: 3;
 }
-svg.connections line.active {
-  stroke: rgba(100,149,237,0.35);
-  stroke-width: 1.2;
-  animation: pulse-line 3s infinite;
+.map-legend .swatch {
+  display: inline-block;
+  width: 18px; height: 3px;
+  margin-right: 5px;
+  vertical-align: middle;
 }
-svg.connections line.ai-link {
-  stroke: rgba(187,134,252,0.25);
-  stroke-width: 1;
-}
-svg.connections line.bot-link {
-  stroke: rgba(221,160,221,0.2);
-  stroke-width: 1;
-}
-/* OpenClaw connection highlight */
-svg.connections line.openclaw-link {
-  stroke: rgba(78,255,145,0.45);
-  stroke-width: 1.5;
-  animation: pulse-line 2s infinite;
-}
-svg.connections line.openclawingest-link {
-  stroke: rgba(77,210,255,0.38);
-  stroke-width: 1.4;
-  animation: pulse-line 2.4s infinite;
-}
-@keyframes pulse-line {
-  0%, 100% { stroke-opacity: 0.15; }
-  50% { stroke-opacity: 0.5; }
-}
+
+/* ── Click panel ─────────────────────────────────────────────────── */
 .panel {
   display: none;
   position: fixed;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(15,15,35,0.95);
+  background: rgba(15,15,35,0.97);
   border: 1px solid rgba(100,149,237,0.4);
   border-radius: 12px;
-  padding: 20px;
-  min-width: 300px;
-  max-width: 420px;
-  z-index: 10;
-  box-shadow: 0 0 40px rgba(100,149,237,0.2);
+  padding: 22px;
+  min-width: 320px;
+  max-width: 460px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 0 40px rgba(100,149,237,0.25);
 }
 .panel.open { display: block; }
-.panel h3 { color: #6495ED; margin-bottom: 10px; font-size: 1em; }
-.panel .close { position: absolute; top: 8px; right: 12px; cursor: pointer; color: #888; font-size: 18px; }
-.panel .info-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.75em; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.panel h3 { color: #6495ED; margin-bottom: 4px; font-size: 1.05em; }
+.panel .panel-analogy { color: #FFD700; font-style: italic; font-size: 0.9em; margin-bottom: 6px; }
+.panel .panel-job { color: #ddd; font-size: 0.85em; line-height: 1.4; margin-bottom: 12px; }
+.panel .close { position: absolute; top: 8px; right: 12px; cursor: pointer; color: #888; font-size: 22px; }
+.panel details { margin-top: 8px; }
+.panel details summary {
+  cursor: pointer;
+  color: #888;
+  font-size: 0.75em;
+  margin-bottom: 6px;
+}
+.panel details summary:hover { color: #ccc; }
+.panel .info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 0.75em;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
 .panel .info-label { color: #888; }
-.panel .info-value { color: #e0e0e0; text-align: right; max-width: 60%; }
+.panel .info-value { color: #e0e0e0; text-align: right; max-width: 60%; word-break: break-word; }
 .panel .tier-badge {
   display: inline-block;
   font-size: 0.6em;
@@ -216,11 +412,13 @@ svg.connections line.openclawingest-link {
   margin-top: 6px;
   font-weight: 600;
 }
-.tier-command { background: rgba(100,149,237,0.2); color: #6495ED; }
-.tier-infra { background: rgba(76,175,80,0.2); color: #4CAF50; }
-.tier-ai { background: rgba(187,134,252,0.2); color: #BB86FC; }
-.tier-bot { background: rgba(221,160,221,0.2); color: #DDA0DD; }
-.tier-service { background: rgba(255,215,0,0.2); color: #FFD700; }
+.tier-command    { background: rgba(100,149,237,0.2); color: #6495ED; }
+.tier-infra      { background: rgba(76,175,80,0.2);   color: #4CAF50; }
+.tier-ai         { background: rgba(187,134,252,0.2); color: #BB86FC; }
+.tier-bot        { background: rgba(221,160,221,0.2); color: #DDA0DD; }
+.tier-service    { background: rgba(255,215,0,0.2);   color: #FFD700; }
+.tier-governance { background: rgba(255,179,0,0.2);   color: #FFB300; }
+
 .governance {
   text-align: center;
   padding: 5px;
@@ -231,20 +429,9 @@ svg.connections line.openclawingest-link {
   letter-spacing: 1px;
 }
 .governance span { margin: 0 10px; }
-.governance .truth { color: #6495ED; }
-.governance .beauty { color: #DDA0DD; }
+.governance .truth    { color: #6495ED; }
+.governance .beauty   { color: #DDA0DD; }
 .governance .goodness { color: #FFD700; }
-/* Zone labels */
-.zone-label {
-  position: absolute;
-  font-size: 0.5em;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.08);
-  z-index: 0;
-  pointer-events: none;
-  font-weight: 700;
-}
 </style>
 </head>
 <body>
@@ -252,357 +439,766 @@ svg.connections line.openclawingest-link {
 <div class="container">
   <header>
     <h1>MIRCEA'S CONSTELLATION</h1>
-    <div class="subtitle">Full System Map — OpenClaw + NanoClaw + Fireclaw + LuciferiClaw + OpenClaw@URANTiOS-ingest + here.now + AI + Bot Fleet + Services</div>
+    <div class="subtitle">A friendly tour of the system — start with <b>Meet the Team</b> →</div>
   </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="team" role="tab" type="button">1. Meet the Team</button>
+    <button class="tab-btn"        data-tab="flow" role="tab" type="button">2. How It Works</button>
+    <button class="tab-btn"        data-tab="map"  role="tab" type="button">3. Map</button>
+    <button class="tab-btn toggle" id="advancedBtn" type="button">Advanced view</button>
+  </nav>
+
   <div class="status-bar" id="statusBar">
-    <span><span class="dot dot-green"></span> Loading...</span>
+    <span><span class="dot dot-green"></span>Loading...</span>
   </div>
-  <div class="map" id="map">
-    <svg class="connections" id="connections"></svg>
+
+  <div class="tab-content">
+    <!-- ── TAB 1: MEET THE TEAM ─────────────────────────────────── -->
+    <section class="tab-pane active" id="pane-team" role="tabpanel">
+      <div class="team">
+        <div class="team-intro">
+          Think of the system as a ship. <b>Mircea is the captain</b> — he commands
+          the fleet from his iPhone, iPad, iMac, or MacBook. Two distant workshops do the
+          actual work, watched by a family of safety helpers called <b>claws</b>.
+          <br>Click any card to learn more.
+        </div>
+        <div id="team-grid-root"></div>
+      </div>
+    </section>
+
+    <!-- ── TAB 2: HOW IT WORKS ──────────────────────────────────── -->
+    <section class="tab-pane" id="pane-flow" role="tabpanel">
+      <div class="howitworks">
+        <h2>What happens when Mircea sends a note</h2>
+        <p class="hint">Press ▶ Play to watch the message travel through the system.</p>
+
+        <div class="flow-controls">
+          <button class="flow-btn primary" id="flowPlay" type="button">▶ Play</button>
+          <button class="flow-btn" id="flowStep" type="button">⏭ Step</button>
+          <button class="flow-btn" id="flowRestart" type="button">⟳ Restart</button>
+        </div>
+
+        <div class="flow-svg-wrap">
+          <svg class="flow-svg" id="flowSvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <marker id="arrow-cmd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#6495ED"/>
+              </marker>
+              <marker id="arrow-data" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#4CAF50"/>
+              </marker>
+              <marker id="arrow-fault" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#FF9800"/>
+              </marker>
+              <marker id="arrow-judge" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#f44336"/>
+              </marker>
+              <marker id="arrow-obs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#BB86FC"/>
+              </marker>
+            </defs>
+            <!-- Boxes + arrows injected by JS -->
+          </svg>
+        </div>
+
+        <div class="flow-caption" id="flowCaption">
+          <span class="step-num">Ready —</span>
+          <span class="step-body">press ▶ Play to begin the tour.</span>
+        </div>
+
+        <div class="flow-legend">
+          <span><span class="swatch" style="background:#6495ED"></span>Command</span>
+          <span><span class="swatch" style="background:#4CAF50"></span>Data</span>
+          <span><span class="swatch" style="background:#BB86FC"></span>Observe</span>
+          <span><span class="swatch" style="background:#FF9800"></span>Fix (Fireclaw)</span>
+          <span><span class="swatch" style="background:#f44336"></span>Judge (LuciferiClaw)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TAB 3: MAP ───────────────────────────────────────────── -->
+    <section class="tab-pane" id="pane-map" role="tabpanel">
+      <div class="map" id="map">
+        <svg class="connections" id="connections">
+          <defs>
+            <marker id="m-cmd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="rgba(100,149,237,0.7)"/>
+            </marker>
+            <marker id="m-data" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="rgba(76,175,80,0.7)"/>
+            </marker>
+            <marker id="m-fault" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="rgba(255,152,0,0.85)"/>
+            </marker>
+            <marker id="m-judge" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="rgba(244,67,54,0.85)"/>
+            </marker>
+            <marker id="m-obs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="rgba(187,134,252,0.7)"/>
+            </marker>
+          </defs>
+        </svg>
+        <div class="map-legend">
+          <div><span class="swatch" style="background:#6495ED"></span>Command</div>
+          <div><span class="swatch" style="background:#4CAF50"></span>Data</div>
+          <div><span class="swatch" style="background:#BB86FC"></span>Observe</div>
+          <div><span class="swatch" style="background:#FF9800"></span>Fix</div>
+          <div><span class="swatch" style="background:#f44336"></span>Judge</div>
+        </div>
+      </div>
+    </section>
   </div>
+
   <div class="governance">
     <span>Governed by UrantiOS v1.0</span> |
     <span class="truth">Truth</span>
     <span class="beauty">Beauty</span>
     <span class="goodness">Goodness</span>
-    | <span>21 nodes &middot; 4 repos &middot; 11 bots &middot; 4 AI models</span>
+    | <span id="govCount">25 nodes · 4 repos · 11 bots · 4 AI models</span>
   </div>
 </div>
+
 <div class="panel" id="panel">
   <span class="close" onclick="closePanel()">&times;</span>
   <h3 id="panelTitle"></h3>
-  <div id="panelContent"></div>
+  <div class="panel-analogy" id="panelAnalogy"></div>
+  <div class="panel-job" id="panelJob"></div>
+  <details>
+    <summary>Technical details</summary>
+    <div id="panelContent"></div>
+  </details>
 </div>
 
 <script>
-// Star field
+// ══════════════════════════════════════════════════════════════════════
+//  Star field
+// ══════════════════════════════════════════════════════════════════════
 const canvas = document.getElementById('stars');
-const ctx = canvas.getContext('2d');
+const sctx = canvas.getContext('2d');
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 resizeCanvas();
-window.addEventListener('resize', () => { resizeCanvas(); drawStars(); layoutNodes(); });
-const stars = Array.from({length: 250}, () => ({
+const stars = Array.from({length: 200}, () => ({
   x: Math.random(), y: Math.random(),
   r: Math.random() * 1.5 + 0.3,
   a: Math.random() * 0.5 + 0.3,
   s: Math.random() * 0.01 + 0.002
 }));
 function drawStars() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  sctx.clearRect(0, 0, canvas.width, canvas.height);
   stars.forEach(s => {
     s.a += Math.sin(Date.now() * s.s) * 0.005;
-    ctx.beginPath();
-    ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(200,210,255,${Math.max(0.1, Math.min(0.8, s.a))})`;
-    ctx.fill();
+    sctx.beginPath();
+    sctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+    sctx.fillStyle = `rgba(200,210,255,${Math.max(0.1, Math.min(0.8, s.a))})`;
+    sctx.fill();
   });
   requestAnimationFrame(drawStars);
 }
 drawStars();
 
 // ══════════════════════════════════════════════════════════════════════
-//  NODES — Complete System Map (20 nodes, 5 tiers)
+//  NODES — each carries an analogy + plain-English job and Map coords
 // ══════════════════════════════════════════════════════════════════════
+const TIERS = {
+  command:    { label: 'Command',        hint: 'The captain and his devices' },
+  infra:      { label: 'Infrastructure', hint: 'Workshops, tunnel, and safety claws' },
+  ai:         { label: 'AI Models',      hint: 'The expert advisors and the librarian' },
+  bot:        { label: 'Bot Fleet',      hint: 'The class of helper bots' },
+  service:    { label: 'Services',       hint: 'What the system makes for the public' },
+  governance: { label: 'Governance',     hint: 'The rulebook everyone follows' },
+};
 
 const nodes = [
-  // ── TIER 1: COMMAND ──────────────────────────────────────────────
-  { id: 'iphone',   icon: '📱', label: 'iPhone 16 Pro',    sub: 'Remote Control',      type: 'controller', x: 0.50, y: 0.05, tier: 'command' },
-  { id: 'imac',     icon: '🖥️', label: 'iMac M4',          sub: 'Controller Node',      type: 'controller', x: 0.24, y: 0.16, tier: 'command' },
+  // ── COMMAND ──────────────────────────────────────────────────────
+  { id: 'mircea',  icon: '\u{1F468}‍✈️', label: 'Mircea',         sub: 'Captain',          type: 'person',     tier: 'command', mx: 0.10, my: 0.07,
+    analogy: 'The captain of the ship',
+    jobPlain: 'Decides what the system should do and steers the whole fleet.' },
+  { id: 'iphone',  icon: '\u{1F4F1}', label: 'iPhone 16 Pro',  sub: 'Walkie-talkie',     type: 'controller', tier: 'command', mx: 0.30, my: 0.07,
+    analogy: 'The captain’s pocket walkie-talkie',
+    jobPlain: 'Lets Mircea send orders from anywhere over Telegram.' },
+  { id: 'ipad',    icon: '\u{1F4F2}', label: 'iPad',           sub: 'Field tablet',      type: 'controller', tier: 'command', mx: 0.50, my: 0.07,
+    analogy: 'The captain’s field tablet',
+    jobPlain: 'Larger touchscreen for reading and replying away from the desk.' },
+  { id: 'imac',    icon: '\u{1F5A5}️', label: 'iMac M4',  sub: 'Captain’s desk', type: 'controller', tier: 'command', mx: 0.70, my: 0.07,
+    analogy: 'The captain’s desk',
+    jobPlain: 'The main control panel — dashboards, Cognee memory, vault syncs.' },
+  { id: 'mbp',     icon: '\u{1F4BB}', label: 'MacBook Pro M1', sub: 'Travel desk',       type: 'controller', tier: 'command', mx: 0.90, my: 0.07,
+    analogy: 'The captain’s travel desk',
+    jobPlain: 'Same powers as the iMac, but Mircea can take it anywhere.' },
 
-  // ── TIER 2: INFRASTRUCTURE ───────────────────────────────────────
-  { id: 'tailscale',icon: '🔗', label: 'Tailscale',        sub: 'VPN Mesh',             type: 'network',    x: 0.50, y: 0.19, tier: 'infra' },
-  { id: 'openclaw', icon: '⚡', label: 'OpenClaw',         sub: '46.225.51.30',         type: 'server',     x: 0.28, y: 0.36, tier: 'infra' },
-  { id: 'urantios', icon: '🌟', label: 'URANTiOS Prime',   sub: '204.168.143.98',       type: 'server',     x: 0.72, y: 0.33, tier: 'infra' },
-  { id: 'nanoclaw', icon: '🦀', label: 'NanoClaw v1.2.17', sub: 'Docker Agents',        type: 'claw',       x: 0.86, y: 0.22, tier: 'infra' },
-  { id: 'fireclaw', icon: '🔥', label: 'Fireclaw v0.1.0',  sub: 'Remediation Layer',    type: 'claw',       x: 0.50, y: 0.42, tier: 'infra' },
-  { id: 'lucifericlaw', icon: '⚖️', label: 'LuciferiClaw v0.1.1', sub: 'Adjudication Layer', type: 'claw',   x: 0.40, y: 0.30, tier: 'infra' },
-  { id: 'openclawingest', icon: '📥', label: 'OpenClaw@URANTiOS-ingest', sub: 'Ingestion Runtime', type: 'claw', x: 0.64, y: 0.42, tier: 'infra' },
+  // ── INFRASTRUCTURE (sub-row A: servers + tunnel) ─────────────────
+  { id: 'openclaw',  icon: '⚡', label: 'OpenClaw',        sub: 'Nuremberg workshop', type: 'server',  tier: 'infra', mx: 0.22, my: 0.22,
+    analogy: 'The workshop in Nuremberg',
+    jobPlain: 'A server in Germany that runs most bots and the watcher (NemoClaw).' },
+  { id: 'tailscale', icon: '\u{1F517}', label: 'Tailscale',    sub: 'Secret tunnel',      type: 'network', tier: 'infra', mx: 0.50, my: 0.22,
+    analogy: 'The secret tunnel between workshops',
+    jobPlain: 'A private VPN that lets Mircea’s devices reach the servers safely.' },
+  { id: 'urantios',  icon: '\u{1F31F}', label: 'URANTiOS Prime', sub: 'Helsinki workshop', type: 'server', tier: 'infra', mx: 0.78, my: 0.22,
+    analogy: 'The workshop in Helsinki',
+    jobPlain: 'A server in Finland that hosts the teacher (Gabriel) and the local brain (Ollama).' },
 
-  // ── TIER 3: AI MODELS ───────────────────────────────────────────
-  { id: 'claude',   icon: '🟣', label: 'Claude',           sub: 'Opus 4.6',            type: 'ai',         x: 0.10, y: 0.28, tier: 'ai' },
-  { id: 'chatgpt',  icon: '🟢', label: 'ChatGPT',          sub: 'Hetzner Vault',        type: 'ai',         x: 0.06, y: 0.46, tier: 'ai' },
-  { id: 'ollama',   icon: '🧠', label: 'Ollama',           sub: 'qwen2.5:32b',         type: 'ai',         x: 0.90, y: 0.44, tier: 'ai' },
-  { id: 'cognee',   icon: '🧬', label: 'Cognee',           sub: 'Knowledge Graph',      type: 'ai',         x: 0.48, y: 0.50, tier: 'ai' },
+  // ── INFRASTRUCTURE (sub-row B: claws) ────────────────────────────
+  { id: 'nemoclaw',       icon: '\u{1F440}', label: 'NemoClaw',     sub: 'n8n on OpenClaw',     type: 'claw', tier: 'infra', mx: 0.10, my: 0.36,
+    analogy: 'The watcher',
+    jobPlain: 'Sees every service’s health and writes down who is OK and who is broken.' },
+  { id: 'fireclaw',       icon: '\u{1F692}', label: 'Fireclaw',     sub: 'v0.1.0 Remediation',  type: 'claw', tier: 'infra', mx: 0.26, my: 0.36,
+    analogy: 'The firefighter',
+    jobPlain: 'Reads NemoClaw and restarts (or quarantines) anything that’s broken.' },
+  { id: 'lucifericlaw',   icon: '⚖️', label: 'LuciferiClaw', sub: 'v0.1.1 Adjudication', type: 'claw', tier: 'infra', mx: 0.42, my: 0.36,
+    analogy: 'The judge',
+    jobPlain: 'Opens a case when an AI agent disobeys on purpose, then decides the sentence.' },
+  { id: 'nanoclaw',       icon: '\u{1F980}', label: 'NanoClaw',     sub: 'v1.2.17 Docker',      type: 'claw', tier: 'infra', mx: 0.58, my: 0.36,
+    analogy: 'The clean-room worker',
+    jobPlain: 'Runs risky jobs inside a sealed docker sandbox so they can’t hurt the rest.' },
+  { id: 'scribeclaw',     icon: '\u{1F4DD}', label: 'ScribeClaw',   sub: 'Media pipeline',      type: 'claw', tier: 'infra', mx: 0.74, my: 0.36,
+    analogy: 'The scribe',
+    jobPlain: 'Turns Mircea’s videos into transcripts and ready-to-post YouTube bundles.' },
+  { id: 'openclawingest', icon: '\u{1F4E5}', label: 'OC-ingest',    sub: 'on URANTiOS',         type: 'claw', tier: 'infra', mx: 0.90, my: 0.36,
+    analogy: 'The mail-room clerk',
+    jobPlain: 'Files incoming documents into Cognee’s memory and tags them.' },
 
-  // ── TIER 4: BOT FLEET ───────────────────────────────────────────
-  { id: 'hetzy',    icon: '🎖️', label: 'Hetzy PhD',        sub: 'Fleet Commander',      type: 'bot',        x: 0.16, y: 0.58, tier: 'bot' },
-  { id: 'gabriel',  icon: '✨', label: 'Gabriel',           sub: 'Morning Star',         type: 'bot',        x: 0.62, y: 0.48, tier: 'bot' },
-  { id: 'uragent',  icon: '🤖', label: 'UrantiPedia Agent', sub: '@UrantiPedia_Agent_01', type: 'bot',       x: 0.30, y: 0.52, tier: 'bot' },
-  { id: 'botfleet', icon: '🤖', label: 'Bot Fleet',        sub: '11 Telegram Bots',     type: 'bot',        x: 0.08, y: 0.70, tier: 'bot' },
-  { id: 'ncbot',    icon: '🦞', label: 'NanoClaw Bot',     sub: '@nanoclaw_openclaw',   type: 'bot',        x: 0.82, y: 0.55, tier: 'bot' },
-  { id: 'lobster',  icon: '🦞', label: 'LobsterBot',       sub: 'Name Reservation',     type: 'bot',        x: 0.04, y: 0.58, tier: 'bot' },
+  // ── AI MODELS ────────────────────────────────────────────────────
+  { id: 'claude',  icon: '\u{1F7E3}', label: 'Claude',  sub: 'Opus 4.6',        type: 'ai', tier: 'ai', mx: 0.18, my: 0.50,
+    analogy: 'The cloud expert (Anthropic)',
+    jobPlain: 'The strongest cloud advisor — deep reasoning and writing code.' },
+  { id: 'chatgpt', icon: '\u{1F7E2}', label: 'ChatGPT', sub: 'Hetzner vault',    type: 'ai', tier: 'ai', mx: 0.38, my: 0.50,
+    analogy: 'The second cloud expert (OpenAI)',
+    jobPlain: 'Backup advisor for summaries, vault management, and cross-checks.' },
+  { id: 'ollama',  icon: '\u{1F9E0}', label: 'Ollama',  sub: 'qwen2.5:32b',     type: 'ai', tier: 'ai', mx: 0.58, my: 0.50,
+    analogy: 'The brain that lives at home',
+    jobPlain: 'A local AI on URANTiOS — runs without sending data to the cloud.' },
+  { id: 'cognee',  icon: '\u{1F4DA}', label: 'Cognee',  sub: 'Knowledge graph',  type: 'ai', tier: 'ai', mx: 0.78, my: 0.50,
+    analogy: 'The librarian',
+    jobPlain: 'Remembers everything the system has seen so others can look it up later.' },
 
-  // ── TIER 5: SERVICES ────────────────────────────────────────────
-  { id: 'urantipedia', icon: '📖', label: 'UrantiPedia',   sub: '.org + .com',          type: 'service',    x: 0.78, y: 0.65, tier: 'service' },
-  { id: 'amep',     icon: '🎓', label: 'AMEP Hub',         sub: '21 Students',          type: 'service',    x: 0.34, y: 0.72, tier: 'service' },
-  { id: 'obsidian', icon: '💎', label: 'Obsidian',         sub: 'Knowledge Vault',      type: 'service',    x: 0.55, y: 0.76, tier: 'service' },
-  { id: 'phd',      icon: '📜', label: 'PhD Research',     sub: 'Triune Monism',        type: 'service',    x: 0.88, y: 0.68, tier: 'service' },
-  { id: 'herenow',  icon: '🌐', label: 'here.now',         sub: 'Dashboard URL',        type: 'service',    x: 0.66, y: 0.82, tier: 'service' },
+  // ── BOT FLEET ────────────────────────────────────────────────────
+  { id: 'hetzy',    icon: '\u{1F396}️', label: 'Hetzy PhD',        sub: 'Fleet commander',   type: 'bot', tier: 'bot', mx: 0.10, my: 0.64,
+    analogy: 'The head prefect',
+    jobPlain: 'Checks on every bot every 30 minutes and reports problems to Mircea.' },
+  { id: 'botfleet', icon: '\u{1F916}', label: 'Bot Fleet',         sub: '11 Telegram bots',  type: 'bot', tier: 'bot', mx: 0.26, my: 0.64,
+    analogy: 'The class of helper bots',
+    jobPlain: 'A roster of 11 specialist Telegram bots, each with one job.' },
+  { id: 'uragent',  icon: '\u{1F6F0}️', label: 'UrantiPedia Agent', sub: '@UrantiPedia_Agent_01', type: 'bot', tier: 'bot', mx: 0.42, my: 0.64,
+    analogy: 'The front-door receptionist',
+    jobPlain: 'The main Telegram gateway — accepts messages and routes them to the right bot.' },
+  { id: 'gabriel',  icon: '\u{1F31F}', label: 'Gabriel',           sub: 'Morning Star',      type: 'bot', tier: 'bot', mx: 0.58, my: 0.64,
+    analogy: 'The teacher on the website',
+    jobPlain: 'A friendly star-shaped chat on urantipedia.org that answers visitor questions.' },
+  { id: 'ncbot',    icon: '\u{1F99E}', label: 'NanoClaw Bot',      sub: '@nanoclaw_openclaw', type: 'bot', tier: 'bot', mx: 0.74, my: 0.64,
+    analogy: 'The sandbox doorbell',
+    jobPlain: 'Mircea types @NanoClaw in Telegram and a sandboxed Claude SDK job runs.' },
+  { id: 'lobster',  icon: '\u{1F990}', label: 'LobsterBot',        sub: 'Name reservation',  type: 'bot', tier: 'bot', mx: 0.90, my: 0.64,
+    analogy: 'The reservation desk',
+    jobPlain: 'Reserves Telegram bot names so they’re ready when needed.' },
 
-  // ── FOUNDATION: GOVERNANCE ──────────────────────────────────────
-  { id: 'urantios_os', icon: '☀️', label: 'UrantiOS v1.0', sub: 'Truth · Beauty · Goodness', type: 'governance', x: 0.50, y: 0.92, tier: 'governance' },
+  // ── SERVICES ─────────────────────────────────────────────────────
+  { id: 'urantipedia', icon: '\u{1F4D6}', label: 'UrantiPedia',  sub: '.org + .com',   type: 'service', tier: 'service', mx: 0.18, my: 0.78,
+    analogy: 'The public library',
+    jobPlain: 'The public website with 196 papers, 477 personalities, and Gabriel’s chat.' },
+  { id: 'amep',        icon: '\u{1F393}', label: 'AMEP Hub',     sub: '21 students',   type: 'service', tier: 'service', mx: 0.38, my: 0.78,
+    analogy: 'The classroom',
+    jobPlain: 'The student portal — tracks 21 learners across three certificate levels.' },
+  { id: 'obsidian',    icon: '\u{1F48E}', label: 'Obsidian',     sub: 'Notes vault',   type: 'service', tier: 'service', mx: 0.58, my: 0.78,
+    analogy: 'Mircea’s notebook',
+    jobPlain: 'A vault of 477+ markdown notes — the source of truth for everything else.' },
+  { id: 'phd',         icon: '\u{1F4DC}', label: 'PhD Research', sub: 'Triune Monism', type: 'service', tier: 'service', mx: 0.78, my: 0.78,
+    analogy: 'The research thesis',
+    jobPlain: 'Mircea’s PhD on matter, mind, and spirit — written with Claude and ChatGPT.' },
+
+  // ── GOVERNANCE ───────────────────────────────────────────────────
+  { id: 'urantios_os', icon: '☀️', label: 'UrantiOS v1.0', sub: 'Truth · Beauty · Goodness', type: 'governance', tier: 'governance', mx: 0.50, my: 0.92,
+    analogy: 'The rulebook',
+    jobPlain: 'Every process must check: Is it Transparent? Honest? Within mandate? Serves mission?' },
 ];
 
 // ══════════════════════════════════════════════════════════════════════
-//  CONNECTIONS — How everything links
+//  CONNECTIONS — directed edges, colored by meaning
 // ══════════════════════════════════════════════════════════════════════
-
 const connections = [
-  // Command layer
-  ['iphone', 'imac',       'active'],
-  ['iphone', 'botfleet',   'active'],
-  ['iphone', 'nanoclaw',   'active'],
+  // Mircea commands his devices
+  ['mircea', 'iphone', 'command'],
+  ['mircea', 'ipad',   'command'],
+  ['mircea', 'imac',   'command'],
+  ['mircea', 'mbp',    'command'],
 
-  // iMac hub (controller to everything it touches)
-  ['imac', 'openclaw',     'openclaw-link'],
-  ['imac', 'urantios',     'active'],
-  ['imac', 'tailscale',    'active'],
-  ['imac', 'claude',       'ai-link'],
-  ['imac', 'cognee',       'ai-link'],
-  ['imac', 'obsidian',     'active'],
-  ['imac', 'amep',         'active'],
+  // Devices reach the tunnel
+  ['iphone', 'tailscale', 'command'],
+  ['ipad',   'tailscale', 'command'],
+  ['imac',   'tailscale', 'command'],
+  ['mbp',    'tailscale', 'command'],
 
-  // Tailscale mesh
-  ['tailscale', 'openclaw',  'openclaw-link'],
-  ['tailscale', 'urantios',  'active'],
+  // Tunnel into the two workshops
+  ['tailscale', 'openclaw', 'data'],
+  ['tailscale', 'urantios', 'data'],
+  ['openclaw',  'urantios', 'data'],
 
-  // Server-to-server
-  ['openclaw', 'urantios',   'openclaw-link'],
+  // Workshops run the claws
+  ['openclaw', 'nemoclaw',       'data'],
+  ['openclaw', 'scribeclaw',     'data'],
+  ['urantios', 'nanoclaw',       'data'],
+  ['urantios', 'openclawingest', 'data'],
 
-  // OpenClaw connections
-  ['openclaw', 'botfleet',   'openclaw-link'],
-  ['openclaw', 'chatgpt',    'openclaw-link'],
-  ['openclaw', 'uragent',    'openclaw-link'],
+  // NemoClaw watches everything important (observer = dashed purple)
+  ['nemoclaw', 'openclaw', 'observer'],
+  ['nemoclaw', 'urantios', 'observer'],
+  ['nemoclaw', 'botfleet', 'observer'],
 
-  // Fireclaw — remediation layer reads NemoClaw signals & acts on infra
-  ['fireclaw', 'openclaw',     'openclaw-link'],
-  ['fireclaw', 'urantios',     'active'],
-  ['fireclaw', 'botfleet',     'bot-link'],
-  ['imac',     'fireclaw',     'active'],
+  // Fireclaw reads NemoClaw and reacts
+  ['nemoclaw', 'fireclaw', 'data'],
+  ['fireclaw', 'openclaw', 'fault'],
+  ['fireclaw', 'urantios', 'fault'],
+  ['fireclaw', 'botfleet', 'fault'],
+  ['fireclaw', 'lucifericlaw', 'fault'],
 
-  // LuciferiClaw — adjudicates intent (handed off from Fireclaw); sources doctrine from URANTiOS
-  ['fireclaw',     'lucifericlaw', 'bot-link'],
-  ['lucifericlaw', 'urantios',     'ai-link'],
-  ['lucifericlaw', 'botfleet',     'bot-link'],
-  ['imac',         'lucifericlaw', 'active'],
+  // LuciferiClaw judges
+  ['lucifericlaw', 'botfleet',    'judge'],
+  ['lucifericlaw', 'urantios_os', 'judge'],
 
-  // OpenClaw@URANTiOS-ingest — second OpenClaw instance, co-located with Cognee on URANTiOS
-  ['openclawingest', 'urantios',   'openclawingest-link'],
-  ['openclawingest', 'cognee',     'openclawingest-link'],
-  ['openclawingest', 'ollama',     'openclawingest-link'],
-  ['imac',           'openclawingest', 'openclawingest-link'],
-  ['fireclaw',       'openclawingest', 'openclawingest-link'],
+  // OpenClaw hosts bots and reaches cloud AIs
+  ['openclaw', 'botfleet', 'data'],
+  ['openclaw', 'uragent',  'data'],
+  ['openclaw', 'claude',   'data'],
+  ['openclaw', 'chatgpt',  'data'],
 
-  // URANTiOS connections
-  ['urantios', 'nanoclaw',     'active'],
-  ['urantios', 'urantipedia',  'active'],
-  ['urantios', 'ollama',       'ai-link'],
-  ['urantios', 'gabriel',      'active'],
-  ['urantios', 'cognee',       'ai-link'],
-  ['urantios', 'phd',          'active'],
+  // URANTiOS hosts teacher + local AI + public site
+  ['urantios', 'gabriel',     'data'],
+  ['urantios', 'ollama',      'data'],
+  ['urantios', 'urantipedia', 'data'],
+  ['urantios', 'phd',         'data'],
 
-  // NanoClaw
-  ['nanoclaw', 'ncbot',        'active'],
-  ['nanoclaw', 'ollama',       'ai-link'],
+  // Ingestion writes to Cognee and uses Ollama
+  ['openclawingest', 'cognee', 'data'],
+  ['openclawingest', 'ollama', 'data'],
 
-  // AI connections
-  ['claude', 'phd',          'ai-link'],
-  ['chatgpt', 'phd',         'ai-link'],
-  ['ollama', 'gabriel',       'ai-link'],
-  ['ollama', 'cognee',        'ai-link'],
-  ['cognee', 'obsidian',      'active'],
-  ['cognee', 'phd',           'ai-link'],
+  // Bot fleet wiring
+  ['botfleet', 'hetzy',   'data'],
+  ['botfleet', 'lobster', 'data'],
+  ['hetzy',    'uragent', 'data'],
+  ['gabriel',  'urantipedia', 'data'],
+  ['ncbot',    'nanoclaw',    'data'],
 
-  // Bot fleet
-  ['botfleet', 'hetzy',        'bot-link'],
-  ['botfleet', 'lobster',      'bot-link'],
-  ['hetzy', 'uragent',         'bot-link'],
-  ['gabriel', 'urantipedia',   'active'],
-  ['ncbot', 'urantios',        'bot-link'],
+  // AI flows
+  ['ollama', 'gabriel',  'data'],
+  ['cognee', 'obsidian', 'data'],
+  ['claude', 'phd',      'data'],
+  ['chatgpt','phd',      'data'],
+  ['cognee', 'phd',      'data'],
 
-  // Services
-  ['obsidian', 'phd',          'active'],
-  ['amep', 'imac',             'active'],
-  ['herenow', 'imac',          'active'],
-  ['herenow', 'urantios_os',   'active'],
+  // Captain’s desk talks to services
+  ['imac', 'obsidian', 'data'],
+  ['imac', 'amep',     'data'],
 
-  // JabbokRiver Productions — Romanian SDA outreach via Dr. Emanoil Geaboc
-  ['jabbokriver', 'urantipedia',     'active'],
-  ['jabbokriver', 'openclawingest',  'active'],
-  ['jabbokriver', 'urantios_os',     'bot-link'],
+  // ScribeClaw eventually publishes
+  ['scribeclaw', 'urantipedia', 'data'],
 
-  // Governance (subtle connections to key nodes)
-  ['urantios_os', 'urantios',     'active'],
-  ['urantios_os', 'cognee',       'ai-link'],
-  ['urantios_os', 'gabriel',      'bot-link'],
+  // Governance touches key surfaces
+  ['urantios_os', 'urantios', 'data'],
+  ['urantios_os', 'gabriel',  'data'],
+  ['urantios_os', 'cognee',   'data'],
 ];
 
 // ══════════════════════════════════════════════════════════════════════
-//  NODE DETAILS — Click-panel data
+//  NODE DETAILS — technical fields (revealed via "Technical details")
 // ══════════════════════════════════════════════════════════════════════
-
 const nodeDetails = {
-  iphone:   { 'Device': 'iPhone 16 Pro Max 256GB', 'Role': 'Remote Control', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562', 'Tier': 'COMMAND' },
-  imac:     { 'Device': 'iMac M4 (Apple Silicon)', 'User': 'mircea8me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36', 'Local AI': 'Cognee 1.0.0', 'Tier': 'COMMAND' },
+  mircea:   { 'Role': 'Captain (human user)', 'Email': 'mircea8@me.com', 'Telegram ID': '828807562', 'Tier': 'COMMAND' },
+  iphone:   { 'Device': 'iPhone 16 Pro Max 256GB', 'Apps': 'Telegram, Claude, Termius', 'User ID': '828807562', 'Tier': 'COMMAND' },
+  ipad:     { 'Device': 'iPad', 'Apps': 'Telegram, Claude, Safari', 'User ID': '828807562', 'Tier': 'COMMAND' },
+  imac:     { 'Device': 'iMac M4 (Apple Silicon)', 'User': 'mircea8@me.com', 'Dashboard': ':18800', 'AMEP Hub': ':18802', 'Fleet Bus': ':18801', 'Tailscale': '100.75.177.36', 'Local AI': 'Cognee 1.0.0', 'Tier': 'COMMAND' },
+  mbp:      { 'Device': 'MacBook Pro M1 (Apple Silicon)', 'User': 'mircea8@me.com', 'Role': 'Mobile workstation', 'Tier': 'COMMAND' },
 
-  tailscale:{ 'Type': 'VPN Mesh Network', 'iMac IP': '100.75.177.36', 'Purpose': 'Secure tunnel between iMac, OpenClaw, URANTiOS', 'Tier': 'INFRASTRUCTURE' },
+  tailscale:{ 'Type': 'VPN Mesh Network', 'iMac IP': '100.75.177.36', 'Purpose': 'Secure tunnel between Mircea’s devices, OpenClaw, URANTiOS', 'Tier': 'INFRASTRUCTURE' },
   openclaw: { 'IP': '46.225.51.30', 'Hardware': 'CPX22 (8GB / 80GB)', 'Location': 'Nuremberg, DE', 'Ports': '18789 / 18791 / 18792', 'Bots Hosted': '9 active', 'Disk': '46% used', 'Tier': 'INFRASTRUCTURE' },
   urantios: { 'IP': '204.168.143.98', 'Hardware': 'CCX23 (16GB / 160GB)', 'Location': 'Helsinki, FI', 'NanoClaw': 'v1.2.17 LIVE', 'Gabriel Brain': ':18900', 'Website': 'urantipedia.org', 'Disk': '38% used', 'Tier': 'INFRASTRUCTURE' },
+
+  nemoclaw: { 'Role': 'Observer (sees)', 'Host': 'OpenClaw 46.225.51.30', 'Runtime': 'n8n in docker (service: nemoclaw-n8n)', 'Web UI': 'http://46.225.51.30', 'Output': 'Postgres view nemoclaw_latest_status', 'Read by': 'Fireclaw, dashboards', 'Tier': 'INFRASTRUCTURE' },
+  fireclaw: { 'Version': '0.1.0', 'Role': 'Remediation / incident response', 'Owns': 'Restart · disable · quarantine · failover · escalate', 'Inputs': 'NemoClaw view + status.json + HTTP/TCP probes', 'Rules': 'fireclaw/rules.yaml (declarative)', 'Lucifer Test': 'Transparent · Honest · Within mandate · Serves mission', 'Logs': '~/.fireclaw/incidents.jsonl (append-only)', 'Repo': 'myedugit/mircea-constellation · fireclaw/', 'Tier': 'INFRASTRUCTURE' },
+  lucifericlaw: { 'Version': '0.1.1', 'Role': 'Adjudication of AI rebellion (intent, not faults)', 'Doctrine': 'Urantia Book Papers 53–54', 'Three Heads': '1. Source denial · 2. Governance rejection · 3. Mission rejection', 'Procedure': 'assess → open → notice → interrogate → offer → respond → vote → sentence', 'Ladder': 'rehabilitate → aloofness → quarantine → annihilation', 'Cases': '~/.lucifericlaw/cases (per-case JSON, append-only)', 'Repo': 'myedugit/mircea-constellation · lucifericlaw/', 'Tier': 'INFRASTRUCTURE' },
   nanoclaw: { 'Version': '1.2.17', 'Bot': '@nanoclaw_openclaw_bot', 'Runtime': 'Docker isolated', 'API': 'Claude SDK', 'Trigger': '@NanoClaw in Telegram', 'Status': 'LIVE', 'Tier': 'INFRASTRUCTURE' },
-  fireclaw: { 'Version': '0.1.0', 'Role': 'Remediation / incident response', 'Owns': 'Restart · disable · quarantine · failover · escalate', 'Inputs': 'NemoClaw view + status.json + HTTP/TCP probes', 'Rules': 'fireclaw/rules.yaml (declarative; no improvisation)', 'Lucifer Test': 'Transparent · Honest · Within mandate · Serves mission', 'Logs': '~/.fireclaw/incidents.jsonl (append-only)', 'Repo': 'myedugit/mircea-constellation · fireclaw/', 'Tier': 'INFRASTRUCTURE' },
-  lucifericlaw: { 'Version': '0.1.1', 'Role': 'Adjudication of AI rebellion (intent, not faults)', 'Doctrine': 'The Urantia Book Papers 53–54', 'Three Heads': '1. Source denial · 2. Governance rejection · 3. Mission rejection', 'Procedure': 'assess → open → notice → interrogate → offer → respond → vote → sentence', 'Ladder': 'rehabilitate → aloofness → quarantine → annihilation', 'Annihilation Gates': '3 heads + 3 refused offers + council quorum + Father Function signature', 'Boundary': 'NO free-form shell. Handlers in ANNIHILATION_HANDLERS allowlist.', 'Cases': '~/.lucifericlaw/cases (per-case JSON, append-only fields)', 'Audit': '~/.lucifericlaw/audit.jsonl (CLI-level intent log)', 'Repo': 'myedugit/mircea-constellation · lucifericlaw/', 'Tier': 'INFRASTRUCTURE' },
-  openclawingest: { 'Version': '0.1.0', 'Role': 'Execution runtime (ingestion sub-role)', 'Truth Label': 'All 5 canonical handlers implemented — pipeline complete', 'Host': 'URANTiOS · 204.168.143.98 · co-located with Cognee', 'Dataset': 'mircea_corpus (configurable via env)', 'Datastore': 'Cognee — LanceDB + Kuzu + fastembed (shared ~/.cognee/data bind mount)', 'Allowlist': 'ingest_normalize · categorise_by_axes · cross_link · governance_check · export_urantipedia · smoke_test', 'Implemented': 'all 6 (5 canonical + smoke_test)', 'Stubbed': 'none — pipeline complete', 'Classifier': '12 axes (openclaw_ingest/axes.py) · Ollama qwen2.5:32b · strict JSON output', 'Cross-link': 'Pair-score edge emission · polarity-only · flagged short-circuit · fan-out cap 50 · threshold 5.0', 'Governance': 'Axis-driven verdict → blocked · requires_review · warning · canonical · pending_canonicalization · active · draft', 'Export': '/opt/openclaw-data/exported/{sha}.md + manifest.json (YAML frontmatter + fenced content)', 'Evidence': '/opt/openclaw-data/evidence/*.json (sha256 per call)', 'Classified': '/opt/openclaw-data/classified/{sha256}.json (per-doc axis record)', 'Linked': '/opt/openclaw-data/linked/{sha_a}__{sha_b}.json (per-edge audit record)', 'Governed': '/opt/openclaw-data/governed/{sha}.governed.json (verdict + axes snapshot)', 'Ingress': 'drop *.jsonl into /opt/openclaw-data/ingest/chatcode/', 'Egress': 'files move to /data/ingested/chatcode/ after add()', 'API': 'POST http://127.0.0.1:8080/tasks (local-only)', 'Repo': 'myedugit/mircea-constellation · openclaw_ingest/', 'Tier': 'INFRASTRUCTURE' },
+  scribeclaw: { 'Role': 'Media pipeline (video → transcript → YouTube)', 'Host': 'OpenClaw', 'Repo': 'myedugit/mircea-constellation · scribeclaw/', 'Pipeline': 'Whisper · diacritics · punctuation · YouTube metadata', 'Tier': 'INFRASTRUCTURE' },
+  openclawingest: { 'Version': '0.1.0', 'Role': 'Execution runtime (ingestion sub-role)', 'Host': 'URANTiOS · co-located with Cognee', 'Dataset': 'mircea_corpus', 'API': 'POST http://127.0.0.1:8080/tasks (local-only)', 'Ingress': 'drop *.jsonl into /opt/openclaw-data/ingest/chatcode/', 'Repo': 'myedugit/mircea-constellation · openclaw_ingest/', 'Tier': 'INFRASTRUCTURE' },
 
   claude:   { 'Model': 'Claude Opus 4.6 (1M ctx)', 'Provider': 'Anthropic', 'Role': 'Primary AI partner', 'Used For': 'PhD analysis, code, deep reasoning', 'Workspace': 'iMac Obsidian vault', 'Tier': 'AI' },
   chatgpt:  { 'Model': 'ChatGPT (OpenAI)', 'Role': 'Secondary AI partner', 'Used For': 'Summaries, vault mgmt, verification', 'Workspace': 'Hetzner vault', 'Tier': 'AI' },
-  ollama:   { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning (no cloud)', 'Powers': 'Gabriel brain, Cognee LLM', 'Status': 'Check required', 'Tier': 'AI' },
-  cognee:   { 'Version': '1.0.0', 'Host': 'iMac M4 (local)', 'API': 'remember / recall / forget / improve', 'Dataset': 'urantia_book (197 papers)', 'Graph DB': 'LanceDB + Kuzu', 'Embedding': 'fastembed (384d)', 'Purpose': 'Semantic memory for all systems', 'Tier': 'AI' },
+  ollama:   { 'Model': 'qwen2.5:32b', 'Server': '204.168.143.98', 'RAM': '16GB dedicated', 'Purpose': 'Local AI reasoning (no cloud)', 'Powers': 'Gabriel brain, Cognee LLM', 'Tier': 'AI' },
+  cognee:   { 'Version': '1.0.0', 'Host': 'iMac M4 (local)', 'API': 'remember / recall / forget / improve', 'Dataset': 'urantia_book (197 papers)', 'Graph DB': 'LanceDB + Kuzu', 'Embedding': 'fastembed (384d)', 'Tier': 'AI' },
 
   hetzy:    { 'Bot': '@Hetzy_PhD_bot', 'Role': 'Fleet Commander', 'Autonomous': 'Yes (30-min cycles)', 'Check-ins': 'Every 2 hours', 'Bots Managed': '10', 'Tier': 'BOT FLEET' },
   gabriel:  { 'Role': 'Bright and Morning Star', 'Brain': ':18900 on URANTiOS', 'Chat': 'Floating star on urantipedia.org', 'LLM': 'Ollama qwen2.5:32b', 'Authority': 'Joint with Mircea', 'Tier': 'BOT FLEET' },
-  uragent:  { 'Bot': '@UrantiPedia_Agent_01_bot', 'Role': 'Primary Telegram gateway', 'Server': 'OpenClaw (Nuremberg)', 'Token': 'in secrets.env', 'User ID': '828807562', 'Tier': 'BOT FLEET' },
+  uragent:  { 'Bot': '@UrantiPedia_Agent_01_bot', 'Role': 'Primary Telegram gateway', 'Server': 'OpenClaw (Nuremberg)', 'User ID': '828807562', 'Tier': 'BOT FLEET' },
   botfleet: { 'Total': '11 bots', 'Active': '10/11', 'Commander': 'Hetzy PhD', 'Gateway': 'UrantiPedia Agent', 'Governance': 'UrantiOS v1.0', 'Tier': 'BOT FLEET' },
   ncbot:    { 'Bot': '@nanoclaw_openclaw_bot', 'Trigger': '@NanoClaw', 'Runtime': 'Docker on URANTiOS', 'API': 'Claude SDK', 'Tier': 'BOT FLEET' },
   lobster:  { 'Bot': 'LobsterBot', 'Purpose': 'Name reservation (Telegram)', 'Status': 'Skeleton — awaiting implementation', 'Repo': 'myedugit/lobsterbot', 'Tier': 'BOT FLEET' },
 
   urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900+', 'SSL': 'Certbot active', 'Chat': 'Gabriel (floating star)', 'Tier': 'SERVICES' },
-  amep:     { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
-  obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Content': 'Ontology, comparisons, Foreword analysis', 'Tier': 'SERVICES' },
-  phd:      { 'Title': 'PhD — Triune Monism', 'Thesis': 'Three irreducible domains: matter, mind, spirit', 'AI Partners': 'Claude (deep analysis) + ChatGPT (summaries)', 'Repo': 'myedugit/phd-triune-monism', 'Papers': '196 Urantia Book papers as source', 'Tier': 'SERVICES' },
-  herenow:  { 'Service': 'here.now', 'Skill': 'heredotnow/skill · here-now v1.12.1', 'Role': 'Instant web hosting — publish the constellation as a live URL', 'Install': 'bash setup/here_now_install.sh', 'Site URL': 'pending publish', 'Auth Mode': 'anonymous (24h) → authenticated (permanent) with API key', 'Docs': 'https://here.now/docs', 'Tier': 'SERVICES' },
+  amep:        { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
+  obsidian:    { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Tier': 'SERVICES' },
+  phd:         { 'Title': 'PhD — Triune Monism', 'Thesis': 'Three irreducible domains: matter, mind, spirit', 'AI Partners': 'Claude (deep analysis) + ChatGPT (summaries)', 'Repo': 'myedugit/phd-triune-monism', 'Tier': 'SERVICES' },
 
-  urantios_os: { 'Version': '1.0', 'Type': 'Governing AI Operating System', 'Source': 'The Urantia Book (Foreword + Papers 1-196)', 'Values': 'Truth, Beauty, Goodness', 'Scope': 'ALL AI, bots, agents, processes', 'Lucifer Test': 'Transparent? Honest? Within mandate? Serves mission?', 'Spawn Mandate': 'Every process must load UrantiOS', 'Repo': 'myedugit/URANTiOS', 'Tier': 'GOVERNANCE' },
+  urantios_os: { 'Version': '1.0', 'Type': 'Governing AI Operating System', 'Source': 'The Urantia Book (Foreword + Papers 1-196)', 'Values': 'Truth, Beauty, Goodness', 'Scope': 'ALL AI, bots, agents, processes', 'Lucifer Test': 'Transparent? Honest? Within mandate? Serves mission?', 'Repo': 'myedugit/URANTiOS', 'Tier': 'GOVERNANCE' },
 };
 
 // ══════════════════════════════════════════════════════════════════════
-//  RENDERING
+//  TAB 1 — Build "Meet the Team" card grid
 // ══════════════════════════════════════════════════════════════════════
+function buildTeam() {
+  const root = document.getElementById('team-grid-root');
+  const tierOrder = ['command', 'infra', 'ai', 'bot', 'service', 'governance'];
+  tierOrder.forEach(tierKey => {
+    const tier = TIERS[tierKey];
+    const tierNodes = nodes.filter(n => n.tier === tierKey);
+    if (tierNodes.length === 0) return;
+    const section = document.createElement('section');
+    section.className = 'team-tier ' + tierKey;
+    section.innerHTML = `
+      <div class="team-tier-header">
+        <h2>${tier.label}</h2>
+        <span class="team-tier-hint">${tier.hint}</span>
+      </div>
+      <div class="team-grid"></div>
+    `;
+    const grid = section.querySelector('.team-grid');
+    tierNodes.forEach(n => {
+      const card = document.createElement('div');
+      card.className = 'team-card';
+      card.onclick = () => openPanel(n);
+      card.innerHTML = `
+        <div class="team-card-head">
+          <div class="team-card-icon icon-${n.type}">${n.icon}</div>
+          <div class="team-card-name">${n.label}</div>
+        </div>
+        <div class="team-card-analogy">“${n.analogy}”</div>
+        <div class="team-card-job">${n.jobPlain}</div>
+        <div class="team-card-tech">${n.sub}</div>
+      `;
+      grid.appendChild(card);
+    });
+    root.appendChild(section);
+  });
+}
+buildTeam();
 
-const map = document.getElementById('map');
-const svg = document.getElementById('connections');
+// ══════════════════════════════════════════════════════════════════════
+//  TAB 2 — How It Works (animated walkthrough)
+//          Box positions in viewBox 1000 × 560
+// ══════════════════════════════════════════════════════════════════════
+const FLOW_BOX_W = 130;
+const FLOW_BOX_H = 80;
+const flowBoxes = [
+  // [id, x, y, label, emoji]
+  ['mircea',       60,  40,  'Mircea',       '\u{1F468}‍✈️'],
+  ['iphone',       240, 40,  'iPhone',       '\u{1F4F1}'],
+  ['tailscale',    420, 40,  'Tailscale',    '\u{1F517}'],
+  ['imac',         600, 40,  'iMac M4',      '\u{1F5A5}️'],
+  ['openclaw',     790, 40,  'OpenClaw',     '⚡'],
+  ['botfleet',     790, 200, 'Bot Fleet',    '\u{1F916}'],
+  ['nemoclaw',     600, 200, 'NemoClaw',     '\u{1F440}'],
+  ['fireclaw',     420, 200, 'Fireclaw',     '\u{1F692}'],
+  ['lucifericlaw', 240, 200, 'LuciferiClaw', '⚖️'],
+  ['cognee',       60,  370, 'Cognee',       '\u{1F4DA}'],
+  ['gabriel',      320, 370, 'Gabriel',      '\u{1F31F}'],
+  ['urantipedia',  620, 370, 'UrantiPedia',  '\u{1F4D6}'],
+];
 
-function layoutNodes() {
-  const w = map.clientWidth;
-  const h = map.clientHeight;
-  map.querySelectorAll('.node').forEach(n => n.remove());
-  map.querySelectorAll('.zone-label').forEach(n => n.remove());
-  svg.innerHTML = '';
+const flowSteps = [
+  { from: 'mircea',        to: 'iphone',      cls: 'command',
+    text: '<b>Mircea</b> taps his iPhone (or iPad / iMac / MacBook): “Add this note.”' },
+  { from: 'iphone',        to: 'tailscale',   cls: 'command',
+    text: 'The message flies into <b>Tailscale</b>, the secret tunnel between Mircea’s devices and the workshops.' },
+  { from: 'tailscale',     to: 'imac',        cls: 'command',
+    text: 'It pops out at the <b>iMac M4</b>, the captain’s desk.' },
+  { from: 'imac',          to: 'openclaw',    cls: 'data',
+    text: 'The iMac hands the job to <b>OpenClaw</b>, the workshop in Nuremberg.' },
+  { from: 'openclaw',      to: 'botfleet',    cls: 'data',
+    text: 'A helper from the <b>Bot Fleet</b> (one of 11 specialist bots) picks the job up.' },
+  { from: 'nemoclaw',      to: 'botfleet',    cls: 'observer',
+    text: '<b>NemoClaw</b> the watcher keeps an eye on every service and writes down who is OK.' },
+  { from: 'fireclaw',      to: 'openclaw',    cls: 'fault',
+    text: 'If something breaks, <b>Fireclaw</b> the firefighter reads NemoClaw and restarts it.' },
+  { from: 'lucifericlaw',  to: 'botfleet',    cls: 'judge',
+    text: 'If an AI agent <i>misbehaves on purpose</i>, <b>LuciferiClaw</b> the judge opens a case.' },
+  { from: 'openclaw',      to: 'cognee',      cls: 'data',
+    text: 'The finished note is filed by <b>Cognee</b>, the librarian who remembers everything.' },
+  { from: 'cognee',        to: 'gabriel',     cls: 'data',
+    text: 'Cognee shares it with <b>Gabriel</b>, the teacher on the website.' },
+  { from: 'gabriel',       to: 'urantipedia', cls: 'data',
+    text: 'Gabriel publishes it on <b>UrantiPedia</b> so the world can read it. \u{1F389}' },
+];
 
-  // Zone labels
-  const zones = [
-    { text: 'COMMAND', x: 0.50, y: 0.01 },
-    { text: 'INFRASTRUCTURE', x: 0.50, y: 0.28 },
-    { text: 'AI MODELS', x: 0.06, y: 0.35 },
-    { text: 'BOT FLEET', x: 0.06, y: 0.65 },
-    { text: 'SERVICES', x: 0.88, y: 0.62 },
-  ];
-  zones.forEach(z => {
-    const lbl = document.createElement('div');
-    lbl.className = 'zone-label';
-    lbl.textContent = z.text;
-    lbl.style.left = (z.x * w) + 'px';
-    lbl.style.top = (z.y * h) + 'px';
-    map.appendChild(lbl);
+function buildFlowSvg() {
+  const svg = document.getElementById('flowSvg');
+  Array.from(svg.children).forEach(c => { if (c.tagName.toLowerCase() !== 'defs') svg.removeChild(c); });
+
+  flowSteps.forEach((step, i) => {
+    const a = flowBoxes.find(b => b[0] === step.from);
+    const b = flowBoxes.find(b => b[0] === step.to);
+    if (!a || !b) return;
+    const x1 = a[1] + FLOW_BOX_W / 2;
+    const y1 = a[2] + FLOW_BOX_H / 2;
+    const x2 = b[1] + FLOW_BOX_W / 2;
+    const y2 = b[2] + FLOW_BOX_H / 2;
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const trimStart = 42, trimEnd = 46;
+    const sx = x1 + dx * (trimStart / len);
+    const sy = y1 + dy * (trimStart / len);
+    const ex = x2 - dx * (trimEnd / len);
+    const ey = y2 - dy * (trimEnd / len);
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M${sx},${sy} L${ex},${ey}`);
+    path.classList.add('flow-arrow', step.cls);
+    const markerId = { command: 'arrow-cmd', data: 'arrow-data', fault: 'arrow-fault', judge: 'arrow-judge', observer: 'arrow-obs' }[step.cls];
+    path.setAttribute('marker-end', `url(#${markerId})`);
+    path.dataset.stepIdx = i;
+    svg.appendChild(path);
   });
 
-  // Render nodes
+  flowBoxes.forEach(([id, x, y, label, emoji]) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.dataset.boxId = id;
+    g.style.cursor = 'pointer';
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', FLOW_BOX_W);
+    rect.setAttribute('height', FLOW_BOX_H);
+    rect.setAttribute('rx', 10);
+    rect.classList.add('flow-box');
+    g.appendChild(rect);
+
+    const emojiText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    emojiText.setAttribute('x', x + FLOW_BOX_W / 2);
+    emojiText.setAttribute('y', y + 30);
+    emojiText.classList.add('flow-box-emoji');
+    emojiText.textContent = emoji;
+    g.appendChild(emojiText);
+
+    const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    labelText.setAttribute('x', x + FLOW_BOX_W / 2);
+    labelText.setAttribute('y', y + 60);
+    labelText.classList.add('flow-box-label');
+    labelText.textContent = label;
+    g.appendChild(labelText);
+
+    g.addEventListener('click', () => {
+      const node = nodes.find(n => n.id === id);
+      if (node) openPanel(node);
+    });
+
+    svg.appendChild(g);
+  });
+
+  const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  dot.setAttribute('r', 8);
+  dot.setAttribute('cx', -20);
+  dot.setAttribute('cy', -20);
+  dot.classList.add('flow-dot');
+  dot.id = 'flowDot';
+  svg.appendChild(dot);
+}
+buildFlowSvg();
+
+const flowState = { idx: -1, timer: null, anim: null, playing: false };
+
+function highlightStep(i) {
+  const svg = document.getElementById('flowSvg');
+  svg.querySelectorAll('.flow-arrow').forEach(p => p.classList.remove('active'));
+  svg.querySelectorAll('.flow-box').forEach(b => b.classList.remove('active'));
+  if (i < 0 || i >= flowSteps.length) return;
+  const step = flowSteps[i];
+  const arrow = svg.querySelector(`path[data-step-idx="${i}"]`);
+  if (arrow) arrow.classList.add('active');
+  [step.from, step.to].forEach(id => {
+    const g = svg.querySelector(`g[data-box-id="${id}"]`);
+    if (g) g.querySelector('.flow-box').classList.add('active');
+  });
+
+  document.getElementById('flowCaption').innerHTML =
+    `<span class="step-num">Step ${i + 1}.</span><span class="step-body"> ${step.text}</span>`;
+
+  const a = flowBoxes.find(b => b[0] === step.from);
+  const b = flowBoxes.find(b => b[0] === step.to);
+  if (!a || !b) return;
+  const x1 = a[1] + FLOW_BOX_W / 2, y1 = a[2] + FLOW_BOX_H / 2;
+  const x2 = b[1] + FLOW_BOX_W / 2, y2 = b[2] + FLOW_BOX_H / 2;
+  const dot = document.getElementById('flowDot');
+  if (flowState.anim) cancelAnimationFrame(flowState.anim);
+  const t0 = performance.now();
+  const dur = 1100;
+  function frame(now) {
+    const t = Math.min(1, (now - t0) / dur);
+    dot.setAttribute('cx', x1 + (x2 - x1) * t);
+    dot.setAttribute('cy', y1 + (y2 - y1) * t);
+    if (t < 1) flowState.anim = requestAnimationFrame(frame);
+  }
+  flowState.anim = requestAnimationFrame(frame);
+}
+
+function flowAdvance() {
+  flowState.idx = (flowState.idx + 1) % flowSteps.length;
+  highlightStep(flowState.idx);
+}
+
+function flowPlay() {
+  if (flowState.playing) {
+    flowState.playing = false;
+    clearInterval(flowState.timer);
+    document.getElementById('flowPlay').textContent = '▶ Play';
+    return;
+  }
+  flowState.playing = true;
+  document.getElementById('flowPlay').textContent = '⏸ Pause';
+  flowAdvance();
+  flowState.timer = setInterval(() => {
+    if (flowState.idx >= flowSteps.length - 1) {
+      clearInterval(flowState.timer);
+      flowState.playing = false;
+      document.getElementById('flowPlay').textContent = '⟲ Replay';
+      return;
+    }
+    flowAdvance();
+  }, 2400);
+}
+
+function flowRestart() {
+  if (flowState.timer) clearInterval(flowState.timer);
+  if (flowState.anim) cancelAnimationFrame(flowState.anim);
+  flowState.playing = false;
+  flowState.idx = -1;
+  document.getElementById('flowPlay').textContent = '▶ Play';
+  document.getElementById('flowCaption').innerHTML =
+    `<span class="step-num">Ready —</span><span class="step-body"> press ▶ Play to begin the tour.</span>`;
+  const dot = document.getElementById('flowDot');
+  dot.setAttribute('cx', -20); dot.setAttribute('cy', -20);
+  const svg = document.getElementById('flowSvg');
+  svg.querySelectorAll('.flow-arrow').forEach(p => p.classList.remove('active'));
+  svg.querySelectorAll('.flow-box').forEach(b => b.classList.remove('active'));
+}
+
+document.getElementById('flowPlay').onclick = flowPlay;
+document.getElementById('flowStep').onclick = flowAdvance;
+document.getElementById('flowRestart').onclick = flowRestart;
+
+// ══════════════════════════════════════════════════════════════════════
+//  TAB 3 — Map (5 tier bands, directed arrows)
+// ══════════════════════════════════════════════════════════════════════
+const map = document.getElementById('map');
+const connSvg = document.getElementById('connections');
+
+const tierBands = [
+  { key: 'command',    label: 'Command',        y: 0.02 },
+  { key: 'infra',      label: 'Infrastructure', y: 0.16 },
+  { key: 'ai',         label: 'AI Models',      y: 0.44 },
+  { key: 'bot',        label: 'Bot Fleet',      y: 0.58 },
+  { key: 'service',    label: 'Services',       y: 0.72 },
+  { key: 'governance', label: 'Governance',     y: 0.86 },
+];
+
+function layoutMap() {
+  const w = map.clientWidth;
+  const h = map.clientHeight;
+  if (w === 0 || h === 0) return;
+
+  map.querySelectorAll('.node, .tier-row-label, .tier-row-divider').forEach(n => n.remove());
+  Array.from(connSvg.children).forEach(c => { if (c.tagName.toLowerCase() !== 'defs') connSvg.removeChild(c); });
+
+  tierBands.forEach(t => {
+    const lbl = document.createElement('div');
+    lbl.className = 'tier-row-label';
+    lbl.textContent = t.label;
+    lbl.style.top = (t.y * h) + 'px';
+    map.appendChild(lbl);
+    const div = document.createElement('div');
+    div.className = 'tier-row-divider';
+    div.style.top = ((t.y + 0.12) * h) + 'px';
+    map.appendChild(div);
+  });
+
+  const newIds = new Set(['lobster','fireclaw','lucifericlaw','openclawingest','scribeclaw','nemoclaw','ipad','mbp','mircea']);
   nodes.forEach(n => {
     const div = document.createElement('div');
     div.className = 'node';
     div.dataset.id = n.id;
-    div.dataset.status = (n.id === 'lobster' || n.id === 'fireclaw' || n.id === 'lucifericlaw' || n.id === 'openclawingest' || n.id === 'herenow') ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
-    div.style.left = (n.x * w - 50) + 'px';
-    div.style.top = (n.y * h - 26) + 'px';
-    const liveBadge = n.id === 'openclaw'
-      ? `<span class="openclaw-live-badge">● LIVE</span>`
-      : n.id === 'openclawingest'
-        ? `<span class="openclawingest-live-badge">● DEPLOYING</span>`
-        : '';
-    div.innerHTML = `<div class="node-icon ${n.type}" style="position:relative">${liveBadge}${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
-    div.onclick = () => openPanel(n);
+    div.dataset.status = newIds.has(n.id) ? 'new' : (n.id === 'ollama' ? 'warn' : 'ok');
+    div.style.left = (n.mx * w - 50) + 'px';
+    div.style.top  = (n.my * h - 26) + 'px';
+    div.innerHTML = `<div class="node-icon icon-${n.type}">${n.icon}</div><div class="node-label">${n.label}</div><div class="node-sublabel">${n.sub}</div>`;
+    div.onclick = (e) => { e.stopPropagation(); openPanel(n); };
     map.appendChild(div);
   });
 
-  // Render connections
   connections.forEach(([a, b, cls]) => {
     const na = nodes.find(n => n.id === a);
     const nb = nodes.find(n => n.id === b);
     if (!na || !nb) return;
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', na.x * w);
-    line.setAttribute('y1', na.y * h);
-    line.setAttribute('x2', nb.x * w);
-    line.setAttribute('y2', nb.y * h);
-    line.classList.add(cls || 'active');
-    svg.appendChild(line);
+    const x1 = na.mx * w, y1 = na.my * h;
+    const x2 = nb.mx * w, y2 = nb.my * h;
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const trim = 28;
+    const sx = x1 + dx * (trim / len);
+    const sy = y1 + dy * (trim / len);
+    const ex = x2 - dx * (trim / len);
+    const ey = y2 - dy * (trim / len);
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M${sx},${sy} L${ex},${ey}`);
+    path.classList.add('edge', cls);
+    const marker = { command: 'm-cmd', data: 'm-data', fault: 'm-fault', judge: 'm-judge', observer: 'm-obs' }[cls] || 'm-data';
+    path.setAttribute('marker-end', `url(#${marker})`);
+    connSvg.appendChild(path);
   });
 }
-layoutNodes();
 
-// ── OpenClaw data-packet particles ────────────────────────────────────
-const packetCanvas = document.createElement('canvas');
-packetCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none';
-map.appendChild(packetCanvas);
-const pctx = packetCanvas.getContext('2d');
-
-const ocPacketRoutes = [
-  { from: 'openclaw', to: 'urantios',  color: '#4eff91' },
-  { from: 'openclaw', to: 'botfleet',  color: '#4eff91' },
-  { from: 'imac',     to: 'openclaw',  color: '#4eff91' },
-  { from: 'openclawingest', to: 'cognee',   color: '#4dd2ff' },
-  { from: 'openclawingest', to: 'urantios', color: '#4dd2ff' },
-  { from: 'imac', to: 'openclawingest',    color: '#4dd2ff' },
-];
-
-const packets = ocPacketRoutes.map(r => ({
-  ...r,
-  t: Math.random(),
-  speed: 0.0015 + Math.random() * 0.001,
-}));
-
-function resizePacketCanvas() {
-  packetCanvas.width = map.clientWidth;
-  packetCanvas.height = map.clientHeight;
-}
-resizePacketCanvas();
-window.addEventListener('resize', resizePacketCanvas);
-
-function getNodeCenter(id) {
-  const n = nodes.find(x => x.id === id);
-  if (!n) return null;
-  return { x: n.x * packetCanvas.width, y: n.y * packetCanvas.height };
+function maybeLayoutMap() {
+  if (document.getElementById('pane-map').classList.contains('active')) layoutMap();
 }
 
-function animatePackets() {
-  pctx.clearRect(0, 0, packetCanvas.width, packetCanvas.height);
-  packets.forEach(p => {
-    p.t += p.speed;
-    if (p.t > 1) p.t = 0;
-    const a = getNodeCenter(p.from);
-    const b = getNodeCenter(p.to);
-    if (!a || !b) return;
-    const x = a.x + (b.x - a.x) * p.t;
-    const y = a.y + (b.y - a.y) * p.t;
-    pctx.beginPath();
-    pctx.arc(x, y, 3, 0, Math.PI * 2);
-    pctx.fillStyle = p.color;
-    pctx.shadowColor = p.color;
-    pctx.shadowBlur = 8;
-    pctx.fill();
-    pctx.shadowBlur = 0;
-  });
-  requestAnimationFrame(animatePackets);
-}
-animatePackets();
+// ══════════════════════════════════════════════════════════════════════
+//  Tabs + advanced toggle
+// ══════════════════════════════════════════════════════════════════════
+document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.getElementById('pane-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'map') requestAnimationFrame(layoutMap);
+  };
+});
 
+document.getElementById('advancedBtn').onclick = () => {
+  document.body.classList.toggle('advanced');
+  document.getElementById('advancedBtn').classList.toggle('active');
+  maybeLayoutMap();
+};
+
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  maybeLayoutMap();
+});
+
+// ══════════════════════════════════════════════════════════════════════
+//  Click panel
+// ══════════════════════════════════════════════════════════════════════
 function openPanel(node) {
   const panel = document.getElementById('panel');
   document.getElementById('panelTitle').textContent = `${node.icon} ${node.label}`;
+  document.getElementById('panelAnalogy').textContent = `“${node.analogy}”`;
+  document.getElementById('panelJob').textContent = node.jobPlain;
   const details = nodeDetails[node.id] || {};
   let html = '';
   for (const [k, v] of Object.entries(details)) {
     if (k === 'Tier') {
-      const cls = { 'COMMAND':'tier-command','INFRASTRUCTURE':'tier-infra','AI':'tier-ai','BOT FLEET':'tier-bot','SERVICES':'tier-service','GOVERNANCE':'tier-command' }[v] || 'tier-command';
+      const cls = {
+        'COMMAND': 'tier-command',
+        'INFRASTRUCTURE': 'tier-infra',
+        'AI': 'tier-ai',
+        'BOT FLEET': 'tier-bot',
+        'SERVICES': 'tier-service',
+        'GOVERNANCE': 'tier-governance'
+      }[v] || 'tier-command';
       html += `<div style="text-align:center;margin-top:6px"><span class="tier-badge ${cls}">${v}</span></div>`;
     } else {
       html += `<div class="info-row"><span class="info-label">${k}</span><span class="info-value">${v}</span></div>`;
@@ -613,11 +1209,17 @@ function openPanel(node) {
 }
 function closePanel() { document.getElementById('panel').classList.remove('open'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-document.getElementById('map').addEventListener('click', e => {
-  if (e.target === map || e.target === svg) closePanel();
+document.addEventListener('click', e => {
+  const panel = document.getElementById('panel');
+  if (!panel.classList.contains('open')) return;
+  if (!panel.contains(e.target) && !e.target.closest('.team-card') && !e.target.closest('.node') && !e.target.closest('[data-box-id]')) {
+    closePanel();
+  }
 });
 
-// Live status
+// ══════════════════════════════════════════════════════════════════════
+//  Live status (advanced view only)
+// ══════════════════════════════════════════════════════════════════════
 async function loadStatus() {
   try {
     const r = await fetch('status.json?t=' + Date.now());
@@ -625,33 +1227,18 @@ async function loadStatus() {
     const data = await r.json();
     const bar = document.getElementById('statusBar');
     const items = [];
-    if (data.fleet) items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span>Fleet: ${data.fleet.bots}</span>`);
-    if (data.nanoclaw) items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span>NanoClaw: ${data.nanoclaw.version || '?'}</span>`);
-    if (data.fireclaw) items.push(`<span><span class="dot dot-${data.fireclaw.status === 'ok' ? 'green' : (data.fireclaw.status === 'warn' ? 'yellow' : (data.fireclaw.status === 'new' ? 'blue' : 'red'))}"></span>Fireclaw: ${data.fireclaw.version || data.fireclaw.status || '?'}</span>`);
+    if (data.fleet)     items.push(`<span><span class="dot dot-${data.fleet.status === 'ok' ? 'green' : 'yellow'}"></span>Fleet: ${data.fleet.bots}</span>`);
+    if (data.nanoclaw)  items.push(`<span><span class="dot dot-${data.nanoclaw.status === 'ok' ? 'green' : 'red'}"></span>NanoClaw: ${data.nanoclaw.version || '?'}</span>`);
+    if (data.fireclaw)  items.push(`<span><span class="dot dot-${data.fireclaw.status === 'ok' ? 'green' : (data.fireclaw.status === 'warn' ? 'yellow' : (data.fireclaw.status === 'new' ? 'blue' : 'red'))}"></span>Fireclaw: ${data.fireclaw.version || data.fireclaw.status || '?'}</span>`);
     if (data.lucifericlaw) items.push(`<span><span class="dot dot-${data.lucifericlaw.status === 'ok' ? 'green' : (data.lucifericlaw.status === 'warn' ? 'yellow' : (data.lucifericlaw.status === 'new' ? 'blue' : 'red'))}"></span>LuciferiClaw: ${data.lucifericlaw.version || data.lucifericlaw.status || '?'}</span>`);
     if (data.openclaw_ingest) items.push(`<span><span class="dot dot-${data.openclaw_ingest.status === 'ok' ? 'green' : (data.openclaw_ingest.status === 'warn' ? 'yellow' : (data.openclaw_ingest.status === 'new' ? 'blue' : 'red'))}"></span>OC-ingest: ${data.openclaw_ingest.version || data.openclaw_ingest.status || '?'}</span>`);
-    if (data.ollama) items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
-    if (data.cognee) items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
-    if (data.here_now) {
-      const hn = data.here_now;
-      const dot = hn.status === 'ok' ? (hn.auth_mode === 'authenticated' ? 'green' : 'yellow') : (hn.status === 'new' ? 'blue' : 'red');
-      const label = hn.site_url ? hn.site_url.replace(/^https?:\/\//, '').replace(/\/$/, '') : (hn.auth_mode || 'pending');
-      items.push(`<span><span class="dot dot-${dot}"></span>here.now: ${label}</span>`);
-    }
+    if (data.ollama)    items.push(`<span><span class="dot dot-${data.ollama.status === 'ok' ? 'green' : 'yellow'}"></span>Ollama: ${data.ollama.model || 'offline'}</span>`);
+    if (data.cognee)    items.push(`<span><span class="dot dot-${data.cognee.status === 'ok' ? 'green' : 'yellow'}"></span>Cognee: ${data.cognee.version || 'offline'}</span>`);
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
-    if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
-    if (data.jabbokriver) items.push(`<span><span class="dot dot-blue"></span>JabbokRiver: ${data.jabbokriver.consent_status}</span>`);
+    if (data.obsidian)  items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
     items.push(`<span><span class="dot dot-blue"></span>Nodes: ${nodes.length}</span>`);
-    if (data.updated) {
-      const t = new Date(data.updated).toLocaleTimeString('en-AU', {
-        timeZone: 'Australia/Melbourne',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: false,
-        timeZoneName: 'short'
-      });
-      items.push(`<span style="color:#555">${t}</span>`);
-    }
+    if (data.updated)   items.push(`<span style="color:#555">${new Date(data.updated).toLocaleTimeString()}</span>`);
     if (items.length) bar.innerHTML = items.join('');
 
     document.querySelectorAll('.node').forEach(n => {
@@ -662,6 +1249,9 @@ async function loadStatus() {
 }
 loadStatus();
 setInterval(loadStatus, 30000);
+
+document.getElementById('govCount').textContent =
+  `${nodes.length} nodes · 4 repos · 11 bots · 4 AI models`;
 </script>
 </body>
 </html>
