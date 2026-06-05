@@ -237,6 +237,8 @@ PHRASE_FIXES: list[tuple[str, str]] = [
     ("nesimbător", "nesimțitor"),
     ("Când fugau în cercuri,", "Când fugeau în cercuri,"),
     ("Lătau ca și câinii", "Lătrau ca și câinii"),
+    ("de savie și trăia", "de sabie și trăia"),
+    ("și i amăgea", "și îi amăgea"),
     ("Citează versetul că împărăția lui Dumnezeu se ia cu violență",
      "Citează versetul că «împărăția lui Dumnezeu se ia cu violență»"),
 ]
