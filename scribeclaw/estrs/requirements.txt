@@ -1,0 +1,11 @@
+# ESTRS — Eternal Sermon Transcript Reconciliation System
+# pip install -r scribeclaw/estrs/requirements.txt
+
+# Required
+watchdog>=3.0.0          # filesystem watcher (macOS FSEvents backend)
+
+# Optional — AI semantic comparison
+anthropic>=0.25.0        # Claude API for semantic transcript summary
+
+# Optional — richer diff output
+rich>=13.0.0             # coloured terminal output
