@@ -45,17 +45,13 @@ python3 scribeclaw/fix_romanian_subs.py --from-srt fisier.srt --out fisier_corec
 YouTube Studio exportă subtitrări în format `.sbv`, nu `.srt`.
 
 ```bash
-# Pas 1: convertire + corecție deterministă
-python3 scribeclaw/convert_sbv_to_srt.py fisier.sbv GFttc7f5zEo_RO_corrected.srt
-
-# Pas 2: reformatare în propoziții complete (elimină tăierile mid-frază)
-python3 scribeclaw/reformat_srt.py GFttc7f5zEo_RO_corrected.srt GFttc7f5zEo_RO_final.srt
-
-# Pas 3: corecție Claude AI (dacă ANTHROPIC_API_KEY disponibil)
-python3 scribeclaw/fix_romanian_subs.py --from-srt GFttc7f5zEo_RO_final.srt --out GFttc7f5zEo_RO_final_ai.srt
+# Pas 1: convertire + corecție deterministă → acesta este fișierul de upload
+python3 scribeclaw/convert_sbv_to_srt.py fisier.sbv VIDEO_ID_RO_corrected.srt
 ```
 
-**Notă:** `reformat_srt.py` unește segmentele care continuă propoziția (verificare: word count input = word count output).
+**Fișierul `_RO_corrected.srt` este fișierul final de upload.** Păstrează timecode-urile originale YouTube și text pe o singură linie per card.
+
+> ⚠️ **NU folosi `reformat_srt.py` pentru upload YouTube.** Scriptul redistribuie proporțional duratele cardurilor pe baza lungimii textului — ceea ce rupe sincronizarea cu vorbirea. De asemenea, inserează `\n` în textul cardurilor, ceea ce face ca YouTube să afișeze subtitrările pe 4 rânduri pe telefon (YouTube aplică propria sa împărțire pe linie PESTE `\n`-urile deja existente).
 
 ### Cazul 3 — AssemblyAI fallback (fără subtitrări auto)
 
