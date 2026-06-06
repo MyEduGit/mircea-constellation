@@ -118,11 +118,26 @@ Alternativă viitoare: rulare pe OpenClaw (46.225.51.30) cu cookie fișier YouTu
 
 ---
 
+## ESTRS — QC automat pentru toate predicile
+
+`scribeclaw/estrs/` — pachet Python cu 11 module care rulează în fundal și verifică automat toate predicile viitoare.
+
+```bash
+pip install watchdog anthropic rich
+python -m estrs --watch                # mod daemon — monitorizează /Volumes/*
+python -m estrs --sermon C0072         # verificare one-shot
+```
+
+Generează 6 fișiere Markdown per predică în dosarul sermonic: raport comparare transcrieri, nume incerte, referințe biblice, terminologie, raport gate (PASS / PASS_WITH_AUDIO_CHECK / BLOCKED), index Obsidian.
+
+---
+
 ## Jurnal sesiuni
 
 | Data | Video | Status | Note |
 |---|---|---|---|
-| 2026-05-15 | C0072 / GFttc7f5zEo | ✅ SRT gata de upload | SBV→SRT convertit, corectat (468 seg), reformat în propoziții complete (494 cards). Fișier: GFttc7f5zEo_RO_final.srt |
+| 2026-05-15 | C0072 / GFttc7f5zEo | ✅ SRT gata de upload | SBV→SRT convertit, corectat (468 seg). **Fișier corect: `GFttc7f5zEo_RO_corrected.srt`** |
+| 2026-06-06 | — | ✅ ESTRS livrat | Pachet `scribeclaw/estrs/` (11 module) committed + pushed pe PR #72. SOP actualizat: `_corrected.srt` = fișier corect; `_final.srt` NU pentru upload (sincronizare ruptă + 4 rânduri pe mobil). |
 
 ---
 
