@@ -1,6 +1,6 @@
 # SOP — Romanian Subtitle Correction Pipeline
 
-**Versiune:** 1.0 | **Data:** 2026-05-15
+**Versiune:** 1.1 | **Data:** 2026-06-06
 **Script:** `scribeclaw/fix_romanian_subs.py`
 **PR:** https://github.com/MyEduGit/mircea-constellation/pull/72
 
