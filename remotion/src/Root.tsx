@@ -10,10 +10,21 @@ import type {
 } from "./compositions/shorts/types";
 import { DEFAULT_ACCENT } from "./compositions/shorts/types";
 import { HelloWorld } from "./HelloWorld";
-<<<<<<< HEAD
 import sampleClip from "../fixtures/sample-clip.json";
 import sampleClipEn from "../fixtures/sample-clip-en.json";
 import sampleSequence from "../fixtures/sample-sequence.json";
+import { JabbokIntro } from "./jabbok/JabbokIntro";
+import { JabbokOutro } from "./jabbok/JabbokOutro";
+import {
+  HostLowerThird,
+  hostLowerThirdDefaultProps,
+} from "./jabbok/HostLowerThird";
+import {
+  ThesisTitleCard,
+  thesisTitleCardDefaultProps,
+} from "./jabbok/ThesisTitleCard";
+import { ChannelBanner } from "./jabbok/ChannelBanner";
+import { ChannelAvatar } from "./jabbok/ChannelAvatar";
 
 const SHORT_CLIP_FPS = 30;
 const SHORT_CLIP_WIDTH = 1080;
@@ -58,20 +69,6 @@ const calcClipSequenceMetadata: CalculateMetadataFunction<
     height: props.height || SHORT_CLIP_HEIGHT,
   };
 };
-=======
-import { JabbokIntro } from "./jabbok/JabbokIntro";
-import { JabbokOutro } from "./jabbok/JabbokOutro";
-import {
-  HostLowerThird,
-  hostLowerThirdDefaultProps,
-} from "./jabbok/HostLowerThird";
-import {
-  ThesisTitleCard,
-  thesisTitleCardDefaultProps,
-} from "./jabbok/ThesisTitleCard";
-import { ChannelBanner } from "./jabbok/ChannelBanner";
-import { ChannelAvatar } from "./jabbok/ChannelAvatar";
->>>>>>> main
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -85,7 +82,6 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
       />
       <Composition
-<<<<<<< HEAD
         id="ShortClip"
         component={ShortClip}
         calculateMetadata={calcShortClipMetadata}
@@ -114,7 +110,8 @@ export const RemotionRoot: React.FC = () => {
         width={SHORT_CLIP_WIDTH}
         height={SHORT_CLIP_HEIGHT}
         defaultProps={sampleSequence as unknown as ClipSequenceProps}
-=======
+      />
+      <Composition
         id="JabbokIntro"
         component={JabbokIntro}
         durationInFrames={150}
@@ -163,7 +160,6 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1080}
->>>>>>> main
       />
     </>
   );

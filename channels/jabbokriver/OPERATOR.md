@@ -160,7 +160,7 @@ For each Dr. Geaboc upload on a public SDA YouTube channel:
 ## 5. Per-episode workflow
 
 ```
-catalog entry → archive → transcribe → council review → render → upload
+catalog entry → archive → transcribe → translate (optional) → council review → render → upload
 ```
 
 1. Pick a `download_status: downloaded` entry from `catalog.yaml`.
@@ -186,11 +186,23 @@ catalog entry → archive → transcribe → council review → render → uploa
             "series":"religia-lui-vs-religia-despre-isus"
           }}'
    ```
-3. Submit the resulting `bundle.json` to the Council of Seven for
+3. **(Optional) Translate to Spanish** — if producing a Spanish-subtitle
+   or Spanish-dubbed version:
+   - Open `channels/jabbokriver/geaboc-glossary.md` and copy the prompt
+     template and glossary table.
+   - Paste the scribeclaw Romanian transcript (`<id>.edited.txt`) into
+     the prompt where indicated.
+   - Run against `claude-opus-4-8` (quality) or `claude-sonnet-4-6`
+     (speed). For full-series batch jobs use `gemini-2.5-pro`.
+   - Save the Spanish output as `/opt/scribeclaw-data/transcripts/<id>.edited.es.txt`.
+   - Review any `[CHECK RVR60 <reference>]` flags manually against
+     a RVR60 Bible before use in a public video.
+
+4. Submit the resulting `bundle.json` to the Council of Seven for
    pre-publish review (workflow at `/council/council_of_seven_v1.n8n.json`).
    Council writes an evidence record; that record is required by the
    launch gate.
-4. Render Remotion intro/outro/lower-third/thesis card:
+5. Render Remotion intro/outro/lower-third/thesis card:
    ```
    cd remotion
    npx remotion render JabbokIntro out/<id>-intro.mp4
@@ -198,16 +210,16 @@ catalog entry → archive → transcribe → council review → render → uploa
    npx remotion render ThesisTitleCard out/<id>-thesis.mp4 \
      --props='{"thesisRo":"...","thesisEn":"...","subCaption":"..."}'
    ```
-5. Concatenate (operator's choice of NLE) the rendered intro + your
+6. Concatenate (operator's choice of NLE) the rendered intro + your
    editorial commentary + outro. **Do not include full re-uploads of
    the source video.** Short excerpts under commentary only.
-6. Upload. Two options depending on whether you've wired OAuth (§2):
+7. Upload. Two options depending on whether you've wired OAuth (§2):
    - **OAuth wired:** `dry_run: true` first, then live with
      `privacy:"private"`; verify in Studio; manually flip to public.
    - **Manual:** upload through YouTube Studio. Tags + description:
      copy from `/opt/scribeclaw-data/youtube/<id>.edited/description.txt`
      and `tags.txt`.
-7. After upload, set `commentary_episode_id` and bump
+8. After upload, set `commentary_episode_id` and bump
    `transcription_status: done` in `catalog.yaml`.
 
 ## 6. Per-source rights checklist (catalog & link policy)
