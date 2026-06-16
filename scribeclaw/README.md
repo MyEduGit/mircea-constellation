@@ -93,11 +93,32 @@ The installer:
 4. Runs `docker compose up --build -d` from `scribeclaw/`.
 5. Waits for `/health` to respond.
 
+### Command Centre (web UI)
+
+Once the container is running, open `http://127.0.0.1:8081/` — it
+redirects to the built-in dashboard at `/ui/`. The UI:
+
+- Live `/health` probe strip across the top (ffmpeg, faster-whisper,
+  httpx, google libs, AssemblyAI key, YouTube token).
+- Left sidebar: every transcript under `/data/transcripts/` with at-a-
+  glance badges for `bundle`, `thumbnail`, `cues`, `uploaded`.
+- Centre: selected-stem detail view — first segments, thumbnail preview,
+  bundle summary, upload status, and quick-run buttons that pre-fill
+  the handler form (postprocess → resegment → metadata → thumbnail →
+  upload).
+- Right pane: handler runner (`POST /tasks` with JSON payload editor)
+  + rolling evidence ticker (most recent 30 `write_evidence` records).
+
+The UI is a single-page vanilla-JS app (`scribeclaw/web/`) with no build
+step. Every mutation still goes through `POST /tasks` — the dashboard
+doesn't get its own privileged path.
+
 ### Verify
 
 ```bash
 docker logs scribeclaw --tail 30
 curl -s http://127.0.0.1:8081/health | python3 -m json.tool
+open http://127.0.0.1:8081/
 ```
 
 `/health` returns `ffmpeg_on_path` and `faster_whisper_installed`
