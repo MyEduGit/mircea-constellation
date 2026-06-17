@@ -46,6 +46,24 @@ Haiku 4.5 $1/$5.
 - Route the heavier Opus / Fable calls **through the Headroom proxy** — it
   caches/compresses prompt context on the M4 and cuts cost further.
 
+### Local model on the M4 (Hermes 4 14B)
+
+**Verified on Hugging Face:** `NousResearch/Hermes-4-14B` — Qwen3-14B base,
+hybrid reasoning, strong function-calling / JSON / structured outputs (Aug
+2025, 35K+ downloads). Trusted Q4 GGUF: `bartowski/NousResearch_Hermes-4-14B-GGUF`
+(or `mradermacher/Hermes-4-14B-GGUF`). ~9 GB at Q4 — runs comfortably on the
+M4 32 GB with Metal via Ollama.
+
+- **Use it for** the local/cheap layer: metadata drafting, JSON/tool-calling,
+  NemoClaw/OpenClaw structured output. A clear upgrade over gemma for those.
+- **Do NOT use it for** sermon translation — keep that on Claude Opus 4.8 /
+  Fable 5. A local 14B is good, but not for faithful public-facing
+  Romanian↔English theological text.
+- **NOT the same as "Hermes Agent" / KiloClaw** (the product we ruled out).
+  This is just an open-weight model file — free, local, reversible.
+- Pull (verified source, command not yet run here):
+  `ollama run hf.co/bartowski/NousResearch_Hermes-4-14B-GGUF:Q4_K_M`
+
 ---
 
 ## What unlocks each step (the real blockers)
