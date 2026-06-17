@@ -63,6 +63,10 @@ M4 32 GB with Metal via Ollama.
   This is just an open-weight model file — free, local, reversible.
 - Pull (verified source, command not yet run here):
   `ollama run hf.co/bartowski/NousResearch_Hermes-4-14B-GGUF:Q4_K_M`
+- **Apple-native alternative (often faster on M-series):** MLX 4-bit —
+  `mlx-community/Hermes-4-14B-4bit` (verified). Run via **LM Studio** (has
+  MLX support) or `mlx-lm`. GGUF + Ollama is the simpler path; MLX is the
+  speed-optimized one. Either is fine — **not Docker**.
 
 ---
 
