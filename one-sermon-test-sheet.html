@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>You Already Have It — Don't Buy Hermes or KiloClaw</title>
+<title>Your Sermon Pipeline — What Works Now, What's Waiting on a Login</title>
 <style>
   :root {
     --ink: #11181c;
@@ -16,6 +16,9 @@
     --amber-border: #c98a2b;
     --own-box: #eaf6ec;
     --own-border: #2f8f4e;
+    --red: #a3271f;
+    --red-box: #fdeceb;
+    --red-border: #c0392b;
   }
   * { box-sizing: border-box; }
   body {
@@ -30,7 +33,7 @@
   }
   .page { max-width: 880px; margin: 0 auto; }
   h1 {
-    font-size: 29px;
+    font-size: 27px;
     line-height: 1.4;
     margin: 0 0 4px;
     border-bottom: 4px solid var(--ink);
@@ -38,8 +41,8 @@
   }
   .date { font-size: 16px; color: #555; margin: 0 0 22px; }
   h2 {
-    font-size: 23px;
-    margin: 30px 0 10px;
+    font-size: 22px;
+    margin: 28px 0 10px;
     background: var(--ink);
     color: var(--paper);
     padding: 8px 14px;
@@ -73,6 +76,20 @@
     letter-spacing: 1px;
     margin-bottom: 6px;
   }
+  .unlock {
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin: 12px 0;
+    border-left: 10px solid #999;
+    background: #f3f5f6;
+  }
+  .unlock.now    { border-left-color: var(--own-border); background: var(--own-box); }
+  .unlock.option { border-left-color: var(--amber-border); background: var(--amber-box); }
+  .unlock.wait   { border-left-color: var(--red-border); background: var(--red-box); }
+  .unlock h3 { margin: 4px 0 6px; font-size: 19px; }
+  .now h3 { color: var(--green); }
+  .option h3 { color: var(--amber); }
+  .wait h3 { color: var(--red); }
   .remember {
     background: var(--amber-box);
     border: 3px solid var(--amber-border);
@@ -80,88 +97,99 @@
     padding: 14px 20px;
     margin: 14px 0;
   }
-  .own li strong { color: var(--own-border); }
-  .good { color: var(--green); font-weight: bold; }
-  .warn { color: var(--amber); font-weight: bold; }
   code {
     background: #eceff1;
     padding: 1px 6px;
     border-radius: 4px;
-    font-size: 17px;
+    font-size: 16px;
   }
   .tag { font-size: 15px; color: #555; margin-top: 26px; }
   @media print {
-    body { font-size: 15px; padding: 0; }
-    h1 { font-size: 21px; }
-    h2 { font-size: 17px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .answerbox, .saybox, .remember { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-size: 14px; padding: 0; }
+    h1 { font-size: 19px; }
+    h2 { font-size: 16px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .answerbox, .saybox, .remember, .unlock { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <h1>You Already Have It — Don't Buy Hermes or KiloClaw</h1>
+  <h1>Your Sermon Pipeline — What Works Now, What's Waiting on a Login</h1>
   <p class="date">For Mircea &middot; June 2026 &middot; Keep this by the keyboard</p>
 
-  <h2>1. The answer</h2>
+  <h2>1. The answer (settled)</h2>
   <div class="answerbox">
     <strong>Don't buy Hermes. Don't buy KiloClaw.</strong><br>
-    Three checks now agree — your own files, your Obsidian notes, and Antigravity
-    (which looked inside your Mac): you already run a custom setup that does
-    <strong>more</strong> than either product sells.
+    You already own a custom setup that does more: <strong>ScribeClaw</strong>
+    (turns sermons into text), <strong>NemoClaw</strong> (runs the jobs),
+    <strong>OpenClaw</strong> (the timer), <strong>Jarvis</strong> (your voice notes),
+    and <strong>Claude Code</strong> (drives them all).
   </div>
 
-  <h2>2. What you already own</h2>
-  <ul class="own">
-    <li><strong>ScribeClaw</strong> — turns your sermon videos into text, cleans the Romanian spelling, and makes YouTube titles and chapters. <em>This is your transcription pipeline.</em></li>
-    <li><strong>NemoClaw</strong> — the engine room that runs the jobs (n8n + database).</li>
-    <li><strong>OpenClaw</strong> — the timer that triggers jobs on schedule.</li>
-    <li><strong>Jarvis</strong> — your voice app that writes notes straight into Obsidian.</li>
-    <li><strong>Claude Code</strong> — reads and writes your files, and can drive all the tools above for you.</li>
-    <li><strong>Headroom proxy</strong> — quietly cuts your AI bills (about half) using your Mac's M4 chip.</li>
-  </ul>
-
-  <h2>3. The corrected test (this one really works)</h2>
-  <p>The old test was wrong: it asked Claude Code to transcribe by itself, which it
-  <strong>cannot</strong> do. The right way uses <strong>ScribeClaw</strong>, which you already have.</p>
-  <p>Open <strong>Claude Code</strong> and type these words:</p>
+  <h2>2. The test that really works</h2>
+  <p>The old test was wrong — it asked Claude Code to transcribe by itself, which it
+  cannot do. The right way uses <strong>ScribeClaw's free offline transcriber</strong>
+  (Romanian, no key, no internet needed). Open <strong>Claude Code</strong> and type:</p>
 
   <div class="saybox">
     <span class="label">TYPE THIS</span><br>
-    Use my ScribeClaw pipeline to transcribe one sermon.<br>
+    Use my ScribeClaw to transcribe one sermon, the free offline way (Romanian).<br>
     1. First check ScribeClaw is running (<code>docker logs scribeclaw</code>).<br>
     2. Here is the sermon video: [drag the file in].<br>
-    3. Run the whole pipeline and show me the text file.<br>
+    3. Run the pipeline and show me the text file.<br>
     Do NOT upload anything to YouTube — just make the transcript and show me.
   </div>
 
-  <p>Then watch what happens:</p>
-  <ul>
-    <li><span class="good">If you get a transcript</span> → your own pipeline works. 🎉 You needed nothing new.</li>
-    <li><span class="warn">If it says ScribeClaw isn't running, or needs a key</span> → that is the real thing to fix (see the next box).</li>
-  </ul>
+  <h2>3. Which login unlocks what</h2>
+  <p>Your tools are built. What's missing is never software — it's a <strong>key or a login</strong>:</p>
 
-  <h2>4. What actually gets you stuck</h2>
-  <p>It is almost never <em>missing software</em>. It is a <strong>missing key or login</strong>:</p>
-  <ul>
-    <li><strong>AssemblyAI</strong> needs an API key (for one of the transcribe options).</li>
-    <li><strong>YouTube upload</strong> needs a one-time Google login.</li>
-    <li><strong>ClickUp / Slack / n8n</strong> need you to be logged in — this is the same wall Codex kept hitting.</li>
-  </ul>
-  <p>Fixing one of these logins is usually what unblocks everything else.</p>
+  <div class="unlock now">
+    <h3>🟢 Transcribe sermons — WORKS NOW</h3>
+    ScribeClaw does it on your Mac, offline and free, in Romanian.
+    No key, no sign-in. This is the test in box 2.
+  </div>
+
+  <div class="unlock option">
+    <h3>🟡 Faster cloud transcription — OPTIONAL</h3>
+    Only if you want it. Add one line — <code>ASSEMBLYAI_API_KEY=...</code> —
+    to <code>scribeclaw/.env</code>. The free offline way above already works, so
+    this is a nice-to-have, not a need.
+  </div>
+
+  <div class="unlock wait">
+    <h3>🔴 Publish to YouTube — WAITING ON TWO THINGS</h3>
+    <ul>
+      <li><strong>First, consent.</strong> Your own rulebook blocks any upload until
+      <strong>Dr. Emanoil Geaboc signs a written consent letter</strong>. The good news:
+      the letters are <em>already written for you</em> in your repo
+      (<code>channels/jabbokriver/consent/</code>, Romanian &amp; English) — just fill the
+      blanks, print, and send.</li>
+      <li><strong>Then, a one-time Google login.</strong> Sign in to the JabbokRiver
+      Google account, turn on “YouTube Data API”, and download the login file
+      (<code>client_secret.json</code>). Until this is done, ScribeClaw <em>deliberately
+      refuses</em> to upload — that safety is on purpose.</li>
+    </ul>
+  </div>
+
+  <h2>4. The one human step that comes first</h2>
+  <p>Before any sermon goes public, <strong>Dr. Geaboc must agree in writing.</strong>
+  That isn't a technical task an AI can do for you — but the draft letters are ready.
+  Sending one of those is the single most useful next move, and it costs nothing.</p>
 
   <h2>5. Remember</h2>
   <div class="remember">
     <ul>
-      <li><strong>Don't buy Hermes or KiloClaw</strong> — you already have more than they offer.</li>
-      <li><strong>The blocker is usually a login or key</strong>, not new software.</li>
-      <li><strong>If you ever do sign up</strong> for a service key, use the real official site only.</li>
-      <li><strong>Source:</strong> Antigravity's June 2026 scan of your Mac, plus your own repository (<code>scribeclaw</code>, <code>nemoclaw</code>) and Obsidian notes.</li>
+      <li><strong>Don't buy Hermes or KiloClaw</strong> — you already have more.</li>
+      <li><strong>Transcribing works today</strong>, free and offline (box 2).</li>
+      <li><strong>The only thing blocking YouTube</strong> is consent + one Google login.</li>
+      <li><strong>Source:</strong> your own repository (<code>scribeclaw</code>,
+      <code>channels/jabbokriver/OPERATOR.md</code>), your Obsidian notes, and Antigravity's
+      scan of your Mac.</li>
     </ul>
   </div>
 
-  <p class="tag">#ga #ai-universe — corrected one-page action sheet</p>
+  <p class="tag">#ga #ai-universe — final one-page action sheet</p>
 
 </div>
 </body>
