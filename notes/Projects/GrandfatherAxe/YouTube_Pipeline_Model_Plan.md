@@ -25,7 +25,7 @@ deterministic step.
 | **Fix mis-heard names & doctrine** | **Claude Opus 4.8** (`claude-opus-4-8`) | Yes | High-stakes; Whisper mistakes on names like *Melchizedek* |
 | **Translate RO → EN/ES** | **Claude Opus 4.8**, or **Fable 5** (`claude-fable-5`) for hardest passages | Yes | Highest-stakes, public, unforgiving |
 | Rewrite for reading levels | **Claude Sonnet 4.6** (`claude-sonnet-4-6`) | Yes | Capable workhorse, lower cost |
-| Titles / description / chapters / tags (`youtube_metadata`) | **Claude Haiku 4.5** (`claude-haiku-4-5`) or **local Ollama/gemma** | Yes (light) | Low-stakes — you review before publish |
+| Titles / description / chapters / tags (`youtube_metadata`) | **Claude Haiku 4.5** (`claude-haiku-4-5`) or **local Hermes 4 14B / gemma** | Yes (light) | Low-stakes — you review before publish |
 | Subtitle/SRT timing & formatting | deterministic | No | Whisper already gives timestamps |
 | Upload (`youtube_upload`) | YouTube Data API v3 | No | Gated on consent + OAuth (below) |
 | Orchestration / scheduling | NemoClaw (n8n) + OpenClaw cron, driven by Claude Code | n/a | Code, not a model |
