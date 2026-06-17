@@ -99,6 +99,6 @@ letter. It's the real thing standing between you and a published sermon.
 | Translation, name/term cleanup (default) | `claude-opus-4-8` |
 | Reading-level rewrites | `claude-sonnet-4-6` |
 | Titles/tags/descriptions (cheap) | `claude-haiku-4-5` |
-| Titles/tags (free, private, on-device) | local Ollama (gemma) |
+| Titles/tags + JSON/tool-calling (free, private, on-device) | Hermes 4 14B (Qwen3, GGUF Q4) — upgrade over gemma |
 
 **Tag:** #ga #ai-universe #pipeline
