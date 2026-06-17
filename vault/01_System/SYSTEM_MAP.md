@@ -4,7 +4,7 @@ vault: UrantiPedia
 updated_at: 2026-05-14
 ---
 
-# System Map — Mircea Constellation
+# System Map: Mircea Constellation
 
 Full architecture of the perpetual capture + cloud backup pipeline.
 
@@ -41,7 +41,7 @@ Full architecture of the perpetual capture + cloud backup pipeline.
      ┌────────▼────────────────────────────────────────────┐
      │  Google Docs (upload-to-gdocs.py)                   │
      │  ObsidianJobs/ + AnthropicData/                     │
-     │  anyoneWithLink reader — no login required          │
+ │ anyoneWithLink reader: no login required │
      └─────────────────────────────────────────────────────┘
 
   GitHub repo: vault/ directory → GitHub Pages → vault.html
@@ -100,7 +100,7 @@ All data is accessible without login via:
 - **Vault browser**: `https://myedugit.github.io/mircea-constellation/vault.html`
 - **Dashboard**: loads `vault/DASHBOARD.md` by default
 - **Google Docs**: `anyoneWithLink` reader on all uploaded documents
-- **Raw markdown**: GitHub public API — `https://api.github.com/repos/MyEduGit/mircea-constellation/contents/vault/`
+- **Raw markdown**: GitHub public API, `https://api.github.com/repos/MyEduGit/mircea-constellation/contents/vault/`
 
 ---
 
@@ -113,7 +113,7 @@ All data is accessible without login via:
 | GDrive remote absent | warns, non-fatal | Configure via `rclone config` |
 | iCloud remote absent | warns, non-fatal | Fill `.env` + re-run `install.sh` |
 | GDocs auth failure | prints error, exits 1 | Check `GDRIVE_SA_FILE` in `.env` |
-| launchd not loaded | — | Run `setup/perpetual-capture/install.sh` |
+| launchd not loaded |, | Run `setup/perpetual-capture/install.sh` |
 
 ---
 

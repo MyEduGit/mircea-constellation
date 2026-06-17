@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.mircea.jarvis</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>cd /Users/mircea/jarvis &amp;&amp; bash scripts/run_desktop_app.sh</string>
+  </array>
+
+  <!-- Start automatically when you log in -->
+  <key>RunAtLoad</key>
+  <true/>
+
+  <!-- Restart Jarvis if it ever crashes -->
+  <key>KeepAlive</key>
+  <true/>
+
+  <!-- Give the desktop time to fully load first (30 s) -->
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+
+ <!-- Logs: readable in Console.app or: tail -f ~/Library/Logs/jarvis.log -->
+  <key>StandardOutPath</key>
+  <string>/Users/mircea/Library/Logs/jarvis.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/mircea/Library/Logs/jarvis-error.log</string>
+</dict>
+</plist>

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScribeClaw — Sermon Transcription & FCP Subtitling SaaS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0813;
+      --panel: rgba(22, 17, 39, 0.7);
+      --border: rgba(167, 139, 250, 0.15);
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.35);
+      --secondary: #d946ef;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-outfit: 'Outfit', sans-serif;
+      --font-inter: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-inter);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Ambient Glow Backgrounds */
+    .glow-1 {
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-2 {
+      position: absolute;
+      top: 40%;
+      right: -10%;
+      width: 45vw;
+      height: 45vw;
+      background: radial-gradient(circle, rgba(217, 70, 239, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      font-family: var(--font-outfit);
+      font-weight: 800;
+      font-size: 1.6rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo span {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .cta-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 100px 20px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: #c084fc;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-outfit);
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .features {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: var(--font-outfit);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 50px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(167, 139, 250, 0.4);
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      font-family: var(--font-outfit);
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Pricing Section */
+    .pricing {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      align-items: center;
+    }
+
+    .pricing-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .pricing-card.premium {
+      border: 2px solid var(--primary);
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(139, 92, 246, 0.2);
+    }
+
+    .pricing-card.premium::after {
+      content: 'POPULAR';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+
+    .pricing-card h3 {
+      font-family: var(--font-outfit);
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .pricing-card .price {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: var(--font-outfit);
+      margin: 20px 0;
+    }
+
+    .pricing-card .price span {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin: 30px 0;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pricing-features li {
+      font-size: 0.95rem;
+      color: #d1d5db;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      color: #34d399;
+      font-weight: bold;
+    }
+
+    .pricing-card button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .pricing-card.premium button {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+
+    .pricing-card button:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    .pricing-card.premium button:hover {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    /* Stripe Simulation Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .stripe-checkout {
+      background: #ffffff;
+      color: #1a1f36;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .stripe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e3e8ee;
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+    }
+
+    .stripe-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .stripe-close {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #697386;
+    }
+
+    .stripe-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+    }
+
+    .stripe-info-label {
+      color: #697386;
+    }
+
+    .stripe-info-value {
+      font-weight: 600;
+    }
+
+    .stripe-form-group {
+      margin-bottom: 20px;
+    }
+
+    .stripe-form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #4f5b66;
+      margin-bottom: 6px;
+    }
+
+    .stripe-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d3dbe2;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .stripe-input:focus {
+      border-color: #556cd6;
+    }
+
+    .stripe-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .stripe-pay-btn {
+      width: 100%;
+      background: #556cd6;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: background-color 0.2s;
+      margin-top: 15px;
+    }
+
+    .stripe-pay-btn:hover {
+      background: #4352b2;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
+  <header>
+    <div class="logo">ScribeClaw <span>SAAS</span></div>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="https://urantipedia.org" target="_blank">UrantiPedia</a></li>
+    </ul>
+    <button class="cta-btn" onclick="openCheckout('Silver', 59)">Get Started</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="badge">TRUTHFUL AI SERMON TRANSCRIPTION</div>
+      <h1>Accelerate Sermon Production with <span>ScribeClaw</span></h1>
+      <p>Clean silence removal, high-fidelity transcription, custom theological dictionaries, and styled FCP caption cards. Created for modern ministries.</p>
+      <button class="cta-btn" style="font-size: 1.1rem; padding: 14px 32px;" onclick="openCheckout('Silver', 59)">Start Your Free Trial</button>
+    </section>
+
+    <section class="features" id="features">
+      <h2 class="section-title">Built Specially for Spiritual Media</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="icon-wrapper">🎓</div>
+          <h3>Theological Dictionary Boost</h3>
+          <p>Boosts recognition of names, places, and books (e.g. Ellen White, Rahav, Urantia) so your transcripts remain accurate and true.</p>
+        </div>
+        <div class="card">
+          <div class="icon-wrapper">✂️</div>
+          <h3>Smart Silence & Noise Filter</h3>
+          <p>Automatically runs FFMPEG edits (loudnorm + silence reduction) to tighten the video flow before processing.</p>
+        </div>
+        <div class="card">
+          <div class="icon-wrapper">🎬</div>
+          <h3>Styled FCP Caption Cards</h3>
+          <p>Automatically wraps captions (max 42 chars per line, max 2 lines) so they drop into Final Cut Pro perfectly aligned.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+      <h2 class="section-title">Simple, Transparent Pricing</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Bronze Plan</h3>
+          <div class="price">$29<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li>5 Hours of Transcription</li>
+            <li>FFMPEG Silence Trimming</li>
+            <li>SRT & VTT Export</li>
+            <li>Email Support</li>
+          </ul>
+          <button onclick="openCheckout('Bronze', 29)">Select Bronze</button>
+        </div>
+
+        <div class="pricing-card premium">
+          <h3>Silver Plan</h3>
+          <div class="price">$59<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li>15 Hours of Transcription</li>
+            <li>Silence Trimming + Loudnorm</li>
+            <li>FCP Auto-Wrap Captions</li>
+            <li>YouTube Metadata drafts</li>
+            <li>Priority Support</li>
+          </ul>
+          <button onclick="openCheckout('Silver', 59)">Select Silver</button>
+        </div>
+
+        <div class="pricing-card">
+          <h3>Gold Plan</h3>
+          <div class="price">$99<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li>35 Hours of Transcription</li>
+            <li>Full Audio & Video Pipeline</li>
+            <li>Remotion Title Card Render</li>
+            <li>Direct YouTube Upload (Unlisted)</li>
+            <li>Dedicated API Endpoint</li>
+          </ul>
+          <button onclick="openCheckout('Gold', 99)">Select Gold</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="checkoutModal">
+    <div class="stripe-checkout">
+      <div class="stripe-header">
+        <h2>Checkout Details</h2>
+        <span class="stripe-close" onclick="closeCheckout()">&times;</span>
+      </div>
+      <div class="stripe-info-row">
+        <span class="stripe-info-label">Subscription</span>
+        <span class="stripe-info-value" id="planName">Silver Plan</span>
+      </div>
+      <div class="stripe-info-row">
+        <span class="stripe-info-label">Amount due</span>
+        <span class="stripe-info-value" id="planPrice">$59.00 / month</span>
+      </div>
+      <div class="stripe-form-group" style="margin-top: 20px;">
+        <label for="email">Email address</label>
+        <input type="email" id="email" class="stripe-input" placeholder="you@example.com" value="mirceamatthews@gmail.com">
+      </div>
+      <div class="stripe-form-group">
+        <label for="card">Card details</label>
+        <input type="text" id="card" class="stripe-input" value="4242 4242 4242 4242" placeholder="Card number">
+      </div>
+      <div class="stripe-row">
+        <div class="stripe-form-group" style="flex: 1;">
+          <label for="expiry">Expiry</label>
+          <input type="text" id="expiry" class="stripe-input" value="12/28" placeholder="MM/YY">
+        </div>
+        <div class="stripe-form-group" style="flex: 1;">
+          <label for="cvc">CVC</label>
+          <input type="text" id="cvc" class="stripe-input" value="123" placeholder="123">
+        </div>
+      </div>
+      <button class="stripe-pay-btn" onclick="submitSimulatedPayment()">Subscribe & Launch</button>
+      <div style="text-align: center; margin-top: 15px; font-size: 0.75rem; color: #697386;">
+        🔒 Secured by Stripe (Test Mode Simulation)
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 ScribeClaw. Part of Mircea's Constellation. Governed by UrantiOS.</p>
+  </footer>
+
+  <script>
+    function openCheckout(planName, price) {
+      document.getElementById('planName').textContent = planName + ' Plan';
+      document.getElementById('planPrice').textContent = '$' + price + '.00 / month';
+      document.getElementById('checkoutModal').classList.add('open');
+    }
+
+    function closeCheckout() {
+      document.getElementById('checkoutModal').classList.remove('open');
+    }
+
+    function submitSimulatedPayment() {
+      alert('Simulated Stripe Payment Successful!\nThis checkout is fully ready to connect to your live stripe products.\nThank you for launching ScribeClaw!');
+      closeCheckout();
+    }
+  </script>
+</body>
+</html>

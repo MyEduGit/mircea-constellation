@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URANTiOS — Ethical Multi-Agent Governing OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030712;
+      --panel: rgba(17, 24, 39, 0.7);
+      --border: rgba(6, 182, 212, 0.15);
+      --primary: #06b6d4;
+      --primary-glow: rgba(6, 182, 212, 0.35);
+      --secondary: #3b82f6;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --font-outfit: 'Outfit', sans-serif;
+      --font-inter: 'Inter', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-inter);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    .glow-bg {
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70vw;
+      height: 70vw;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      font-family: var(--font-outfit);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: #3b82f6;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .cta-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 120px 20px 80px;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+      font-family: var(--font-mono);
+    }
+
+    .hero h1 {
+      font-family: var(--font-outfit);
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      margin-bottom: 40px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .code-demo {
+      background: #0b0f19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: #93c5fd;
+      max-width: 750px;
+      margin: 40px auto 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .code-demo::after {
+      content: 'URANTiOS CORE API';
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(6, 182, 212, 0.4);
+      letter-spacing: 1px;
+    }
+
+    .code-green { color: #34d399; }
+    .code-cyan { color: #22d3ee; }
+    .code-comment { color: #4b5563; }
+
+    /* Architectures */
+    .arch {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      z-index: 1;
+      position: relative;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: var(--font-outfit);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 50px;
+    }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+    }
+
+    .arch-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s;
+    }
+
+    .arch-card:hover {
+      border-color: var(--primary);
+    }
+
+    .arch-card h3 {
+      font-family: var(--font-outfit);
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .arch-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Licensing Pricing */
+    .licensing {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      align-items: stretch;
+    }
+
+    .pricing-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s;
+    }
+
+    .pricing-card.premium {
+      border: 2px solid var(--primary);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(6, 182, 212, 0.15);
+    }
+
+    .pricing-card h3 {
+      font-family: var(--font-outfit);
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    .pricing-card .price {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: var(--font-outfit);
+      margin: 20px 0;
+    }
+
+    .pricing-card .price span {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin: 30px 0;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pricing-features li {
+      font-size: 0.95rem;
+      color: #d1d5db;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .pricing-card button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .pricing-card.premium button {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+
+    .pricing-card button:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .pricing-card.premium button:hover {
+      background: linear-gradient(135deg, #22d3ee, #2563eb);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+    }
+
+    /* Modal stripe */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .stripe-checkout {
+      background: #ffffff;
+      color: #1a1f36;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .stripe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e3e8ee;
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+    }
+
+    .stripe-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .stripe-close {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #697386;
+    }
+
+    .stripe-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+    }
+
+    .stripe-info-label {
+      color: #697386;
+    }
+
+    .stripe-info-value {
+      font-weight: 600;
+    }
+
+    .stripe-form-group {
+      margin-bottom: 20px;
+    }
+
+    .stripe-form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #4f5b66;
+      margin-bottom: 6px;
+    }
+
+    .stripe-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d3dbe2;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .stripe-pay-btn {
+      width: 100%;
+      background: #556cd6;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <header>
+    <div class="logo">URANT<span>iOS</span></div>
+    <ul class="nav-links">
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#licensing">Licensing</a></li>
+      <li><a href="https://urantipedia.org" target="_blank">The Cosmology</a></li>
+    </ul>
+    <button class="cta-btn" onclick="openCheckout('Team Pro', 99)">Developer License</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="badge">COSMOLOGICAL AGENT ALIGNMENT</div>
+      <h1>Align Agent Actions with <span>Truth, Beauty & Goodness</span></h1>
+      <p>A declarative multi-agent operating system and runtime checking framework that prevents LLM hallucination, intent drift, and unauthorized executions using structural constraints.</p>
+      <button class="cta-btn" style="font-size: 1.1rem; padding: 14px 32px;" onclick="openCheckout('Team Pro', 99)">Get License Key</button>
+
+      <div class="code-demo">
+        <span class="code-comment"># Enforce the Lucifer Test safety guardrail</span><br>
+        <span class="code-cyan">import</span> urantios<br><br>
+        os = urantios.<span class="code-green">load_covenant</span>(<span class="code-cyan">"./COVENANT.md"</span>)<br>
+        agent = os.<span class="code-green">spawn_agent</span>(role=<span class="code-cyan">"Theologian"</span>)<br><br>
+        <span class="code-comment"># Real-time intent and boundary check</span><br>
+        agent.<span class="code-green">run</span>(<span class="code-cyan">"verify_thesis"</span>, payload={})<br>
+        os.<span class="code-green">lucifer_test</span>(agent) <span class="code-comment"># Returns alignment status</span>
+      </div>
+    </section>
+
+    <section class="arch" id="architecture">
+      <h2 class="section-title">The Trinity Architecture</h2>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <h3>👑 1. Will (The Father)</h3>
+          <p>The authority layer. Holds structural rules, sandbox credentials, and final decisions. Will cannot be modified by the agent.</p>
+        </div>
+        <div class="arch-card">
+          <h3>💬 2. Word (The Son)</h3>
+          <p>The communication layer. Logs, telemetry, and evidence hashes. The Word is immutable, audit-ready, and transparent.</p>
+        </div>
+        <div class="arch-card">
+          <h3>🧠 3. Mind (The Spirit)</h3>
+          <p>The execution layer. Performs LLM calls, tools interaction, and task solving. Spirit executes in service of the Will.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="licensing" id="licensing">
+      <h2 class="section-title">Developer & Enterprise Licenses</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Developer Core</h3>
+          <div class="price">$0<span>/forever</span></div>
+          <ul class="pricing-features">
+            <li>Open Source Core Library</li>
+            <li>Trinity Architecture Spec</li>
+            <li>Standard Markdown Covenant</li>
+            <li>GitHub Action deployment</li>
+          </ul>
+          <button onclick="alert('Download from github.com/MyEduGit/URANTiOS')">Get Open Source</button>
+        </div>
+
+        <div class="pricing-card premium">
+          <h3>Team Pro License</h3>
+          <div class="price">$99<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li>Lucifer Test Auto-Audit API</li>
+            <li>Quarantine webhook triggers</li>
+            <li>Local Cognee integration support</li>
+            <li>Multi-seat configuration dashboard</li>
+            <li>Priority developer support</li>
+          </ul>
+          <button onclick="openCheckout('Team Pro', 99)">Buy License Key</button>
+        </div>
+
+        <div class="pricing-card">
+          <h3>Enterprise Sovereign</h3>
+          <div class="price">$499<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li>Self-hosted LuciferiClaw controller</li>
+            <li>Unlimited agent node seats</li>
+            <li>STRIDE threat model customizer</li>
+            <li>24/7 incident response SLA</li>
+            <li>Custom database auditing</li>
+          </ul>
+          <button onclick="openCheckout('Enterprise Sovereign', 499)">Contact Sales</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="checkoutModal">
+    <div class="stripe-checkout">
+      <div class="stripe-header">
+        <h2>Developer License Checkout</h2>
+        <span class="stripe-close" onclick="closeCheckout()">&times;</span>
+      </div>
+      <div class="stripe-info-row">
+        <span class="stripe-info-label">License Plan</span>
+        <span class="stripe-info-value" id="planName">Team Pro License</span>
+      </div>
+      <div class="stripe-info-row">
+        <span class="stripe-info-label">Amount due</span>
+        <span class="stripe-info-value" id="planPrice">$99.00 / month</span>
+      </div>
+      <div class="stripe-form-group" style="margin-top: 20px;">
+        <label for="email">Email address</label>
+        <input type="email" id="email" class="stripe-input" placeholder="you@example.com" value="mirceamatthews@gmail.com">
+      </div>
+      <div class="stripe-form-group">
+        <label for="card">Card details</label>
+        <input type="text" id="card" class="stripe-input" value="4242 4242 4242 4242" placeholder="Card number">
+      </div>
+      <div class="stripe-row">
+        <div class="stripe-form-group" style="flex: 1;">
+          <label for="expiry">Expiry</label>
+          <input type="text" id="expiry" class="stripe-input" value="08/29" placeholder="MM/YY">
+        </div>
+        <div class="stripe-form-group" style="flex: 1;">
+          <label for="cvc">CVC</label>
+          <input type="text" id="cvc" class="stripe-input" value="456" placeholder="123">
+        </div>
+      </div>
+      <button class="stripe-pay-btn" onclick="submitSimulatedPayment()">Purchase License</button>
+      <div style="text-align: center; margin-top: 15px; font-size: 0.75rem; color: #697386;">
+        🔒 Secured by Stripe (Test Mode Simulation)
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 URANTiOS. Part of Mircea's Constellation. Built in service of Paper 196.</p>
+  </footer>
+
+  <script>
+    function openCheckout(planName, price) {
+      document.getElementById('planName').textContent = planName;
+      document.getElementById('planPrice').textContent = '$' + price + '.00 / month';
+      document.getElementById('checkoutModal').classList.add('open');
+    }
+
+    function closeCheckout() {
+      document.getElementById('checkoutModal').classList.remove('open');
+    }
+
+    function submitSimulatedPayment() {
+      alert('Simulated Stripe Payment Successful!\nYour license key has been generated and emailed.\nThank you for supporting URANTiOS!');
+      closeCheckout();
+    }
+  </script>
+</body>
+</html>
