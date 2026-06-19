@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS launchd agent for ESTRS.
+  Installed automatically by install_estrs.sh into ~/Library/LaunchAgents/
+  __ESTRS_REPO__ and __PYTHON3__ are replaced by the installer.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.geaboc.estrs</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>__PYTHON3__</string>
+        <string>-m</string>
+        <string>estrs</string>
+        <string>--watch</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>__ESTRS_REPO__</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONPATH</key>
+        <string>__ESTRS_REPO__</string>
+    </dict>
+
+    <!-- Start immediately and restart if it crashes -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Throttle restart if it crashes in a tight loop -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <key>StandardOutPath</key>
+    <string>__ESTRS_REPO__/estrs_watcher.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__ESTRS_REPO__/estrs_watcher_error.log</string>
+</dict>
+</plist>

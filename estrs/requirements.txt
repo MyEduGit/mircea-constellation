@@ -1,0 +1,4 @@
+# ESTRS — Python dependencies
+# Core: stdlib only (pathlib, difflib, re, dataclasses, threading, logging)
+# Optional but strongly recommended for watcher mode:
+watchdog>=4.0.0
