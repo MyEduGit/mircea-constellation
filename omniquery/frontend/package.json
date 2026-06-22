@@ -1,0 +1,20 @@
+{
+  "name": "omniquery-frontend",
+  "private": true,
+  "version": "phase3-v1.0",
+  "type": "module",
+  "description": "OmniQuery Phase 3 — local-only UI for the Force-of-Three Council backend. Not for deployment.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
+  }
+}

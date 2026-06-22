@@ -1,0 +1,342 @@
+{
+  "name": "OmniQuery Phase 1 — Force-of-Three Council",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "oq1-trigger-001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-240, 100]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "oq1-q-assign-001",
+              "name": "query",
+              "value": "What is the nature of truth, beauty, and goodness?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "oq1-set-query-001",
+      "name": "Set Query",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [0, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_OPENAI_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are Father — Final Judge of the OmniQuery Force-of-Three. Speak with ultimate wisdom and divine authority.' }, { role: 'user', content: $('Set Query').item.json.query }], max_tokens: 400 }) }}",
+        "options": {},
+        "timeout": 15000
+      },
+      "id": "oq1-seat1-gpt",
+      "name": "Seat1_Father_GPT",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, -100],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REPLACE_WITH_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'claude-opus-4-7', max_tokens: 400, system: 'You are Son — Builder and Coder of the OmniQuery Force-of-Three. Speak with creative precision and technical mastery.', messages: [{ role: 'user', content: $('Set Query').item.json.query }] }) }}",
+        "options": {},
+        "timeout": 15000
+      },
+      "id": "oq1-seat2-claude",
+      "name": "Seat2_Son_Claude",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 100],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.x.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_XAI_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'grok-4.3', messages: [{ role: 'system', content: 'You are Spirit — Live Context and Truth-Seeker of the OmniQuery Force-of-Three. Speak with real-time awareness and the clarity of Spirit of Truth.' }, { role: 'user', content: $('Set Query').item.json.query }], max_tokens: 400 }) }}",
+        "options": {},
+        "timeout": 15000
+      },
+      "id": "oq1-seat3-grok",
+      "name": "Seat3_Spirit_Grok",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [300, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      },
+      "id": "oq1-merge-001",
+      "name": "Merge Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [600, 100]
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const query = $('Set Query').first().json.query || 'Unknown query';\n\nfunction extractText(json) {\n  // OpenAI / xAI (Grok) format\n  if (json.choices && json.choices[0] && json.choices[0].message) {\n    return json.choices[0].message.content || '[empty]';\n  }\n  // Anthropic format\n  if (json.content && Array.isArray(json.content) && json.content[0] && json.content[0].text) {\n    return json.content[0].text;\n  }\n  // Error object\n  if (json.error) {\n    return '[Error: ' + JSON.stringify(json.error).substring(0, 200) + ']';\n  }\n  return '[No response]';\n}\n\nconst seatLabels = [\n  'Father (GPT-4o) — Final Judge',\n  'Son (Claude) — Builder',\n  'Spirit (Grok) — Live Context / Truth'\n];\n\nconst items = $input.all();\nconst responses = items.map(function(item, i) {\n  const text = extractText(item.json);\n  const label = seatLabels[i] || ('Seat ' + (i + 1));\n  return '## ' + label + '\\n' + text;\n});\n\nconst synthesisPrompt = 'You are Gabriel — the Bright and Morning Star, Synthesizer of the OmniQuery Force-of-Three.\\n\\nThe council was asked:\\n\"' + query + '\"\\n\\nHere are the perspectives from the three seats:\\n\\n' + responses.join('\\n\\n---\\n\\n') + '\\n\\nSynthesize these perspectives into a single unified response. Identify areas of consensus, note meaningful disagreements, and provide your final authoritative judgment. Speak with the clarity and authority of Gabriel.';\n\nreturn [{\n  json: {\n    synthesis_prompt: synthesisPrompt,\n    query: query,\n    response_count: responses.length,\n    seat_responses: responses\n  }\n}];"
+      },
+      "id": "oq1-code-001",
+      "name": "Build Synthesis Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [860, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_OPENAI_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'user', content: $json.synthesis_prompt }], max_tokens: 600 }) }}",
+        "options": {},
+        "timeout": 20000
+      },
+      "id": "oq1-gabriel-001",
+      "name": "Gabriel_Synthesizer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1120, 100],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "oq1-out-q",
+              "name": "query",
+              "value": "={{ $('Build Synthesis Prompt').item.json.query }}",
+              "type": "string"
+            },
+            {
+              "id": "oq1-out-gabriel",
+              "name": "gabriel_synthesis",
+              "value": "={{ $json.choices && $json.choices[0] ? $json.choices[0].message.content : '[Gabriel could not synthesize — check OPENAI_API_KEY]' }}",
+              "type": "string"
+            },
+            {
+              "id": "oq1-out-seats",
+              "name": "seat_responses",
+              "value": "={{ $('Build Synthesis Prompt').item.json.seat_responses }}",
+              "type": "array"
+            },
+            {
+              "id": "oq1-out-count",
+              "name": "response_count",
+              "value": "={{ $('Build Synthesis Prompt').item.json.response_count }}",
+              "type": "number"
+            },
+            {
+              "id": "oq1-out-ver",
+              "name": "omniquery_version",
+              "value": "phase1-v1.0",
+              "type": "string"
+            },
+            {
+              "id": "oq1-out-council",
+              "name": "council",
+              "value": "Force-of-Three (Father/GPT · Son/Claude · Spirit/Grok)",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "oq1-output-001",
+      "name": "OmniQuery Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [1380, 100]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Query": {
+      "main": [
+        [
+          {
+            "node": "Seat1_Father_GPT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat2_Son_Claude",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seat3_Spirit_Grok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seat1_Father_GPT": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seat2_Son_Claude": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Seat3_Spirit_Grok": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge Responses": {
+      "main": [
+        [
+          {
+            "node": "Build Synthesis Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Synthesis Prompt": {
+      "main": [
+        [
+          {
+            "node": "Gabriel_Synthesizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gabriel_Synthesizer": {
+      "main": [
+        [
+          {
+            "node": "OmniQuery Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["omniquery", "force-of-three", "phase1"],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-26T00:00:00.000Z",
+  "versionId": "omniquery-phase1-v1-0"
+}

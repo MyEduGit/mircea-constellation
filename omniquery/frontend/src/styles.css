@@ -1,0 +1,214 @@
+:root {
+  --bg: #0e1116;
+  --panel: #161b22;
+  --panel-2: #1c232c;
+  --border: #2a323c;
+  --text: #e6edf3;
+  --muted: #9aa7b2;
+  --accent: #c9a227;
+  --ok: #3fb950;
+  --err: #f85149;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.masthead h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  letter-spacing: 0.5px;
+}
+
+.council-line {
+  margin: 0.25rem 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.warning-banner {
+  border: 1px solid var(--accent);
+  background: rgba(201, 162, 39, 0.08);
+  color: var(--accent);
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.query-form {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.query-form label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.counter {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+button {
+  background: var(--accent);
+  color: #1a1400;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-error {
+  margin-top: 1.25rem;
+  border: 1px solid var(--err);
+  background: rgba(248, 81, 73, 0.08);
+  color: var(--err);
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.results {
+  margin-top: 2rem;
+}
+
+.synthesis {
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 1.25rem 1.4rem;
+}
+
+.synthesis h2 {
+  margin: 0 0 0.6rem;
+  color: var(--accent);
+  font-size: 1.3rem;
+}
+
+.synthesis-text {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.seats-heading {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.seats {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.seat {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 10px;
+  padding: 0.9rem 1.05rem;
+}
+
+.seat-ok {
+  border-left-color: var(--ok);
+}
+
+.seat-error {
+  border-left-color: var(--err);
+}
+
+.seat-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.seat-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.seat-meta {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.seat-text {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.error-note {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.error-code {
+  background: rgba(248, 81, 73, 0.12);
+  color: var(--err);
+  border: 1px solid var(--err);
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+
+.error-gloss {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
