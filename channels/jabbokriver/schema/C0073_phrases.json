@@ -1,0 +1,71 @@
+[
+  {
+    "id": "ufo",
+    "label": "UFO / UAP / Congres — 46 videoclipuri declasificate",
+    "search": "46 de videoclipuri",
+    "duration": 7,
+    "card_text": "CONGRESUL A DECLASIFICAT 46 DE VIDEOCLIPURI",
+    "fallbacks": [
+      "46 de video",
+      "videoclipuri cu privire",
+      "fenomene care au fost filmate"
+    ],
+    "card_style": "default"
+  },
+  {
+    "id": "copeland",
+    "label": "Kenneth Copeland — Tu ești Dumnezeu",
+    "search": "tu ești dumnezeu",
+    "duration": 7,
+    "card_text": "COPELAND: «TU EȘTI DUMNEZEU.»",
+    "fallbacks": [
+      "tu esti dumnezeu",
+      "voi sunteți dumnezeu",
+      "kenneth copeland",
+      "benny hinn"
+    ],
+    "card_style": "default"
+  },
+  {
+    "id": "tomb",
+    "label": "Tombsucking la Bethel",
+    "search": "tombsucking",
+    "duration": 7,
+    "card_text": "BETHEL: DORM PE MORMINTE.",
+    "fallbacks": [
+      "suge puterea din mormant",
+      "suge puterea din mormânt",
+      "morminte",
+      "bethel"
+    ],
+    "card_style": "default"
+  },
+  {
+    "id": "daughters",
+    "label": "Fetițele misionarului — apar la biserică",
+    "search": "fetițele apar",
+    "duration": 6,
+    "card_text": "FETIȚELE MOARTE — AU APĂRUT DUMINICA.",
+    "fallbacks": [
+      "fetitele apar",
+      "cele doua fetite",
+      "se asaza pe scaune",
+      "vorbesc cu el"
+    ],
+    "card_style": "default"
+  },
+  {
+    "id": "pivot",
+    "label": "Sora White — vizitatori / spirite rele (thesis pivot)",
+    "search": "vizitatori",
+    "duration": 8,
+    "card_text": "ȘI O FEMEIE A PREZIS TOT — DE 170 DE ANI.",
+    "fallbacks": [
+      "vizitatorii sunt spirite",
+      "spirite rele",
+      "sora white spune",
+      "sabatul este gresit"
+    ],
+    "card_style": "pivot"
+  }
+]
