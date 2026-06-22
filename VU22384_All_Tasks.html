@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VU22384 – All Conversation Exercises (Tasks A–E)</title>
+    <style>
+        /* ── Screen styles ─────────────────────────────────────── */
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            background: #f0f4f8;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 25mm 20mm 20mm 20mm;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* ── Print styles ──────────────────────────────────────── */
+        @media print {
+            body { background: white; }
+            .page {
+                width: 100%;
+                margin: 0;
+                padding: 20mm 20mm 25mm 20mm;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            .page:last-child { page-break-after: avoid; }
+        }
+
+        @page {
+            size: A4;
+            margin: 20mm 20mm 25mm 20mm;
+            @bottom-center {
+                content: "VU22384 – Certificate III in EAL  |  Page " counter(page) " of " counter(pages);
+                font-family: Arial, sans-serif;
+                font-size: 9pt;
+                color: #555;
+            }
+        }
+
+        /* ── Cover page ────────────────────────────────────────── */
+        .cover {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250mm;
+            text-align: center;
+        }
+        .cover-logo {
+            font-size: 48pt;
+            margin-bottom: 20px;
+        }
+        .cover h1 {
+            font-size: 22pt;
+            color: #1e40af;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        .cover h2 {
+            font-size: 16pt;
+            color: #3b82f6;
+            border: none;
+            margin: 5px 0 30px;
+        }
+        .cover-subtitle {
+            font-size: 13pt;
+            color: #475569;
+            margin-bottom: 50px;
+        }
+        .cover-fields {
+            width: 100%;
+            border-collapse: collapse;
+            max-width: 420px;
+        }
+        .cover-fields td {
+            padding: 10px 8px;
+            border: none;
+            border-bottom: 2px solid #94a3b8;
+            font-size: 11pt;
+            text-align: left;
+        }
+        .cover-fields td:first-child { width: 140px; color: #475569; }
+        .cover-disclaimer {
+            margin-top: 60px;
+            font-size: 9.5pt;
+            color: #64748b;
+            max-width: 400px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* ── Headings ───────────────────────────────────────────── */
+        h1 { font-size: 18pt; color: #1e40af; margin: 0 0 12px; }
+        h2 {
+            font-size: 15pt;
+            color: #1e40af;
+            border-bottom: 3px solid #bfdbfe;
+            padding-bottom: 8px;
+            margin: 30px 0 16px;
+        }
+        h3 { font-size: 12pt; color: #2563eb; margin: 20px 0 10px; }
+
+        /* ── Task header band ───────────────────────────────────── */
+        .task-header {
+            background: #1e40af;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 6px 6px 0 0;
+            margin: 0 0 0 0;
+        }
+        .task-header h2 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+            font-size: 16pt;
+        }
+        .task-body {
+            border: 1.5px solid #bfdbfe;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            padding: 16px 18px 20px;
+            margin-bottom: 20px;
+        }
+
+        /* ── Info box ───────────────────────────────────────────── */
+        .info-box {
+            background: #f0f9ff;
+            border-left: 5px solid #3b82f6;
+            padding: 12px 16px;
+            margin: 16px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .info-box strong { color: #1e40af; }
+
+        /* ── Tables ─────────────────────────────────────────────── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0 18px;
+            font-size: 10.5pt;
+        }
+        th {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            padding: 9px 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            border: 1px solid #94a3b8;
+            padding: 8px 10px;
+            vertical-align: top;
+        }
+        tr:nth-child(even) td { background: #f8faff; }
+
+        /* ── Answer blanks ──────────────────────────────────────── */
+        .blank-line {
+            border: none;
+            border-bottom: 1.5px solid #94a3b8;
+            height: 28px;
+            display: block;
+            margin: 6px 0 14px;
+            width: 100%;
+        }
+        .blank-box {
+            border: 1px solid #94a3b8;
+            min-height: 60px;
+            border-radius: 4px;
+            margin: 8px 0 16px;
+            background: #fafafa;
+        }
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .answer-label {
+            font-size: 9.5pt;
+            color: #475569;
+            margin-bottom: 2px;
+        }
+
+        /* ── Student info row ───────────────────────────────────── */
+        .student-info {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .student-info div { flex: 1; }
+        .student-info .label {
+            font-size: 9.5pt;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        /* ── Lists ──────────────────────────────────────────────── */
+        ul { margin: 8px 0 14px 22px; }
+        li { margin-bottom: 4px; }
+
+        /* ── Footer note ────────────────────────────────────────── */
+        .end-note {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #bfdbfe;
+            color: #475569;
+            font-size: 10pt;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════ COVER PAGE ══════════════ -->
+<div class="page">
+    <div class="cover">
+        <div class="cover-logo">📘</div>
+        <h1>VU22384</h1>
+        <h1>Develop and Document a Learning Plan and Portfolio</h1>
+        <h2>Certificate III in English as an Additional Language (EAL)</h2>
+        <p class="cover-subtitle">Conversation Exercises — Tasks A to E</p>
+
+        <table class="cover-fields">
+            <tr>
+                <td><strong>Student Name:</strong></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><strong>Date:</strong></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><strong>Class / Teacher:</strong></td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+        <p class="cover-disclaimer">
+            These handouts focus on speaking practice, vocabulary, goal setting,
+            and portfolio development. Complete each task with your teacher's guidance.
+        </p>
+    </div>
+</div>
+
+<!-- ══════════════ TASK A ══════════════ -->
+<div class="page">
+    <div class="task-header"><h2>Task A — My Learning Goals</h2></div>
+    <div class="task-body">
+
+        <div class="student-info">
+            <div>
+                <div class="label">Student Name</div>
+                <div class="blank-line"></div>
+            </div>
+            <div>
+                <div class="label">Date</div>
+                <div class="blank-line"></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Learning Outcomes</strong>
+            <ul>
+                <li>Practise speaking about goals using new vocabulary.</li>
+                <li>Interview different classmates.</li>
+                <li>Write clear and strong goals.</li>
+                <li>Speak with one new student.</li>
+            </ul>
+        </div>
+
+        <h3>Section 1 — Key Vocabulary</h3>
+        <table>
+            <tr>
+                <th style="width:22%">Word / Phrase</th>
+                <th style="width:38%">Meaning</th>
+                <th>Example Sentence</th>
+            </tr>
+            <tr>
+                <td>goal</td>
+                <td>something you want to achieve</td>
+                <td>My main goal is to improve my English.</td>
+            </tr>
+            <tr>
+                <td>short-term goal</td>
+                <td>a goal for the next few weeks or months</td>
+                <td>A short-term goal is to speak English every day.</td>
+            </tr>
+            <tr>
+                <td>long-term goal</td>
+                <td>a goal for 1 year or more</td>
+                <td>My long-term goal is to get a job in Australia.</td>
+            </tr>
+            <tr>
+                <td>achieve</td>
+                <td>to successfully reach a goal</td>
+                <td>I want to achieve my goal of passing this course.</td>
+            </tr>
+            <tr>
+                <td>aspiration</td>
+                <td>a strong hope or ambition</td>
+                <td>Her aspiration is to become a nurse.</td>
+            </tr>
+            <tr>
+                <td>specific</td>
+                <td>clear and exact, not general</td>
+                <td>Make your goals specific so you know what to do.</td>
+            </tr>
+            <tr>
+                <td>motivation</td>
+                <td>the reason you want to do something</td>
+                <td>My motivation is my family.</td>
+            </tr>
+            <tr>
+                <td>challenge</td>
+                <td>something difficult you have to deal with</td>
+                <td>A challenge for me is understanding fast speakers.</td>
+            </tr>
+            <tr>
+                <td>progress</td>
+                <td>improvement over time</td>
+                <td>I can see my progress in my writing.</td>
+            </tr>
+        </table>
+
+        <h3>Section 2 — Interview 2 Classmates</h3>
+        <p>Ask two classmates the questions below. Write their answers in the table.</p>
+
+        <table>
+            <tr>
+                <th style="width:40%">Question</th>
+                <th>Classmate 1</th>
+                <th>Classmate 2</th>
+            </tr>
+            <tr>
+                <td>What is your name?</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>Why are you studying English?</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>What is one short-term goal?</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>What is one long-term goal?</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>What motivates you?</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+        <h3>Section 3 — Write Your Own Goals</h3>
+        <p>Now write <strong>your</strong> goals. Use the vocabulary from Section 1.</p>
+
+        <div class="answer-grid">
+            <div>
+                <div class="answer-label">My short-term goal is:</div>
+                <div class="blank-box"></div>
+            </div>
+            <div>
+                <div class="answer-label">My long-term goal is:</div>
+                <div class="blank-box"></div>
+            </div>
+            <div>
+                <div class="answer-label">My motivation is:</div>
+                <div class="blank-box"></div>
+            </div>
+            <div>
+                <div class="answer-label">One challenge I have is:</div>
+                <div class="blank-box"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══════════════ TASK B ══════════════ -->
+<div class="page">
+    <div class="task-header"><h2>Task B — My Learning Plan</h2></div>
+    <div class="task-body">
+
+        <div class="student-info">
+            <div>
+                <div class="label">Student Name</div>
+                <div class="blank-line"></div>
+            </div>
+            <div>
+                <div class="label">Date</div>
+                <div class="blank-line"></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Learning Outcomes</strong>
+            <ul>
+                <li>Identify specific actions to reach your English goals.</li>
+                <li>Plan study activities for the week.</li>
+                <li>Discuss your plan with a partner.</li>
+            </ul>
+        </div>
+
+        <h3>Section 1 — My Weekly Learning Plan</h3>
+        <p>Fill in the table with what you will do to practise English each day.</p>
+
+        <table>
+            <tr>
+                <th style="width:20%">Day</th>
+                <th>English activity I will do</th>
+                <th style="width:25%">Time (minutes)</th>
+            </tr>
+            <tr><td>Monday</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Tuesday</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Wednesday</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Thursday</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Friday</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Weekend</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </table>
+
+        <h3>Section 2 — My Learning Plan (SMART Goals)</h3>
+        <table>
+            <tr>
+                <th style="width:20%">SMART</th>
+                <th>What does it mean?</th>
+                <th>My goal example</th>
+            </tr>
+            <tr><td>Specific</td><td>Clear and exact</td><td>&nbsp;</td></tr>
+            <tr><td>Measurable</td><td>You can count or check it</td><td>&nbsp;</td></tr>
+            <tr><td>Achievable</td><td>Realistic for you</td><td>&nbsp;</td></tr>
+            <tr><td>Relevant</td><td>Important for your life</td><td>&nbsp;</td></tr>
+            <tr><td>Time-bound</td><td>Has a deadline</td><td>&nbsp;</td></tr>
+        </table>
+
+        <h3>Section 3 — Discuss With a Partner</h3>
+        <p>Tell your partner about your learning plan. Use these sentence starters:</p>
+        <ul>
+            <li>This week I am going to …</li>
+            <li>I will practise English by …</li>
+            <li>My SMART goal is …</li>
+            <li>I will check my progress by …</li>
+        </ul>
+
+        <div class="answer-label">Partner's feedback on my plan:</div>
+        <div class="blank-box" style="min-height:80px;"></div>
+
+    </div>
+</div>
+
+<!-- ══════════════ TASK C ══════════════ -->
+<div class="page">
+    <div class="task-header"><h2>Task C — My Skills, Strengths and Barriers</h2></div>
+    <div class="task-body">
+
+        <div class="student-info">
+            <div>
+                <div class="label">Student Name</div>
+                <div class="blank-line"></div>
+            </div>
+            <div>
+                <div class="label">Date</div>
+                <div class="blank-line"></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Learning Outcomes</strong>
+            <ul>
+                <li>Identify your English skills and strengths.</li>
+                <li>Recognise barriers to learning.</li>
+                <li>Talk about strategies to overcome barriers.</li>
+            </ul>
+        </div>
+
+        <h3>Section 1 — My English Skills Self-Assessment</h3>
+        <p>Circle your level: <strong>1 = needs work &nbsp; 2 = OK &nbsp; 3 = good &nbsp; 4 = very good</strong></p>
+
+        <table>
+            <tr>
+                <th>Skill</th>
+                <th style="width:15%">My level (1–4)</th>
+                <th>One thing I want to improve</th>
+            </tr>
+            <tr><td>Listening</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Speaking</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Reading</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Writing</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Vocabulary</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Grammar</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </table>
+
+        <h3>Section 2 — Barriers to My Learning</h3>
+        <table>
+            <tr>
+                <th>Barrier (problem)</th>
+                <th>Does this affect you? (Yes / No)</th>
+                <th>Strategy (what can help?)</th>
+            </tr>
+            <tr>
+                <td>I feel nervous speaking English</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>I don't have enough time to study</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>I don't understand some vocabulary</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>I find it hard to understand fast speakers</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>My own barrier: ___________________</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+        <h3>Section 3 — Class Discussion</h3>
+        <p>Share one strength and one barrier with the class. Use these phrases:</p>
+        <ul>
+            <li>One of my strengths in English is …</li>
+            <li>A barrier for me is …</li>
+            <li>I can overcome this by …</li>
+            <li>Something that helps me is …</li>
+        </ul>
+
+    </div>
+</div>
+
+<!-- ══════════════ TASK D ══════════════ -->
+<div class="page">
+    <div class="task-header"><h2>Task D — My Portfolio</h2></div>
+    <div class="task-body">
+
+        <div class="student-info">
+            <div>
+                <div class="label">Student Name</div>
+                <div class="blank-line"></div>
+            </div>
+            <div>
+                <div class="label">Date</div>
+                <div class="blank-line"></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Learning Outcomes</strong>
+            <ul>
+                <li>Understand what a portfolio is and why it is important.</li>
+                <li>Select evidence of your English learning.</li>
+                <li>Describe and discuss your portfolio items.</li>
+            </ul>
+        </div>
+
+        <h3>Section 1 — What Is a Portfolio?</h3>
+        <p>A <strong>portfolio</strong> is a collection of your work that shows your learning and progress.
+           It can include writing samples, worksheets, recordings, certificates, and reflections.</p>
+
+        <h3>Section 2 — My Portfolio Checklist</h3>
+        <p>Tick (✓) the items you have or will collect for your portfolio.</p>
+        <table>
+            <tr>
+                <th style="width:10%">✓</th>
+                <th>Portfolio Item</th>
+                <th>Why it shows my learning</th>
+            </tr>
+            <tr><td>&nbsp;</td><td>A writing sample from class</td><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td><td>A completed worksheet</td><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td><td>A photo or certificate</td><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td><td>A recording of me speaking</td><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td><td>My learning plan (Task B)</td><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td><td>A reflection or journal entry</td><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td><td>Other: ___________________</td><td>&nbsp;</td></tr>
+        </table>
+
+        <h3>Section 3 — Describe One Portfolio Item</h3>
+        <p>Choose one item. Write about it and then tell a partner.</p>
+
+        <table>
+            <tr><th>Question</th><th>Your answer</th></tr>
+            <tr><td>What is the item?</td><td style="min-height:40px;">&nbsp;</td></tr>
+            <tr><td>When did you make or collect it?</td><td>&nbsp;</td></tr>
+            <tr><td>What does it show about your English?</td><td>&nbsp;</td></tr>
+            <tr><td>How do you feel about this work?</td><td>&nbsp;</td></tr>
+        </table>
+
+    </div>
+</div>
+
+<!-- ══════════════ TASK E ══════════════ -->
+<div class="page">
+    <div class="task-header"><h2>Task E — Review Progress and Update Plan &amp; Portfolio</h2></div>
+    <div class="task-body">
+
+        <div class="student-info">
+            <div>
+                <div class="label">Student Name</div>
+                <div class="blank-line"></div>
+            </div>
+            <div>
+                <div class="label">Date</div>
+                <div class="blank-line"></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Learning Outcomes</strong>
+            <ul>
+                <li>Reflect on your learning progress since Task A.</li>
+                <li>Update your learning plan and portfolio.</li>
+                <li>Set new goals for the next stage of learning.</li>
+                <li>Share your progress with a partner or the class.</li>
+            </ul>
+        </div>
+
+        <h3>Section 1 — Progress Review</h3>
+        <p>Look back at your goals from Task A and your plan from Task B. Answer these questions.</p>
+
+        <table>
+            <tr><th>Question</th><th>Your answer</th></tr>
+            <tr>
+                <td>Did you achieve your short-term goal? What happened?</td>
+                <td style="min-height:50px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>What did you practise or improve most?</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>What was still a challenge?</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>What surprised you about your learning?</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+        <h3>Section 2 — Self-Assessment: Before and After</h3>
+        <table>
+            <tr>
+                <th>Skill</th>
+                <th>My level in Task A (1–4)</th>
+                <th>My level now (1–4)</th>
+                <th>Did I improve? (Yes / A little / Not yet)</th>
+            </tr>
+            <tr><td>Listening</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Speaking</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Reading</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Writing</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>Vocabulary</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </table>
+
+        <h3>Section 3 — My New Goals</h3>
+        <div class="answer-grid">
+            <div>
+                <div class="answer-label">My new short-term goal:</div>
+                <div class="blank-box"></div>
+            </div>
+            <div>
+                <div class="answer-label">My new long-term goal:</div>
+                <div class="blank-box"></div>
+            </div>
+        </div>
+
+        <h3>Section 4 — Update My Portfolio</h3>
+        <p>Add at least one new item to your portfolio. Write about it here:</p>
+        <table>
+            <tr><th>New portfolio item</th><th>What it shows about my progress</th></tr>
+            <tr><td>&nbsp;</td><td style="min-height:50px;">&nbsp;</td></tr>
+        </table>
+
+        <h3>Section 5 — Share With the Class</h3>
+        <p>Tell the class about your progress using these sentence starters:</p>
+        <ul>
+            <li>Since the start of the course, I have improved my …</li>
+            <li>One thing I achieved is …</li>
+            <li>I still need to work on …</li>
+            <li>My new goal is …</li>
+            <li>Something I am proud of is …</li>
+        </ul>
+
+        <div class="end-note">
+            <strong>Well done — you have completed all five tasks!</strong><br>
+            VU22384 – Develop and Document a Learning Plan and Portfolio &nbsp;|&nbsp; Certificate III in EAL
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
