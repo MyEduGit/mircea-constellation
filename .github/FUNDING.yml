@@ -1,0 +1,14 @@
+# Funding links shown on GitHub repo "Sponsor" button
+# Sources: GitHub FUNDING.yml spec — https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+
+# STEP 1: Go to ko-fi.com → create account → username = "mirceaconstellation" (or similar)
+# STEP 2: Update the line below with your Ko-fi username
+# STEP 3: Push — GitHub will show a "Sponsor" button on the repo immediately
+
+ko_fi: mirceaconstellation
+
+# Once GitHub Sponsors is approved (apply at github.com/settings/sponsors):
+# github: myedugit
+
+# Custom links (update once Patreon/Substack are live):
+# custom: ["https://patreon.com/mircea", "https://mircea.substack.com"]
