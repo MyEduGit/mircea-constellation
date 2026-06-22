@@ -1,0 +1,41 @@
+# Ruff configuration for the mircea-constellation Python modules.
+# Kept intentionally narrow so CI catches real problems without bikeshedding.
+
+target-version = "py312"
+line-length = 100
+
+exclude = [
+  ".git",
+  "__pycache__",
+  "scribeclaw/web",
+]
+
+[lint]
+# Start with the rule set that catches real bugs:
+#   E    pycodestyle errors
+#   F    pyflakes (undefined names, unused imports)
+#   I    import sorting
+#   B    flake8-bugbear (likely bugs)
+#   UP   pyupgrade (dead syntax on py3.12)
+select = ["E", "F", "I", "B", "UP"]
+
+# Long strings in rule rationales / SRT templates / docstrings are
+# intentional; we don't want ruff splitting them for us.
+ignore = [
+  "E501",  # line too long — handled by the formatter, not the linter
+  "B008",  # FastAPI uses Depends()/Body() in defaults by design
+]
+
+[lint.per-file-ignores]
+# Handler dispatch tables use lambdas as the canonical shape; we
+# want them uniform and readable, not refactored into named fns.
+"scribeclaw/main.py" = ["E731"]
+
+[lint.isort]
+known-first-party = [
+  "scribeclaw",
+  "openclaw_ingest",
+  "fireclaw",
+  "lucifericlaw",
+  "cognee_config",
+]
