@@ -62,3 +62,18 @@ entries:
     ingestion_date: null
     rights_note: "operator-held archive; consent required from Dr. Geaboc before public commentary"
     commentary_episode_id: null
+
+  - id: geaboc-c0081
+    title: "Dr. Geaboc — sermon C0081 (camera recording, title TBD after transcription)"
+    host: "Dr. Emanoil Geaboc"
+    source_url: ""              # operator-held camera recording, never published
+    source_channel: "operator-held camera recording (SSD_Adobe:FCP/C0081_/C0081.mp3)"
+    language: ro
+    duration_s: null
+    download_status: downloaded
+    transcription_status: done  # AssemblyAI run completed 2026-07-09; outputs in SSD_Adobe:FCP/C0081_/
+    series: religia-lui-vs-religia-despre-isus
+    tags: ["c0081", "operator-held", "assemblyai"]
+    ingestion_date: "2026-07-09"
+    rights_note: "operator-held original recording; consent required from Dr. Geaboc before public commentary"
+    commentary_episode_id: null
