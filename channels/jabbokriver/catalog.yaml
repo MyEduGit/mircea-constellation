@@ -71,7 +71,7 @@ entries:
     language: ro
     duration_s: null
     download_status: downloaded
-    transcription_status: pending  # flip to done once transcribe_local_assemblyai.py has run
+    transcription_status: done  # AssemblyAI run completed 2026-07-09; outputs in SSD_Adobe:FCP/C0081_/
     series: religia-lui-vs-religia-despre-isus
     tags: ["c0081", "operator-held", "assemblyai"]
     ingestion_date: "2026-07-09"
