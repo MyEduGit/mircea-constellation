@@ -138,6 +138,8 @@ Generează 6 fișiere Markdown per predică în dosarul sermonic: raport compara
 |---|---|---|---|
 | 2026-05-15 | C0072 / GFttc7f5zEo | ✅ SRT gata de upload | SBV→SRT convertit, corectat (468 seg). **Fișier corect: `GFttc7f5zEo_RO_corrected.srt`** |
 | 2026-06-06 | — | ✅ ESTRS livrat | Pachet `scribeclaw/estrs/` (11 module) committed + pushed pe PR #72. SOP actualizat: `_corrected.srt` = fișier corect; `_final.srt` NU pentru upload (sincronizare ruptă + 4 rânduri pe mobil). |
+| 2026-07-19 | C0072 / GFttc7f5zEo | ✅ Publicat | Subtitrări române publicate pe YouTube Studio. |
+| 2026-07-19 | C0082 | ✅ Publicat | Publicat vineri ora 16:00 Australia. ID YouTube necunoscut — de adăugat. |
 
 ---
 
