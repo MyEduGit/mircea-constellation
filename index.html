@@ -414,6 +414,7 @@ const connections = [
   ['ollama', 'gabriel',       'ai-link'],
   ['ollama', 'cognee',        'ai-link'],
   ['cognee', 'obsidian',      'active'],
+  ['obsidian', 'imac',         'active'],
   ['cognee', 'phd',           'ai-link'],
 
   // Bot fleet
@@ -470,7 +471,7 @@ const nodeDetails = {
 
   urantipedia: { 'Domains': 'urantipedia.org + .com', 'Papers': '196 + Foreword', 'Personalities': '477', 'Concepts': '900+', 'SSL': 'Certbot active', 'Chat': 'Gabriel (floating star)', 'Tier': 'SERVICES' },
   amep:     { 'Hub URL': '100.75.177.36:18802', 'Students': '21 total', 'Cert I': '7 students', 'Cert II': '9 students', 'Cert III': '5 students', 'Class': 'CP123E3/4', 'Tier': 'SERVICES' },
-  obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Content': 'Ontology, comparisons, Foreword analysis', 'Tier': 'SERVICES' },
+  obsidian: { 'Type': 'Knowledge Vault', 'Bridge': 'rsync to Hetzner + status sync 10min', 'Docs': '477+', 'Export': 'JSON to constellation', 'Content': 'Ontology, comparisons, Foreword analysis', 'Actions URI': 'obsidian://actions-uri/* (CLI + event bridge)', 'Event Bridge': '~/.constellation/events/*.event → daily note capture', 'CLI': 'obsidian-actions <cmd> <vault> [args]', 'Canonical Paths': 'iCloud → ~/Library/Mobile Documents/iCloud~md~obsidian | Git/Local → ~/ObsidianVaults', 'Tier': 'SERVICES' },
   phd:      { 'Title': 'PhD — Triune Monism', 'Thesis': 'Three irreducible domains: matter, mind, spirit', 'AI Partners': 'Claude (deep analysis) + ChatGPT (summaries)', 'Repo': 'myedugit/phd-triune-monism', 'Papers': '196 Urantia Book papers as source', 'Tier': 'SERVICES' },
   herenow:  { 'Service': 'here.now', 'Skill': 'heredotnow/skill · here-now v1.12.1', 'Role': 'Instant web hosting — publish the constellation as a live URL', 'Install': 'bash setup/here_now_install.sh', 'Site URL': 'pending publish', 'Auth Mode': 'anonymous (24h) → authenticated (permanent) with API key', 'Docs': 'https://here.now/docs', 'Tier': 'SERVICES' },
 
@@ -643,7 +644,11 @@ async function loadStatus() {
     }
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
-    if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
+    if (data.obsidian) {
+      const obsDot = data.obsidian.actions_uri ? 'green' : 'yellow';
+      const obsLabel = data.obsidian.actions_uri ? `${data.obsidian.docs} docs · Actions URI` : `${data.obsidian.docs} docs`;
+      items.push(`<span><span class="dot dot-${obsDot}"></span>Vault: ${obsLabel}</span>`);
+    }
     if (data.jabbokriver) items.push(`<span><span class="dot dot-blue"></span>JabbokRiver: ${data.jabbokriver.consent_status}</span>`);
     items.push(`<span><span class="dot dot-blue"></span>Nodes: ${nodes.length}</span>`);
     if (data.updated) {
