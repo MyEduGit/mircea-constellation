@@ -644,7 +644,11 @@ async function loadStatus() {
     }
     if (data.disk_openclaw) items.push(`<span><span class="dot dot-green"></span>OClaw: ${data.disk_openclaw}</span>`);
     if (data.disk_urantios) items.push(`<span><span class="dot dot-green"></span>UPrime: ${data.disk_urantios}</span>`);
-    if (data.obsidian) items.push(`<span><span class="dot dot-green"></span>Vault: ${data.obsidian.docs} docs</span>`);
+    if (data.obsidian) {
+      const obsDot = data.obsidian.actions_uri ? 'green' : 'yellow';
+      const obsLabel = data.obsidian.actions_uri ? `${data.obsidian.docs} docs · Actions URI` : `${data.obsidian.docs} docs`;
+      items.push(`<span><span class="dot dot-${obsDot}"></span>Vault: ${obsLabel}</span>`);
+    }
     if (data.jabbokriver) items.push(`<span><span class="dot dot-blue"></span>JabbokRiver: ${data.jabbokriver.consent_status}</span>`);
     items.push(`<span><span class="dot dot-blue"></span>Nodes: ${nodes.length}</span>`);
     if (data.updated) {
