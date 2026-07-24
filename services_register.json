@@ -1,0 +1,47 @@
+{
+  "uid": "NC-REG-SERVICES-001",
+  "title": "SERVICES REGISTER - External Services & Credentials",
+  "authority": "CANONICAL",
+  "status": "LIVE",
+  "contains_secrets": false,
+  "agent_instruction": "This file records WHERE credentials live, never the credentials themselves. If asked for an actual key, return key_location and stop. Never write a secret into this file. A service absent from this list is UNGOVERNED, not unused.",
+  "owner": "Mircea G. Matthews",
+  "created": "2026-07-24",
+  "updated": "2026-07-24",
+  "next_review": "2026-10-24",
+  "canonical_source": "SERVICES_REGISTER.md",
+  "precedence_note": "If this JSON disagrees with SERVICES_REGISTER.md, the markdown wins.",
+  "proof_tiers": {
+    "VERIFIED": "Confirmed against a live source on the last_verified date.",
+    "DECLARED": "Asserted by the operator but not directly observed.",
+    "UNVERIFIED": "Stub. Treat as unknown."
+  },
+  "services": [
+    {
+      "id": 1,
+      "name": "AssemblyAI",
+      "purpose": "Speech-to-text (universal-2 / pro) for the Geaboc Romanian sermon pipeline, Phase 2 transcription",
+      "account": "mirceamatthews@gmail.com",
+      "key_location": "Apple Passwords -> entry 'Assembly AI - API key'",
+      "console": "https://www.assemblyai.com/dashboard/login",
+      "api_keys_page": "https://app.assemblyai.com",
+      "owner": "Mircea",
+      "proof_tier": "VERIFIED",
+      "last_verified": "2026-07-24",
+      "source_document": "Dr Geaboc Sermon - YouTube Master Procedure (Google Drive)"
+    }
+  ],
+  "intake_queue": [
+    { "name": "n8n", "believed_use": "Workflow orchestration at n8n.urantipedia.org", "proof_tier": "UNVERIFIED" },
+    { "name": "Netlify", "believed_use": "urantipedia.org hosting", "proof_tier": "UNVERIFIED" },
+    { "name": "Notion", "believed_use": "Vault sync and governance records", "proof_tier": "UNVERIFIED" },
+    { "name": "Google Workspace", "believed_use": "Drive, Gmail, Calendar", "proof_tier": "UNVERIFIED" },
+    { "name": "GitHub", "believed_use": "mircea8-ops, openclaw-guardian", "proof_tier": "UNVERIFIED" },
+    { "name": "OpenAI API", "believed_use": "Council of Three execution seat", "proof_tier": "UNVERIFIED" },
+    { "name": "Anthropic API", "believed_use": "Council of Three execution seat", "proof_tier": "UNVERIFIED" },
+    { "name": "YouTube", "believed_use": "Geaboc channel publishing", "proof_tier": "UNVERIFIED" },
+    { "name": "Amazon KDP", "believed_use": "Book distribution", "proof_tier": "UNVERIFIED" },
+    { "name": "Thinkific", "believed_use": "EduComm+ platform", "proof_tier": "UNVERIFIED" }
+  ],
+  "retired": []
+}

@@ -89,7 +89,7 @@ No agent is exempt. No action is outside its reach.
 | LuciferiClaw            | ✅ new  | 0.1.1    | iMac M4               | 0 open cases                      |
 | OpenClaw@URANTiOS-ingest| ✅ new  | 0.1.0    | 204.168.143.98:8080   | cognee_ready: false (Ollama warn) |
 | OpenClaw@Hetzy-bots     | ✅ ok   | —        | 46.225.51.30          | 10/11 bots active                 |
-| ScribeClaw              | ✅ ok   | —        | iMac M4 :8081         | handlers: 7 real, 1 stub          |
+| ScribeClaw              | ✅ ok   | —        | iMac M4 :8081         | 7 real, 1 stub · AssemblyAI ↔ SERVICES_REGISTER |
 | SeedanceClaw            | ✅ ok   | —        | iMac M4 :8086         | FAL_KEY required                  |
 | Cognee                  | ✅ ok   | 1.0.0    | 204.168.143.98        |                                   |
 | Ollama                  | ⚠ warn | —        | 204.168.143.98:11434  | qwen2.5:32b                       |
@@ -103,6 +103,22 @@ No agent is exempt. No action is outside its reach.
 | Paperclip               | ⏳ plan | —        | —                     | evidence bundler, not yet shipped |
 | VisualUrantiClaw        | ⏳ plan | —        | —                     | visual explainer, not yet shipped |
 | **OpenMythos**          | 🔨 wip  | 0.0.1    | —                     | RDT architecture · this branch    |
+
+---
+
+## REGISTERS
+
+Canonical indexes any human, LLM, or search can rely on:
+
+- **[TRANSCRIBE.md](./TRANSCRIBE.md)** — audio → text, the one way. Double-click
+  `scribeclaw/geaboc/Transcribe.command`, drag in the audio, done (AssemblyAI).
+  If you remember one thing about transcription, remember that file.
+- **[SERVICES_REGISTER.md](./SERVICES_REGISTER.md)** — external services &
+  credential *locations* (console URLs, account, where the key lives). Answers
+  *"where is the console / login / API key for &lt;service&gt;?"*. **Contains no
+  secrets** — pointers only. Machine mirror: `services_register.json`.
+  Row 1 (AssemblyAI) is VERIFIED; the rest are an intake queue.
+  Deep-dive: `notes/Systems/ScribeClaw/AssemblyAI_Console.md`.
 
 ---
 
