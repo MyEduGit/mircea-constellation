@@ -159,6 +159,17 @@ SAFE_CORRECTIONS: dict[str, str] = {
     "martin luther": "Martin Luther",
     "jean calvin": "Jean Calvin",
     "ioan calvin": "Ioan Calvin",
+    # Additional garbled forms observed in a draft ASR pass of C0083. Only
+    # non-words with an unambiguous target are added here — never a correction
+    # from one valid Romanian word to another (see GLOSSARY_TUNING.md; e.g.
+    # "credințe"→"credință" is DELIBERATELY excluded because "credințe" is the
+    # legitimate plural and the rule would corrupt correct text).
+    "mala lupta": "Marea Luptă",
+    "mala luptă": "Marea Luptă",
+    "meral domnie": "Merle d'Aubigné",
+    "meral domnile": "Merle d'Aubigné",
+    "istoria reformatiunii": "Istoria Reformațiunii",
+    "istoria reformationii": "Istoria Reformațiunii",
 }
 
 
