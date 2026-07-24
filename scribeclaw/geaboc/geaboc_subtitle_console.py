@@ -126,6 +126,39 @@ SAFE_CORRECTIONS: dict[str, str] = {
     "sedinta spiritista": "ședință spiritistă",
     "starea mortilor": "Starea Morților",
     "mortii nu stiu nimic": "Morții nu știu nimic",
+    # ── Reformation-history name-set (added from episode C0083) ──
+    # Canonical-form normalization for the Reformation figures/terms these
+    # sermons use. Keyed to lowercased / mis-accented / mis-spelled forms;
+    # each maps to a single unambiguous canonical spelling (case + diacritics)
+    # without imposing a first-name variant the speaker didn't use. Tune
+    # against a real AssemblyAI transcript when one is in hand.
+    "merle d'aubigné": "Merle d'Aubigné",
+    "merle d'aubigne": "Merle d'Aubigné",
+    "merle d’aubigné": "Merle d'Aubigné",
+    "merle daubigne": "Merle d'Aubigné",
+    "d'aubigné": "d'Aubigné",
+    "d'aubigne": "d'Aubigné",
+    "valdensi": "valdenzi",
+    "waldensi": "valdenzi",
+    "waldenses": "valdenzi",
+    "valbenci": "valdenzi",
+    "jan hus": "Jan Hus",
+    "ioan hus": "Ioan Hus",
+    "jan huss": "Jan Hus",
+    "john wycliffe": "John Wycliffe",
+    "ioan wycliffe": "Ioan Wycliffe",
+    "wickliffe": "Wycliffe",
+    "william tyndale": "William Tyndale",
+    "tindale": "Tyndale",
+    "girolamo savonarola": "Girolamo Savonarola",
+    "savonarola": "Savonarola",
+    "ulrich zwingli": "Ulrich Zwingli",
+    "zwingli": "Zwingli",
+    "filip melanchthon": "Filip Melanchthon",
+    "melanchthon": "Melanchthon",
+    "martin luther": "Martin Luther",
+    "jean calvin": "Jean Calvin",
+    "ioan calvin": "Ioan Calvin",
 }
 
 
