@@ -110,6 +110,9 @@ No agent is exempt. No action is outside its reach.
 
 Canonical indexes any human, LLM, or search can rely on:
 
+- **[TRANSCRIBE.md](./TRANSCRIBE.md)** — audio → text, the one way. Double-click
+  `scribeclaw/geaboc/Transcribe.command`, drag in the audio, done (AssemblyAI).
+  If you remember one thing about transcription, remember that file.
 - **[SERVICES_REGISTER.md](./SERVICES_REGISTER.md)** — external services &
   credential *locations* (console URLs, account, where the key lives). Answers
   *"where is the console / login / API key for &lt;service&gt;?"*. **Contains no

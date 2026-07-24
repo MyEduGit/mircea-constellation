@@ -40,6 +40,10 @@ related:
 
 # AssemblyAI Console
 
+> [!tip] Just want to transcribe? → **[[TRANSCRIBE]]**
+> Double-click `scribeclaw/geaboc/Transcribe.command`, drag in the audio, click
+> Transcribe. This note is the background/reference; TRANSCRIBE is the how-to.
+
 > [!info] One-line answer
 > The **AssemblyAI console** is the external web app at
 > **<https://www.assemblyai.com/dashboard/login>** (API keys at
