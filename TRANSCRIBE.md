@@ -80,6 +80,23 @@ Add `--sbv "/path/timing.sbv"` only if you have YouTube timing to reuse (its
 
 ---
 
+## Two tools, one key
+
+| Tool | Best for | Output |
+|---|---|---|
+| **`Transcribe.command` / `geaboc_subtitle_console.py`** | the everyday run | one-click, **glossary-corrected** subtitles straight to SSD/Obsidian/Drive |
+| **`jrp_assemblyai.py`** | hunting errors before publishing | raw AssemblyAI `.txt`/`.srt`/`.vtt` + a **`_lowconf.txt`** listing every token under 0.60 confidence with its timestamp (add `--correct` for a glossary-corrected transcript too) |
+
+Both read the **same** AssemblyAI key from the Keychain — they accept either
+service name (`assemblyai-api-key` or `Geaboc AssemblyAI API Key`), so the two
+tools can't collide. The secret itself never leaves the Keychain.
+
+```bash
+# lean CLI with the low-confidence audit + glossary correction:
+python3 scribeclaw/geaboc/jrp_assemblyai.py /path/C0083_AUDIO__.mp3 \
+  --lang ro --model universal-3-5-pro --correct --outdir ./C0083_out
+```
+
 ## If it says the API key is missing
 
 The tool looks for the AssemblyAI key in this order — macOS **Keychain**

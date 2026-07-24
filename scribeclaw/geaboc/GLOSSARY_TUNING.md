@@ -90,8 +90,12 @@ REJECTED (never add):
 
 ## Workflow to grow the dict
 
-1. Run the episode through **AssemblyAI** (the console — `Transcribe.command`).
-2. Read the QA file and skim the transcript for proper-noun / citation errors.
+1. Run the episode through **AssemblyAI** (the console — `Transcribe.command`,
+   or `jrp_assemblyai.py` for the CLI).
+2. Read the transcript for proper-noun / citation errors. Shortcut: if you used
+   `jrp_assemblyai.py`, open **`<stem>_lowconf.txt`** — it lists every token
+   under 0.60 confidence with its timestamp, which is exactly where the
+   "Merle d'Aubigné / valdenzi" class of errors hides. Fix those first.
 3. For each, apply the one rule above. Add VERIFIED entries; park CANDIDATEs
    here until a second episode confirms the pattern; log REJECTEDs so they stay
    out.
