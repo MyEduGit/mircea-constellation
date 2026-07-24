@@ -93,6 +93,18 @@ GitHub Action secrets: `GDRIVE_SA_JSON`, `APPLE_ID`, `APPLE_APP_PASSWORD`, `ICLO
 
 ---
 
+## External Services
+
+External service consoles, accounts, and **credential locations** (never the
+secrets themselves) are tracked in the canonical **[[SERVICES_REGISTER]]**
+(`SERVICES_REGISTER.md` at repo root; machine mirror `services_register.json`).
+Any *"where is the console / login / API key for &lt;service&gt;?"* question
+should be answered from there. Row 1 — **AssemblyAI** (ScribeClaw transcription
+backend) — is VERIFIED; see `notes/Systems/ScribeClaw/AssemblyAI_Console.md`
+for the ScribeClaw-side integration detail.
+
+---
+
 ## Public Access
 
 All data is accessible without login via:
