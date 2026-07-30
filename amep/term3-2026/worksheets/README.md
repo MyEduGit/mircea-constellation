@@ -32,6 +32,8 @@ Four Word files, each with a TOC + page numbers, bundling a PRACTICE
 - `ENGAGE_FirstAid_Cut_and_Burn_COMBINED.docx` (Cert II Task C)
 - `ENGAGE_CertIII_Health_Eating_and_Sleep_COMBINED.docx` (Cert III Task A)
 - `ENGAGE_CertIII_Instructions_Lifting_and_Mopping_COMBINED.docx` (Cert III Task C)
+- `ENGAGE_CertI_Travel_Roleplay_COMBINED.docx` (Cert I VU23501 Task A — travel role-play)
+- `ENGAGE_CertI_Ordering_Roleplay_COMBINED.docx` (Cert I VU23501 Task B — ordering role-play)
 Different games per genre (mingle / info-gap / role-play; sequencing race;
 survey / rank & talk / advice; "Do it!" TPR / spot-the-mistake).
 
