@@ -16,14 +16,14 @@ __pycache__/
 # Remotion (Node tooling under remotion/)
 remotion/node_modules/
 remotion/out/
-<<<<<<< HEAD
 remotion/build/
 remotion/shorts-queue/
-=======
 
 # here.now — per-project claim tokens + staged site (never commit)
 .herenow/
 .here-now-site/
 # Cloudflare credentials (never commit)
 .cloudflare.env
->>>>>>> main
+
+# Built distributables (geaboc_subtitle_console/make_zip.sh)
+dist/
