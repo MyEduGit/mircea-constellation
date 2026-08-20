@@ -184,6 +184,70 @@ unchanged afterwards. The raw AssemblyAI response is preserved at
 
 ---
 
+## Standalone CLI — `C0087_transcribe.sh`
+
+One file, one recording, no Docker and no Python. `curl` and `jq` are the
+only dependencies, and it is bash 3.2 compatible so it runs on a stock
+macOS shell. Use it when you have an audio file on a laptop and want the
+transcript now — the containerized handlers above stay the path for
+pipeline work.
+
+```bash
+export ASSEMBLYAI_API_KEY='...'          # https://www.assemblyai.com/app/api-keys
+./scribeclaw/C0087_transcribe.sh ~/Downloads/C0087_AUDIO_.mp3
+```
+
+It uploads the file, starts a Romanian job, polls until AssemblyAI is
+done, and writes to `<audio-dir>/transcripts/<stem>/` — the same layout
+`transcribe_assemblyai` produces, plus the `.clean` files that
+`postprocess_transcript` would have written:
+
+```
+segments.json  segments.clean.json  transcript.srt  transcript.vtt
+transcript.txt  transcript.clean.txt
+assemblyai.raw.json  assemblyai.sentences.json  evidence.json
+```
+
+Copy that directory into `/data/transcripts/<stem>/` and
+`youtube_metadata` runs against it unchanged.
+
+Three modes:
+
+```bash
+# 1. transcribe a local file (add -s for speaker diarization)
+./scribeclaw/C0087_transcribe.sh -s ~/Downloads/interviu.mp3
+
+# 2. reuse a transcript that already completed in the dashboard — no
+#    upload, no second charge
+./scribeclaw/C0087_transcribe.sh --import <transcript-id> -o ./transcripts/interviu
+
+# 3. re-render the output files from a saved response — offline, no key
+./scribeclaw/C0087_transcribe.sh --render ./transcripts/interviu/assemblyai.raw.json
+```
+
+`--help` lists every flag. Notes on the contract:
+
+- **Key discovery**, first hit wins: `--api-key-file` → `$ASSEMBLYAI_API_KEY`
+  → `scribeclaw/.env` → `~/.assemblyai`. The key is passed to curl through a
+  0600 config file, so it never shows up in `ps` output.
+- **stdout is a JSON summary; stderr is progress.** `... | jq -r .output_dir`
+  works, and `-q` silences the progress.
+- **Romanian cleanup is deterministic** — the same cedilla → comma-below map
+  and punctuation rules as `postprocess.py`, no language model. Raw files
+  keep AssemblyAI's text verbatim; only the `.clean` files are normalized.
+- **A timeout does not lose the job.** If polling gives up, the error prints
+  the `--import <id>` command that picks the transcript up later.
+- `--dry-run` prints the exact request body and sends nothing.
+
+Tests (no network, no API credit — an AssemblyAI stub on localhost covers
+upload, polling and import):
+
+```bash
+bash scribeclaw/tests/test_c0087_transcribe.sh
+```
+
+---
+
 ## Configuration surface
 
 | Env var            | Default        | Purpose                                  |

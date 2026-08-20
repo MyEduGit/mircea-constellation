@@ -27,3 +27,24 @@ jobs:
 
       - name: Run package validator
         run: ./setup/claude-doc/scripts/validate.sh
+
+  scribeclaw-transcribe-cli:
+    name: ScribeClaw standalone transcribe CLI
+    runs-on: ubuntu-22.04   # pinned for reproducible shellcheck version
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck + jq
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck jq
+          shellcheck --version
+          jq --version
+
+      - name: Lint the script and its tests
+        run: |
+          shellcheck scribeclaw/C0087_transcribe.sh \
+                     scribeclaw/tests/test_c0087_transcribe.sh
+
+      - name: Run tests (offline; AssemblyAI is stubbed on localhost)
+        run: bash scribeclaw/tests/test_c0087_transcribe.sh
