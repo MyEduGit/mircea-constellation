@@ -111,7 +111,7 @@ HELPTEXT
 }
 
 # ── plumbing ─────────────────────────────────────────────────────────────────
-log()  { [ "$QUIET" -eq 0 ] && printf '%s\n' "$*" >&2 || true; }
+log()  { if [ "$QUIET" -eq 0 ]; then printf '%s\n' "$*" >&2; fi; }
 warn() { printf '%s\n' "WARN: $*" >&2; }
 die()  { printf '%s\n' "ERROR: $*" >&2; exit 1; }
 
@@ -612,8 +612,10 @@ run_transcribe() {
   [ -n "$upload_url" ] || die "upload succeeded but no upload_url came back"
 
   jq --arg u "$upload_url" '. + {audio_url: $u}' "$WORK/job.json" > "$WORK/job.final.json"
-  log "-> starting job (language: $([ "$DETECT_LANGUAGE" -eq 1 ] && echo auto-detect || echo "$LANGUAGE")\
-$([ "$SPEAKER_LABELS" -eq 1 ] && echo ", diarized" || true))"
+  local lang_note diar_note=""
+  if [ "$DETECT_LANGUAGE" -eq 1 ]; then lang_note="auto-detect"; else lang_note="$LANGUAGE"; fi
+  if [ "$SPEAKER_LABELS" -eq 1 ]; then diar_note=", diarized"; fi
+  log "-> starting job (language: ${lang_note}${diar_note})"
   code="$(http_post_json "$API/transcript" "$WORK/job.final.json" "$WORK/job.resp.json")" \
     || die "network error starting the job (curl exit $?)"
   check_http "$code" "$WORK/job.resp.json" "job start"
