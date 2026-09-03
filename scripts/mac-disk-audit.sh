@@ -177,7 +177,7 @@ head -30 "$WORK/video.tsv" | awk -F'\t' '{
 
 # ====================================================== 6. FINAL CUT PRO ====
 echo
-hr; echo "6. FINAL CUT PRO"; hr
+hr; echo "6. MEDIA LIBRARIES (Final Cut, Photos, iMovie, Logic)"; hr
 FCP_REGEN_KB=0
 FCP_ORIG_KB=0
 OTHER_LIB_KB=0
@@ -376,6 +376,7 @@ grep -iE '\.(pvm|vmwarevm|utm|qcow2|vdi|vmdk|sparsebundle|dmg\.sparseimage)$' \
     while (b >= 1024 && i < 5) { b /= 1024; i++ }
     printf("    AMBER  %9.1f %-3s  %s\n", b, u[i], $2)
   }'
+echo "  VM container directories (totals — may include the files listed above):"
 for vd in "$HOME/Parallels" "$HOME/Virtual Machines.localized" "$HOME/Library/Containers/com.utmapp.UTM"; do
   K=$(dir_kb "$vd")
   if [ "$K" -gt 0 ]; then echo "    AMBER  $(human "$(kb "$K")")  $vd"; VM_FOUND=1; fi
