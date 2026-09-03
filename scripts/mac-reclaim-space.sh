@@ -155,13 +155,24 @@ purge_contents "yarn cache" "$HOME/Library/Caches/Yarn"
 
 if command -v pnpm >/dev/null 2>&1; then
   echo "  pnpm store: $(human "$(dir_bytes "$(pnpm store path 2>/dev/null)")")"
-  if confirm "    run 'pnpm store prune'?"; then pnpm store prune 2>/dev/null; echo "    done"; fi
+  if confirm "    run 'pnpm store prune'?"; then
+    pnpm store prune 2>/dev/null
+    echo "    done"
+  else
+    echo "    skipped"
+  fi
 fi
 
 for pipcmd in pip3 pip; do
   if command -v "$pipcmd" >/dev/null 2>&1; then
-    echo "  $pipcmd cache: $("$pipcmd" cache dir 2>/dev/null)"
-    if confirm "    run '$pipcmd cache purge'?"; then "$pipcmd" cache purge 2>/dev/null; fi
+    PIP_DIR=$("$pipcmd" cache dir 2>/dev/null)
+    echo "  $pipcmd cache: $(human "$(dir_bytes "$PIP_DIR")")  ($PIP_DIR)"
+    if confirm "    run '$pipcmd cache purge'?"; then
+      "$pipcmd" cache purge 2>/dev/null
+      echo "    done"
+    else
+      echo "    skipped"
+    fi
     break
   fi
 done
@@ -222,17 +233,32 @@ purge_contents "Mail downloads" \
 
 heading "STAGE 4 — Time Machine local snapshots"
 
-SNAPSHOTS=$(tmutil listlocalsnapshots / 2>/dev/null | grep -c 'com.apple.TimeMachine')
-echo "  Local snapshots on /: $SNAPSHOTS"
+# Snapshots are taken on the Data volume; querying / alone can under-report.
+SNAPSHOTS=0
+for vol in / /System/Volumes/Data; do
+  n=$(tmutil listlocalsnapshots "$vol" 2>/dev/null | grep -c 'com.apple.TimeMachine')
+  echo "  Local snapshots on $vol: $n"
+  if [ "$n" -gt 0 ]; then
+    tmutil listlocalsnapshots "$vol" 2>/dev/null | \
+      grep 'com.apple.TimeMachine' | sed 's/^/    /'
+  fi
+  SNAPSHOTS=$((SNAPSHOTS + n))
+done
 
 if [ "$SNAPSHOTS" -gt 0 ]; then
-  tmutil listlocalsnapshots / 2>/dev/null | sed 's/^/    /'
+  echo
+  echo "  Cross-check with sizes:"
+  diskutil apfs listSnapshots /System/Volumes/Data 2>/dev/null | \
+    grep -E "Name|Size|Purgeable" | sed 's/^/    /'
   echo
   echo "  These are on-disk restore points. Deleting them does NOT touch backups"
   echo "  already written to your Time Machine destination."
   echo "  BACKUP-FIRST: confirm your destination backup ran recently."
   if confirm_destructive "  delete ALL local snapshots (needs sudo)?"; then
-    sudo tmutil deletelocalsnapshots / && echo "    done"
+    for vol in / /System/Volumes/Data; do
+      sudo tmutil deletelocalsnapshots "$vol" 2>/dev/null
+    done
+    echo "    done"
   else
     echo "    skipped"
   fi
@@ -300,6 +326,11 @@ echo
 echo "  Target: keep at least 150-200 GB free on a 32 GB-RAM machine so macOS"
 echo "  has room for swap. Below ~50 GB you get beachballs and failed updates."
 echo
+if [ "$END_FREE" -lt 107374182400 ] && [ "$DEEP_SCAN" -eq 0 ]; then
+  echo "  Still under 100 GB free. Caches and Trash are not where the bulk went."
+  echo "  Re-run with --deep-scan to locate the directories actually holding it."
+  echo
+fi
 if [ "$REPORT_ONLY" -eq 1 ]; then
   echo "  (--report-only: nothing was changed)"
 fi
