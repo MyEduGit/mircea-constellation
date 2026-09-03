@@ -2,17 +2,29 @@
 #
 # mac-disk-audit.sh — READ-ONLY inventory of a macOS internal volume.
 #
-# Stage 1 of SCAN -> REPORT -> APPROVE -> CLEAN. This is the SCAN.
+# Stage 1-2 of SCAN -> VERIFY -> REPORT -> REVIEW -> CLEAN.
 # It deletes nothing, moves nothing, renames nothing, empties nothing.
-# The only file it creates is its own report.
 #
-# That is a structural property, not a promise: this script contains no
-# rm, mv, rmdir, unlink, trash, truncate, shred or dd. Verify before running:
+# Files it creates, and there are no others:
+#   1. the report, at --report (default ~/Desktop/imac-disk-audit-<stamp>.txt)
+#   2. scratch data under $TMPDIR/disk-audit-<pid>/ :
+#      files.tsv, bundles.txt, map.tsv, video.tsv, and dup*.tsv when
+#      --verify-dupes is used. Left in place; macOS clears TMPDIR itself.
 #
-#     grep -nE '\b(rm|mv|rmdir|unlink|trash|truncate|shred|dd)\b' mac-disk-audit.sh
+# Verifying that claim: grepping for command names is a smoke test, NOT a
+# proof. It cannot see `find -delete`, `-exec rm`, eval, indirect expansion,
+# or a `>` truncating an existing file. Check the things that actually
+# execute, then read the script -- it is linear and has no functions that
+# hide work:
+#
+#   grep -nE '\-delete|\-exec|\beval\b|xargs|\$\{!' mac-disk-audit.sh
+#       -> the only -exec is `stat`, which reads.
+#   grep -nE '(^|[^0-9<>&])>[^>&]|>>' mac-disk-audit.sh
+#       -> every write target is "$WORK/..." or "$REPORT".
 #
 # Usage:
 #   sudo bash mac-disk-audit.sh                 # full audit, ~5-25 min on 2 TB
+#   sudo bash mac-disk-audit.sh --verify-dupes  # + SHA-256 confirm duplicates
 #   sudo bash mac-disk-audit.sh --min-file 500  # only catalogue files >500 MB
 #   bash mac-disk-audit.sh --no-sudo            # skip areas needing root
 #
@@ -28,6 +40,8 @@ BIG_FILE_MB=1024         # "large file" headline threshold
 DUP_MIN_MB=200           # duplicate-candidate threshold
 REPORT="$HOME/Desktop/imac-disk-audit-$(date +%Y%m%d-%H%M).txt"
 USE_SUDO=1
+VERIFY_DUPES=0
+DUP_MAX_GROUPS=40        # cap hashing work on a first pass
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -36,7 +50,9 @@ while [ $# -gt 0 ]; do
     --vol)      VOL="$2"; shift 2 ;;
     --report)   REPORT="$2"; shift 2 ;;
     --no-sudo)  USE_SUDO=0; shift ;;
-    --help|-h)  sed -n '2,24p' "$0"; exit 0 ;;
+    --verify-dupes)  VERIFY_DUPES=1; shift ;;
+    --dup-groups)    DUP_MAX_GROUPS="$2"; shift 2 ;;
+    --help|-h)  sed -n '2,36p' "$0"; exit 0 ;;
     *) echo "Unknown option: $1" >&2; exit 2 ;;
   esac
 done
@@ -199,31 +215,99 @@ done
 # ========================================================= 7. DUPLICATES ====
 echo
 hr; echo "7. DUPLICATE CANDIDATES (identical byte size, >= ${DUP_MIN_MB} MB)"; hr
-echo "  AMBER — same size is a strong hint, not proof. Verify before acting:"
-echo "    shasum -a 256 \"file A\" \"file B\""
+echo "  Same byte size is a HINT, not evidence. Two different 4K takes of the"
+echo "  same length are routinely byte-identical in size and completely"
+echo "  different in content. Nothing here is counted as reclaimable space"
+echo "  unless --verify-dupes has hashed it."
 echo
-# One line per size-group: reclaimable, copy count, then each path.
-# Paths are tab-separated so the formatter below stays line-oriented.
+
+# size <TAB> path <TAB> path ...   (paths are tab-separated; filenames cannot
+# contain tabs in any output produced by find/stat)
 awk -F'\t' -v m=$((DUP_MIN_MB * 1048576)) '
   $1 >= m { c[$1]++; p[$1] = p[$1] "\t" $2 }
-  END { for (s in c) if (c[s] > 1) printf "%d\t%d%s\n", s * (c[s] - 1), c[s], p[s] }
-' "$WORK/files.tsv" | sort -rn | head -20 | awk -F'\t' '{
-  b = $1; split("B KiB MiB GiB TiB", u, " "); i = 1
-  while (b >= 1024 && i < 5) { b /= 1024; i++ }
-  printf("  reclaimable %9.1f %-3s  (%s copies)\n", b, u[i], $2)
-  for (j = 3; j <= NF; j++) printf("        %s\n", $j)
-}'
-DUPSUM=$(awk -F'\t' -v m=$((DUP_MIN_MB * 1048576)) '
-  $1 >= m { c[$1]++ } END { for (s in c) if (c[s] > 1) t += s * (c[s] - 1); print t+0 }
-' "$WORK/files.tsv")
+  END { for (s in c) if (c[s] > 1) printf "%d%s\n", s, p[s] }
+' "$WORK/files.tsv" | sort -rn > "$WORK/dupgroups.tsv"
+
+DUP_GROUPS=$(wc -l < "$WORK/dupgroups.tsv" | tr -d " ")
+DUPSUM=$(awk -F'\t' '{ t += $1 * (NF - 2) } END { print t+0 }' "$WORK/dupgroups.tsv")
+
+echo "  $DUP_GROUPS candidate group(s)."
+echo "  UNVERIFIED CEILING (if every one were a true duplicate): $(human "$DUPSUM")"
+echo "  Treat that number as an upper bound on what MIGHT exist, nothing more."
 echo
-echo "  Total if every duplicate candidate is confirmed and one copy kept: $(human "$DUPSUM")"
+
+head -20 "$WORK/dupgroups.tsv" | awk -F"\t" '{
+  b = $1 * (NF - 2); split("B KiB MiB GiB TiB", u, " "); i = 1
+  while (b >= 1024 && i < 5) { b /= 1024; i++ }
+  printf("  candidate  %9.1f %-3s  (%d files of identical size)\n", b, u[i], NF - 1)
+  for (j = 2; j <= NF; j++) printf("        %s\n", $j)
+}'
+
+DUP_CONFIRMED=0
+if [ "$VERIFY_DUPES" -eq 1 ] && [ "$DUP_GROUPS" -gt 0 ]; then
+  echo
+  sub
+  echo "  VERIFY — SHA-256 confirmation of the top $DUP_MAX_GROUPS group(s)"
+  echo "  Cheap prefilter on the first 1 MiB, full hash only on survivors."
+  sub
+  GN=0
+  while IFS= read -r line; do
+    GN=$((GN + 1)); [ "$GN" -gt "$DUP_MAX_GROUPS" ] && break
+    OLDIFS="$IFS"; IFS=$(printf "\t"); set -f
+    # shellcheck disable=SC2086
+    set -- $line
+    set +f; IFS="$OLDIFS"
+    SIZE="$1"; shift
+
+    # pass 1: hash the first 1 MiB of each candidate
+    : > "$WORK/pre.tsv"
+    for f in "$@"; do
+      [ -r "$f" ] || { $SUDO test -r "$f" 2>/dev/null || continue; }
+      H=$($SUDO head -c 1048576 "$f" 2>/dev/null | shasum -a 256 2>/dev/null | awk "{print \$1}")
+      [ -n "$H" ] && printf "%s\t%s\n" "$H" "$f" >> "$WORK/pre.tsv"
+    done
+    SURVIVORS=$(awk -F"\t" "{c[\$1]++} END {for (h in c) if (c[h] > 1) print h}" "$WORK/pre.tsv")
+    [ -z "$SURVIVORS" ] && continue
+
+    # pass 2: full SHA-256 on the survivors only
+    : > "$WORK/full.tsv"
+    for h in $SURVIVORS; do
+      awk -F"\t" -v k="$h" "\$1 == k {print \$2}" "$WORK/pre.tsv" | while IFS= read -r f; do
+        FH=$($SUDO shasum -a 256 "$f" 2>/dev/null | awk "{print \$1}")
+        [ -n "$FH" ] && printf "%s\t%s\n" "$FH" "$f" >> "$WORK/full.tsv"
+      done
+    done
+
+    awk -F"\t" -v sz="$SIZE" "
+      {c[\$1]++; p[\$1] = p[\$1] \"\\n        \" \$2}
+      END { for (h in c) if (c[h] > 1)
+              printf \"  CONFIRMED  %d bytes reclaimable  sha256 %s...%s\\n\",
+                     sz * (c[h] - 1), substr(h, 1, 12), p[h] }
+    " "$WORK/full.tsv" | tee -a "$WORK/confirmed.txt"
+
+    ADD=$(awk -F"\t" -v sz="$SIZE" "{c[\$1]++} END {for (h in c) if (c[h] > 1) t += sz * (c[h] - 1); print t+0}" "$WORK/full.tsv")
+    DUP_CONFIRMED=$((DUP_CONFIRMED + ADD))
+  done < "$WORK/dupgroups.tsv"
+
+  echo
+  echo "  CONFIRMED duplicate bytes (hash-identical, one copy kept): $(human "$DUP_CONFIRMED")"
+  [ "$DUP_GROUPS" -gt "$DUP_MAX_GROUPS" ] && \
+    echo "  Note: only the largest $DUP_MAX_GROUPS of $DUP_GROUPS groups were hashed."
+else
+  echo
+  echo "  NOT VERIFIED. Re-run with --verify-dupes to hash these and get a real"
+  echo "  figure. Until then no duplicate space is claimed anywhere in this report."
+fi
 
 # =========================================== 8. DOWNLOADS AND INSTALLERS ====
 echo
 hr; echo "8. DOWNLOADS AND INSTALLERS"; hr
 DL_KB=$(dir_kb "$HOME/Downloads")
-echo "  GREEN-ish  $(human "$(kb "$DL_KB")")  ~/Downloads  (review, then it is usually disposable)"
+echo "  AMBER  $(human "$(kb "$DL_KB")")  ~/Downloads"
+echo "         Not counted as reclaimable. On a production machine Downloads"
+echo "         holds unique material as often as it holds installers -- the"
+echo "         only copy of a delivered file, a client upload, a signed PDF."
+echo "         Review by hand. Installers below are the disposable part."
 echo
 grep -iE '\.(dmg|pkg|iso|zip|tar|tar\.gz|tgz|xip)$' "$WORK/files.tsv" 2>/dev/null | head -20 | \
 awk -F'\t' '{
@@ -302,7 +386,14 @@ $SUDO find "$HOME" -maxdepth 6 -type d -name node_modules -prune 2>/dev/null | h
 
 # =========================================================== 12. CACHES =====
 echo
-hr; echo "12. APPLICATION CACHES AND LOGS — GREEN"; hr
+hr; echo "12. APPLICATION CACHES AND LOGS — GREEN, with a caveat"; hr
+echo "  Regenerable by design, so GREEN for accounting. But a CLEAN stage"
+echo "  must be application-aware, not a blanket delete under these paths:"
+echo "  some apps keep real state under Caches (part-complete uploads,"
+echo "  offline mail bodies, license material), and a few misbehave badly"
+echo "  when their cache vanishes underneath a running process."
+echo "  Quit the app, clear that app\'s directory, verify. Not rm -rf Caches/*."
+echo
 CACHE_KB=0
 for d in "$HOME/Library/Caches" "$HOME/Library/Logs" "/Library/Caches" "/Library/Logs"; do
   K=$(dir_kb "$d")
@@ -354,30 +445,45 @@ done
 # ========================================================== 16. SUMMARY =====
 echo
 hr; echo "16. CLASSIFICATION SUMMARY"; hr
-GREEN_KB=$((DEV_KB + CACHE_KB + TRASH_KB + DL_KB + FCP_REGEN_KB))
+# Downloads is deliberately NOT in GREEN: on a production machine it holds
+# unique material as often as installers. Duplicates are NOT in any total
+# unless --verify-dupes actually hashed them.
+GREEN_KB=$((DEV_KB + CACHE_KB + TRASH_KB + FCP_REGEN_KB))
 echo
-printf "  GREEN  safely regenerable        %s\n" "$(human "$(kb "$GREEN_KB")")"
+printf "  GREEN  regenerable, countable    %s\n" "$(human "$(kb "$GREEN_KB")")"
 printf "           dev caches              %s\n" "$(human "$(kb "$DEV_KB")")"
-printf "           app caches and logs     %s\n" "$(human "$(kb "$CACHE_KB")")"
-printf "           Trash                   %s\n" "$(human "$(kb "$TRASH_KB")")"
+printf "           app caches and logs     %s  (clear per-app, not wholesale)\n" "$(human "$(kb "$CACHE_KB")")"
+printf "           Trash                   %s  (look inside first)\n" "$(human "$(kb "$TRASH_KB")")"
+printf "           FCP render/proxy/optim. %s  (Final Cut rebuilds these)\n" "$(human "$(kb "$FCP_REGEN_KB")")"
+echo
+echo "  AMBER  review required, NOT counted as reclaimable"
 printf "           Downloads               %s\n" "$(human "$(kb "$DL_KB")")"
-printf "           FCP render/proxy/optim. %s\n" "$(human "$(kb "$FCP_REGEN_KB")")"
+printf "           device backups          %s\n" "$(human "$(kb "$BK_KB")")"
+printf "           Xcode archives, unused applications, old library backups\n"
+if [ "$VERIFY_DUPES" -eq 1 ]; then
+  printf "           duplicates CONFIRMED    %s  (sha256-identical)\n" "$(human "$DUP_CONFIRMED")"
+  printf "           duplicates unverified   %s  (ceiling, not a finding)\n" "$(human "$DUPSUM")"
+else
+  printf "           duplicates              %s UNVERIFIED CEILING -- not a finding.\n" "$(human "$DUPSUM")"
+  printf "                                   Re-run with --verify-dupes to hash them.\n"
+fi
 echo
-printf "  AMBER  review required           device backups %s, Xcode archives, apps, duplicates %s\n" \
-  "$(human "$(kb "$BK_KB")")" "$(human "$DUPSUM")"
-echo
-printf "  RED    never auto-delete         FCP Original Media %s, Google Drive, git trees, media originals\n" \
-  "$(human "$(kb "$FCP_ORIG_KB")")"
+printf "  RED    never auto-delete         FCP Original Media %s\n" "$(human "$(kb "$FCP_ORIG_KB")")"
+printf "                                   Google Drive local, git working trees,\n"
+printf "                                   NemoClaw/OpenClaw, Geaboc material,\n"
+printf "                                   media originals\n"
 echo
 GOAL_KB=$((350 * 1024 * 1024))
 echo "  Free now:              $(human "$(kb "$AVAIL_KB")")"
 echo "  GREEN alone would give $(human "$(kb "$((AVAIL_KB + GREEN_KB))")")"
 echo "  Target (~350 GB):      $(human "$(kb "$GOAL_KB")")"
 if [ $((AVAIL_KB + GREEN_KB)) -lt "$GOAL_KB" ]; then
+  GAP_KB=$((GOAL_KB - AVAIL_KB - GREEN_KB))
   echo
-  echo "  GREEN alone does not reach the target. The gap has to come from"
-  echo "  AMBER after review — most likely duplicates, old FCP libraries and"
-  echo "  device backups. Section 3 and section 4 say where to look."
+  echo "  GREEN alone falls $(human "$(kb "$GAP_KB")") short of the target."
+  echo "  That gap must be closed from AMBER, after you review it -- not by"
+  echo "  widening GREEN. Sections 3 and 4 show where the mass actually sits;"
+  echo "  on this machine the answer is almost certainly video, not caches."
 fi
 
 echo
