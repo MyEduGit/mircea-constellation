@@ -105,7 +105,11 @@ async def _upload_file(client, api_key: str, path: Path) -> str:
     """Stream the audio bytes to /upload. Returns the temporary upload_url."""
     headers = {"authorization": api_key}
 
-    def chunks():
+    # NOTE: this MUST be an async generator. httpx refuses a sync iterable
+    # on an AsyncClient with "Attempted to send an sync request with an
+    # AsyncClient instance", which aborts the upload before any bytes reach
+    # AssemblyAI.
+    async def chunks():
         with path.open("rb") as fh:
             while True:
                 b = fh.read(5 * 1024 * 1024)
@@ -130,6 +134,13 @@ async def _start_job(client, api_key: str, audio_url: str, payload: dict) -> str
     model = payload.get("speech_model")
     if model:
         body["speech_model"] = model
+    # Custom vocabulary — biblical names, theological terms, proper nouns the
+    # generic Romanian model mis-hears. Only sent when the caller supplies it,
+    # so existing handlers keep their exact request shape.
+    boost = payload.get("word_boost")
+    if boost:
+        body["word_boost"] = list(boost)
+        body["boost_param"] = payload.get("boost_param", "high")
     r = await client.post(f"{_API_BASE}/transcript", headers=headers, json=body)
     r.raise_for_status()
     return r.json()["id"]

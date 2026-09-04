@@ -184,6 +184,81 @@ unchanged afterwards. The raw AssemblyAI response is preserved at
 
 ---
 
+## Sermon package — one file, no Docker, source untouched
+
+`transcribe_assemblyai` requires the audio to sit inside the Docker bind
+mount at `/data/media/audio/`. A sermon on an external SSD is not there,
+and copying an authoritative source just to transcribe it is exactly what
+the preservation rules forbid. `scribeclaw.sermon_transcribe` runs the
+same AssemblyAI client against an arbitrary absolute path, read-only, and
+emits the full evidence package:
+
+```bash
+export ASSEMBLYAI_API_KEY=...          # or put it in scribeclaw/.env
+pip install httpx
+
+python3 -m scribeclaw.sermon_transcribe \
+    --input "/Volumes/SSD_Adobe:FCP/.../C0089_Audio.mp3" \
+    --code C0089 \
+    --speaker-labels \
+    --word-boost-file channels/jabbokriver/geaboc-vocabulary-ro.txt
+```
+
+Writes ten files to `<source dir>/C0089_Transcription/` (override with
+`--out-dir`):
+
+| File | Layer |
+|---|---|
+| `C0089_AssemblyAI_RAW.json` / `.txt` | 1 — verbatim API response |
+| `C0089_Transcript_Corrected_RO.txt`  | 2 — deterministic orthography + `[NECLAR]` |
+| `C0089_Transcript_Canonical_RO.md`   | 3 — **candidate**, not human-verified |
+| `C0089_Transcript_Timestamped_RO.md` | HH:MM:SS blocks for FCP |
+| `C0089_Word_Timestamps.json`         | word + utterance timing, seconds |
+| `C0089_Transcription_Metadata.json`  | provenance, SHA-256, job id |
+| `C0089_Transcription_QA.md`          | automated QA findings |
+| `C0089_RO.srt` / `.vtt`              | subtitles |
+
+What each layer does and does **not** claim:
+
+- **Layer 1** is untouched API output. It is the evidence.
+- **Layer 2** applies `postprocess._fix_text` only — legacy cedilla
+  (`ş`→`ș`, `ţ`→`ț`) and spacing. No lexical guessing. Where AssemblyAI
+  itself reported a sustained low-confidence run, a `[NECLAR — HH:MM:SS]`
+  marker is inserted so uncertainty is visible rather than hidden.
+- **Layer 3** is Layer 2 reflowed into paragraphs, and labels itself a
+  CANDIDATE in its own header. Biblical names, references and theological
+  terms are **not** editorially corrected — that needs a human against the
+  audio. Do not treat it as authoritative until someone signs it off.
+
+Safety behaviours, all covered by `tests/test_sermon_transcribe.py`:
+
+- The source is opened read-only; a test asserts bytes and mtime are
+  unchanged after a run.
+- An existing package is **not** overwritten. The run refuses with exit
+  code 5, writes `C0089_EXISTING_PACKAGE_FOUND.json` with sizes and
+  SHA-256s of what is already there, and waits for `--overwrite`.
+- The API key never enters metadata, logs, or stdout (asserted).
+- `--speech-model best` falls back to the account default if the API
+  rejects it, rather than failing the whole run.
+
+### Custom vocabulary
+
+`channels/jabbokriver/geaboc-vocabulary-ro.txt` holds 181 terms derived
+from `channels/jabbokriver/geaboc-glossary.md`, plus Cornilescu book names
+and recurring proper nouns. Passed as AssemblyAI `word_boost` with
+`boost_param: high`, it measurably helps on the words a generic Romanian
+model gets wrong — `Sanctuar`, `Neprihănirea prin credință`, `Apocalipsa`,
+`Golgota`.
+
+> **Fixed:** `_upload_file` passed a *sync* generator to an httpx
+> `AsyncClient`, which raises `RuntimeError: Attempted to send an sync
+> request with an AsyncClient instance` — every upload aborted before a
+> byte reached AssemblyAI. It is now an async generator, and
+> `test_whole_file_uploaded` asserts the received byte count equals the
+> file size.
+
+---
+
 ## Configuration surface
 
 | Env var            | Default        | Purpose                                  |

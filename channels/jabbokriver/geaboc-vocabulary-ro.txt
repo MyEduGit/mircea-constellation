@@ -1,0 +1,196 @@
+# Vocabular personalizat AssemblyAI (word_boost) — predici Dr Emanoil Geaboc
+#
+# Derivat din channels/jabbokriver/geaboc-glossary.md (coloana romana),
+# plus cartile biblice in traducerea Cornilescu si numele proprii care apar
+# frecvent in predicile SDA. Termenii sunt trimisi ca `word_boost` cu
+# `boost_param: high` catre AssemblyAI, ceea ce creste sansa recunoasterii
+# corecte a terminologiei teologice si a numelor biblice.
+#
+# Foloseste-l astfel:
+#   python3 -m scribeclaw.sermon_transcribe --input ... --code C0089 \
+#       --word-boost-file channels/jabbokriver/geaboc-vocabulary-ro.txt
+#
+# Liniile care incep cu '#' sunt ignorate. Un termen pe linie.
+# Termeni: 181
+
+Sanctuar
+Neprihănirea prin credință
+Judecata de cercetare
+Marele Conflict
+Sabat
+Duhul Sfânt
+Isus Hristos
+Mântuitorul
+mântuire
+har
+credință
+pocăință
+botez
+profeție
+apocalipsă
+Apocalipsa
+cartea Daniel
+a doua venire
+revenirea lui Hristos
+învierea morților
+starea morților
+somnul morții
+suflet nemuritor
+îngeri
+Satana
+Diavolul
+marea luptă
+Spiritul Profetismului
+reformă sanitară
+zecime
+darul vorbirii în limbi
+Împărăția lui Dumnezeu
+Tatăl ceresc
+Sfânta Treime
+legea lui Dumnezeu
+Cele Zece Porunci
+ziua Domnului
+Sionul ceresc
+promisiunea Duhului
+noua naștere
+sfințenie
+desăvârșire
+judecată
+mânia lui Dumnezeu
+iertare
+ispășire
+sângele lui Hristos
+cruce
+Golgota
+înălțare
+mijlocire
+marea adunare
+poporul lui Dumnezeu
+rămășița
+timp de strâmtorare
+pecetea lui Dumnezeu
+semnul fiarei
+cei 144.000
+Babilonul mistic
+potir
+cupa mâniei
+judecata pre-adventă
+porțile perle
+Noul Pământ
+veșnicie
+Use case
+Single sermon, best quality
+Single sermon, fast
+cost
+Full series in one pass
+Real-time YouTube subtitles
+Geneza
+Exodul
+Leviticul
+Numeri
+Deuteronomul
+Iosua
+Judecători
+Rut
+1 Samuel
+2 Samuel
+1 Împărați
+2 Împărați
+1 Cronici
+2 Cronici
+Ezra
+Neemia
+Estera
+Iov
+Psalmii
+Proverbele
+Eclesiastul
+Cântarea Cântărilor
+Isaia
+Ieremia
+Plângerile lui Ieremia
+Ezechiel
+Daniel
+Osea
+Ioel
+Amos
+Obadia
+Iona
+Mica
+Naum
+Habacuc
+Țefania
+Hagai
+Zaharia
+Maleahi
+Matei
+Marcu
+Luca
+Ioan
+Faptele Apostolilor
+Romani
+1 Corinteni
+2 Corinteni
+Galateni
+Efeseni
+Filipeni
+Coloseni
+1 Tesaloniceni
+2 Tesaloniceni
+1 Timotei
+2 Timotei
+Tit
+Filimon
+Evrei
+Iacov
+1 Petru
+2 Petru
+1 Ioan
+2 Ioan
+3 Ioan
+Iuda
+Emanoil Geaboc
+Ellen White
+Cornilescu
+Avraam
+Isaac
+Iacob
+Moise
+Aaron
+David
+Solomon
+Ilie
+Elisei
+Samuel
+Saul
+Noe
+Iosif
+Maria
+Ioan Botezătorul
+Pavel
+Petru
+Toma
+Ștefan
+Barnaba
+Timotei
+Ierusalim
+Betleem
+Nazaret
+Galileea
+Iudeea
+Samaria
+Egipt
+Babilon
+Canaan
+Sinai
+Ghetsimani
+Muntele Măslinilor
+Marea Roșie
+Iordan
+Emanuel
+Mesia
+Hristos
+Iehova
+Elohim
+Fiul Omului
+Mielul lui Dumnezeu
